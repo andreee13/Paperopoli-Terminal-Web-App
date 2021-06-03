@@ -3,13 +3,13 @@ import 'package:paperopoli_terminal/data/models/vehicle/vehicle_status.dart';
 import 'vehicle_status.dart';
 
 class VehicleModel {
-  int id;
+  int? id;
   String plate;
   String type;
   final List<VehicleStatus> status;
 
   VehicleModel({
-    required this.id,
+    this.id,
     required this.status,
     required this.plate,
     required this.type,

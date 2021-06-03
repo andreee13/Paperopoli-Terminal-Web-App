@@ -1,14 +1,14 @@
 import 'person_status.dart';
 
 class PersonModel {
-  int id;
+  int? id;
   String cf;
   String fullname;
   String type;
   final List<PersonStatus> status;
 
   PersonModel({
-    required this.id,
+    this.id,
     required this.status,
     required this.cf,
     required this.fullname,

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:paperopoli_terminal/cubits/authentication/authentication_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flash/flash.dart';
 
 class LoginFormWidget extends StatefulWidget {
   @override
@@ -145,29 +146,18 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
             Center(
               child: MaterialButton(
                 onPressed: () async {
-                  try {
-                    await context
-                        .read<AuthenticationCubit>()
-                        .logInWithCredentials(
-                          email: _emailController.text,
-                          password: _passwordController.text,
-                        );
-                    if (context.read<AuthenticationCubit>().state
-                        is AuthenticationNotLogged) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Password/email incorretti',
-                          ),
-                        ),
+                  await context
+                      .read<AuthenticationCubit>()
+                      .logInWithCredentials(
+                        email: _emailController.text,
+                        password: _passwordController.text,
                       );
-                    }
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Si è verificato un errore',
-                        ),
+                  var state = context.read<AuthenticationCubit>().state;
+                  if (state is AuthenticationNotLogged ||
+                      state is AuthenticationError) {
+                    await context.showErrorBar(
+                      content: Text(
+                        'Email o password errati',
                       ),
                     );
                   }

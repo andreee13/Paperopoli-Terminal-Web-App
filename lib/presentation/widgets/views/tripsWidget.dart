@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:html';
+import 'dart:io';
 
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flash/flash.dart';
@@ -46,6 +46,10 @@ class _TripsWidgetState extends State<TripsWidget> {
 
   @override
   void dispose() {
+    _expectedArrivalDateController.dispose();
+    _expectedDeparturedDateController.dispose();
+    _actualArrivalDateController.dispose();
+    _actualDepartureDateController.dispose();
     _deleteTextController.dispose();
     super.dispose();
   }
@@ -785,7 +789,7 @@ class _TripsWidgetState extends State<TripsWidget> {
                     });
                     return context.showInfoBar(
                       content: Text(
-                        'Viaggio aggiornato',
+                        'Viaggio aggiornato con successo',
                       ),
                     );
                   },
@@ -812,7 +816,7 @@ class _TripsWidgetState extends State<TripsWidget> {
                 ? await _fetch().then(
                     (value) => context.showInfoBar(
                       content: Text(
-                        'Viaggio eliminato',
+                        'Viaggio eliminato con successo',
                       ),
                     ),
                   )

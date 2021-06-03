@@ -32,7 +32,7 @@ import 'presentation/widgets/loading_indicator.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  //FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   await _initializeDeviceProperties();
   _initializeFirebaseMessaging();
   runZonedGuarded(
@@ -111,7 +111,7 @@ void _initializeFirebaseMessaging() {
   );
 }
 
-Future<void> _manageNotification(RemoteMessage msg) async => {};
+Future<void> _manageNotification(RemoteMessage msg) async => {}; //TODO
 
 class AppBootstrapper extends StatefulWidget {
   @override
@@ -135,9 +135,9 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
         ),
         home: BlocBuilder<AuthenticationCubit, AuthenticationState>(
           builder: (context, state) {
-            //return LandingScreen();
             if (state is AuthenticationError ||
-                state is AuthenticationNotLogged) {
+                state is AuthenticationNotLogged ||
+                state is AuthenticationLoading) {
               return AuthenticatonScreen();
             } else if (state is AuthenticationLogged) {
               return HomeScreen();

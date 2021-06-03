@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:html';
+import 'dart:io';
 
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flash/flash.dart';
@@ -172,16 +172,9 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                     icon: Icon(
                       Icons.delete_outline,
                     ),
-                    onPressed: () => _goodToEdit!.status
-                                .where(
-                                  (element) => !element.isDeleted,
-                                )
-                                .length >
-                            1
-                        ? setState(
-                            () => _goodToEdit!.status[index].isDeleted = true,
-                          )
-                        : {},
+                    onPressed: () => setState(
+                      () => _goodToEdit!.status[index].isDeleted = true,
+                    ),
                   ),
                 )
               : SizedBox();
@@ -680,7 +673,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                   children: [
                     Container(
                       height: 50,
-                      width: 800,
+                      width: 500,
                       padding: const EdgeInsets.only(
                         top: 8,
                       ),
@@ -800,7 +793,17 @@ class _GoodsWidgetState extends State<GoodsWidget> {
         ],
       );
 
-  Future _editGood() async => await ServerService(
+  Future _editGood() async {
+    if (_goodToEdit!.status.isEmpty ||
+        _goodToEdit!.status.where((element) => element.isDeleted).length ==
+            _goodToEdit!.status.length) {
+      await context.showErrorBar(
+        content: Text(
+          'Inserire almeno uno stato',
+        ),
+      );
+    } else {
+      await ServerService(
         HomeScreen.of(context)!.getUser(),
       )
           .editGood(
@@ -815,7 +818,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                       });
                       return context.showInfoBar(
                         content: Text(
-                          'Merce aggiornata',
+                          'Merce aggiornata con successo',
                         ),
                       );
                     },
@@ -826,6 +829,8 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                     ),
                   ),
           );
+    }
+  }
 
   Future _deleteGood(
     GoodModel goodModel,
@@ -841,7 +846,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                 ? await _fetch().then(
                     (value) => context.showInfoBar(
                       content: Text(
-                        'Merce eliminata',
+                        'Merce eliminata con successo',
                       ),
                     ),
                   )

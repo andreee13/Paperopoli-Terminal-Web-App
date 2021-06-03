@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1094311692688",
+    "project_id": "paperopoli-terminal",
+    "storage_bucket": "paperopoli-terminal.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1094311692688:android:bd4e0f8cbd40a161fd0b15",
+        "android_client_info": {
+          "package_name": "com.andreachecchin.paperopoli_terminal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1094311692688-qbcq3arpqt3n527vq0kjj3s1ilsd8ma7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.andreachecchin.paperopoli_terminal",
+            "certificate_hash": "65f67fa70e9648617d72e393b88f7c8e163b2535"
+          }
+        },
+        {
+          "client_id": "1094311692688-s70ja0rkqovs2jaogh1ko2vn7m76cfsb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBY4QLokHAM_-wasQX5PpyWb9wlA2g98Fs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1094311692688-s70ja0rkqovs2jaogh1ko2vn7m76cfsb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

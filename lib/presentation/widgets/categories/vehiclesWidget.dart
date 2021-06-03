@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:html';
+import 'dart:io';
 
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flash/flash.dart';
@@ -171,17 +171,9 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                     icon: Icon(
                       Icons.delete_outline,
                     ),
-                    onPressed: () => _vehicleToEdit!.status
-                                .where(
-                                  (element) => !element.isDeleted,
-                                )
-                                .length >
-                            1
-                        ? setState(
-                            () =>
-                                _vehicleToEdit!.status[index].isDeleted = true,
-                          )
-                        : {},
+                    onPressed: () => setState(
+                      () => _vehicleToEdit!.status[index].isDeleted = true,
+                    ),
                   ),
                 )
               : SizedBox();
@@ -802,7 +794,17 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
         ],
       );
 
-  Future _editVehicle() async => await ServerService(
+  Future _editVehicle() async {
+    if (_vehicleToEdit!.status.isEmpty ||
+        _vehicleToEdit!.status.where((element) => element.isDeleted).length ==
+            _vehicleToEdit!.status.length) {
+      await context.showErrorBar(
+        content: Text(
+          'Inserire almeno uno stato',
+        ),
+      );
+    } else {
+      await ServerService(
         HomeScreen.of(context)!.getUser(),
       )
           .editVehicle(
@@ -817,7 +819,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                       });
                       return context.showInfoBar(
                         content: Text(
-                          'Veicolo aggiornata',
+                          'Veicolo aggiornato con successo',
                         ),
                       );
                     },
@@ -828,6 +830,8 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                     ),
                   ),
           );
+    }
+  }
 
   Future _deleteVehicle(
     VehicleModel vehicleModel,
@@ -843,7 +847,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                 ? await _fetch().then(
                     (value) => context.showInfoBar(
                       content: Text(
-                        'Veicolo eliminato',
+                        'Veicolo eliminato con successo',
                       ),
                     ),
                   )

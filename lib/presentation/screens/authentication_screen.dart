@@ -30,7 +30,11 @@ class _AuthenticatonScreenState extends State<AuthenticatonScreen>
       Duration(
         seconds: 1,
       ),
-      () => _controller.forward(),
+      () {
+        try {
+          _controller.forward();
+        } catch (_) {}
+      },
     );
     super.initState();
   }

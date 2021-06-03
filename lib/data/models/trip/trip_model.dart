@@ -4,14 +4,14 @@ import 'package:paperopoli_terminal/data/models/quay/quay_model.dart';
 import 'package:paperopoli_terminal/data/models/trip/trip_time.dart';
 
 class TripModel {
-  int id;
+  int? id;
   Quay quay;
   TripTime time;
   final List<OperationModel> operations;
 
   TripModel({
     required this.operations,
-    required this.id,
+    this.id,
     required this.quay,
     required this.time,
   });

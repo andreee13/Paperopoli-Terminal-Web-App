@@ -1,13 +1,13 @@
 import 'good_status.dart';
 
 class GoodModel {
-  int id;
+  int? id;
   String description;
   String type;
   final List<GoodStatus> status;
 
   GoodModel({
-    required this.id,
+    this.id,
     required this.status,
     required this.description,
     required this.type,

@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:html';
+import 'dart:io';
 
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flash/flash.dart';
@@ -173,16 +173,9 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                     icon: Icon(
                       Icons.delete_outline,
                     ),
-                    onPressed: () => _personToEdit!.status
-                                .where(
-                                  (element) => !element.isDeleted,
-                                )
-                                .length >
-                            1
-                        ? setState(
-                            () => _personToEdit!.status[index].isDeleted = true,
-                          )
-                        : {},
+                    onPressed: () => setState(
+                      () => _personToEdit!.status[index].isDeleted = true,
+                    ),
                   ),
                 )
               : SizedBox();
@@ -701,7 +694,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                   children: [
                     Container(
                       height: 50,
-                      width: 400,
+                      width: 500,
                       padding: const EdgeInsets.only(
                         top: 8,
                       ),
@@ -850,7 +843,17 @@ class _PeopleWidgetState extends State<PeopleWidget> {
         ],
       );
 
-  Future _editPerson() async => await ServerService(
+  Future _editPerson() async {
+    if (_personToEdit!.status.isEmpty ||
+        _personToEdit!.status.where((element) => element.isDeleted).length ==
+            _personToEdit!.status.length) {
+      await context.showErrorBar(
+        content: Text(
+          'Inserire almeno uno stato',
+        ),
+      );
+    } else {
+      await ServerService(
         HomeScreen.of(context)!.getUser(),
       )
           .editPerson(
@@ -867,7 +870,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                       });
                       return context.showInfoBar(
                         content: Text(
-                          'Persona aggiornata',
+                          'Persona aggiornata con successo',
                         ),
                       );
                     },
@@ -878,6 +881,8 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                     ),
                   ),
           );
+    }
+  }
 
   Future _deletePerson(
     PersonModel personModel,
@@ -893,7 +898,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                 ? await _fetch().then(
                     (value) => context.showInfoBar(
                       content: Text(
-                        'Persona eliminata',
+                        'Persona eliminata con successo',
                       ),
                     ),
                   )

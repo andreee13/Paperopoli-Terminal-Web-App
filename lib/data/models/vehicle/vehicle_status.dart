@@ -15,10 +15,10 @@ class VehicleStatus {
     this.name_id,
   });
 
-  Map<String, dynamic> toJson(int id) => {
+  Map<String, dynamic> toJson(int? id) => {
         'id': id,
         'status_id': this.id,
-        'timestamp': timestamp,
+        'timestamp': timestamp.toIso8601String(),
         'stato': name_id,
         'name_id': name_id,
         'is_new': isNew,

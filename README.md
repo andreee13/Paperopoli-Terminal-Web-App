@@ -1,3 +1,3 @@
-# Paperopoli Terminal App
+# Paperopoli Terminal Web App
 
 Applicazione Web Paperopoli Terminal.

@@ -33,16 +33,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   CategoryModel _selectedCategory = CATEGORIES[0];
-  Object? _itemToCreate;
-  bool _inCreatingMode = false;
-  final List<Widget> _routes = [
-    CreateTripWidget(),
-    CreateOperationWidget(),
-    CreateShipWidget(),
-    CreateGoodWidget(),
-    CreatePersonWidget(),
-    CreateVehicleWidget(),
-  ];
+  int _inCreatingMode = 0;
+  Widget? _createWidget;
+
+  void setCreatingMode(int i) => setState(
+        () => _inCreatingMode = i,
+      );
 
   User getUser() =>
       (context.read<AuthenticationCubit>().state as AuthenticationLogged).user!;
@@ -83,8 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     selectedTileColor: Colors.white10,
                     onTap: () {
                       setState(() {
-                        _itemToCreate = null;
-                        _inCreatingMode = false;
+                        _inCreatingMode = 0;
                         _selectedCategory = CATEGORIES[index];
                       });
                     },
@@ -119,8 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 selectedTileColor: Colors.white10,
                 onTap: () {
                   setState(() {
-                    _itemToCreate = null;
-                    _inCreatingMode = false;
+                    _inCreatingMode = 0;
                     _selectedCategory = CATEGORIES[index];
                   });
                 },
@@ -151,6 +145,25 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           : SizedBox();
 
+  Widget _getCreateWidgetWidget(String s) {
+    switch (s) {
+      case 'Viaggio':
+        return CreateTripWidget();
+      case 'Movimentazione':
+        return CreateOperationWidget();
+      case 'Nave':
+        return CreateShipWidget();
+      case 'Merce':
+        return CreateGoodWidget();
+      case 'Persona':
+        return CreatePersonWidget();
+      case 'Veicolo':
+        return CreateVehicleWidget();
+      default:
+        return SizedBox();
+    }
+  }
+
   Widget _buildMainWidget() {
     switch (_selectedCategory.name) {
       case 'Dashboard':
@@ -172,12 +185,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  //TODO
   Widget _buildCreateWidget() => AnimatedSwitcher(
         duration: Duration(
           milliseconds: 500,
         ),
-        child: _itemToCreate == null
+        child: _inCreatingMode == 1
             ? Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -188,17 +200,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         _buildNewItemWidget(
                           Icons.calendar_today_outlined,
                           'Viaggio',
-                          _routes[0],
                         ),
                         _buildNewItemWidget(
                           Icons.stacked_line_chart_outlined,
                           'Movimentazione',
-                          _routes[0],
                         ),
                         _buildNewItemWidget(
                           Ionicons.boat_outline,
                           'Nave',
-                          _routes[0],
                         ),
                       ],
                     ),
@@ -208,30 +217,26 @@ class _HomeScreenState extends State<HomeScreen> {
                         _buildNewItemWidget(
                           Ionicons.cube_outline,
                           'Merce',
-                          _routes[0],
                         ),
                         _buildNewItemWidget(
                           Ionicons.people_outline,
                           'Persona',
-                          _routes[0],
                         ),
                         _buildNewItemWidget(
                           Ionicons.car_outline,
                           'Veicolo',
-                          _routes[0],
                         ),
                       ],
                     ),
                   ],
                 ),
               )
-            : Text('insert data'),
+            : _createWidget,
       );
 
   Widget _buildNewItemWidget(
     IconData icon,
     String title,
-    Widget route,
   ) =>
       Padding(
         padding: const EdgeInsets.all(16.0),
@@ -246,8 +251,10 @@ class _HomeScreenState extends State<HomeScreen> {
           color: Color(0xffF9F9F9),
           onPressed: () => setState(
             () {
-              _itemToCreate = Object(); //TODO
-              _inCreatingMode = true;
+              _inCreatingMode = 2;
+              _createWidget = _getCreateWidgetWidget(
+                title,
+              );
             },
           ),
           child: Column(
@@ -275,11 +282,17 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.white,
         floatingActionButton: FloatingActionButton(
           onPressed: () => setState(
-            () => _inCreatingMode = !_inCreatingMode,
+            () => _inCreatingMode == 1 || _inCreatingMode == 2
+                ? _inCreatingMode = 0
+                : _inCreatingMode = 1,
           ),
-          backgroundColor: _inCreatingMode ? Colors.red.withOpacity(0.9) : Color(0xff5564E8),
+          backgroundColor: _inCreatingMode == 1 || _inCreatingMode == 2
+              ? Colors.red.withOpacity(0.9)
+              : Color(0xff5564E8),
           child: Icon(
-            _inCreatingMode ? Icons.close : Icons.add,
+            _inCreatingMode == 1 || _inCreatingMode == 2
+                ? Icons.close
+                : Icons.add,
             color: Colors.white,
           ),
         ),
@@ -409,8 +422,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 duration: Duration(
                   milliseconds: 500,
                 ),
-                child:
-                    _inCreatingMode ? _buildCreateWidget() : _buildMainWidget(),
+                child: _inCreatingMode == 1 || _inCreatingMode == 2
+                    ? _buildCreateWidget()
+                    : _buildMainWidget(),
               ),
             ),
           ],

@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:html';
+import 'dart:io';
 
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flash/flash.dart';
@@ -172,16 +172,9 @@ class _ShipsWidgetState extends State<ShipsWidget> {
                     icon: Icon(
                       Icons.delete_outline,
                     ),
-                    onPressed: () => _shipToEdit!.status
-                                .where(
-                                  (element) => !element.isDeleted,
-                                )
-                                .length >
-                            1
-                        ? setState(
-                            () => _shipToEdit!.status[index].isDeleted = true,
-                          )
-                        : {},
+                    onPressed: () => setState(
+                      () => _shipToEdit!.status[index].isDeleted = true,
+                    ),
                   ),
                 )
               : SizedBox();
@@ -680,7 +673,7 @@ class _ShipsWidgetState extends State<ShipsWidget> {
                   children: [
                     Container(
                       height: 50,
-                      width: 800,
+                      width: 500,
                       padding: const EdgeInsets.only(
                         top: 8,
                       ),
@@ -800,7 +793,17 @@ class _ShipsWidgetState extends State<ShipsWidget> {
         ],
       );
 
-  Future _editShip() async => await ServerService(
+  Future _editShip() async {
+    if (_shipToEdit!.status.isEmpty ||
+        _shipToEdit!.status.where((element) => element.isDeleted).length ==
+            _shipToEdit!.status.length) {
+      await context.showErrorBar(
+        content: Text(
+          'Inserire almeno uno stato',
+        ),
+      );
+    } else {
+      await ServerService(
         HomeScreen.of(context)!.getUser(),
       )
           .editShip(
@@ -815,7 +818,7 @@ class _ShipsWidgetState extends State<ShipsWidget> {
                       });
                       return context.showInfoBar(
                         content: Text(
-                          'Nave aggiornata',
+                          'Nave aggiornata con successo',
                         ),
                       );
                     },
@@ -826,6 +829,8 @@ class _ShipsWidgetState extends State<ShipsWidget> {
                     ),
                   ),
           );
+    }
+  }
 
   Future _deleteShip(
     ShipModel shipModel,
@@ -841,7 +846,7 @@ class _ShipsWidgetState extends State<ShipsWidget> {
                 ? await _fetch().then(
                     (value) => context.showInfoBar(
                       content: Text(
-                        'Nave eliminata',
+                        'Nave eliminata con successo',
                       ),
                     ),
                   )

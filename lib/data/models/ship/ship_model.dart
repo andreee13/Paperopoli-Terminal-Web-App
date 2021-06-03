@@ -1,13 +1,13 @@
 import 'package:paperopoli_terminal/data/models/ship/ship_status.dart';
 
 class ShipModel {
-  int id;
+  int? id;
   final List<ShipStatus> status;
   String type;
   String description;
 
   ShipModel({
-    required this.id,
+    this.id,
     required this.status,
     required this.type,
     required this.description,
@@ -37,7 +37,6 @@ class ShipModel {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
         'type': type,
         'description': description,
         'status': status
