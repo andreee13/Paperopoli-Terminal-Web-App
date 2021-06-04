@@ -12,27 +12,29 @@ import 'package:ionicons/ionicons.dart';
 import 'package:paperopoli_terminal/core/services/server_service.dart';
 import 'package:paperopoli_terminal/core/utils/constants.dart';
 import 'package:paperopoli_terminal/core/utils/packages/flutter-countup/lib/countup.dart';
-import 'package:paperopoli_terminal/cubits/vehicles/vehicles_cubit.dart';
-import 'package:paperopoli_terminal/data/models/vehicle/vehicle_model.dart';
-import 'package:paperopoli_terminal/data/models/vehicle/vehicle_status.dart';
+import 'package:paperopoli_terminal/cubits/operations/operations_cubit.dart';
+import 'package:paperopoli_terminal/data/models/operation/operation_model.dart';
+import 'package:paperopoli_terminal/data/models/operation/operation_status.dart';
 import 'package:paperopoli_terminal/presentation/screens/home_screen.dart';
 
 import '../loading_indicator.dart';
 
-class VehiclesWidget extends StatefulWidget {
+class OperationsWidget extends StatefulWidget {
   @override
-  _VehiclesWidgetState createState() => _VehiclesWidgetState();
+  _OperationsWidgetState createState() => _OperationsWidgetState();
 }
 
-class _VehiclesWidgetState extends State<VehiclesWidget> {
-  late List<VehicleModel> _vehicles;
-  final TextEditingController _plateTextController = TextEditingController();
+class _OperationsWidgetState extends State<OperationsWidget> {
+  late List<OperationModel> _operations;
+  final TextEditingController _descriptionTextController =
+      TextEditingController();
   final TextEditingController _newStateDateTimeController =
       TextEditingController();
-  VehicleModel? _vehicleToEdit;
+  OperationModel? _operationToEdit;
   List<String> _types = [];
   List _statusNames = [];
   var _currentStatusName;
+  var _currentNewItem;
 
   @override
   void initState() {
@@ -42,19 +44,19 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
 
   @override
   void dispose() {
-    _plateTextController.dispose();
+    _descriptionTextController.dispose();
     _newStateDateTimeController.dispose();
     super.dispose();
   }
 
   Future _fetch() async {
-    await context.read<VehiclesCubit>().fetch(
+    await context.read<OperationsCubit>().fetch(
           user: HomeScreen.of(context)!.getUser(),
         );
     _types = await jsonDecode(
       await ServerService(
         HomeScreen.of(context)!.getUser(),
-      ).fetchVehicleTypes().then(
+      ).fetchOperationTypes().then(
             (value) => value.body,
           ),
     )
@@ -65,14 +67,17 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
     _statusNames = await jsonDecode(
       await ServerService(
         HomeScreen.of(context)!.getUser(),
-      ).fetchVehiclesStatusNames().then(
+      ).fetchOperationsStatusNames().then(
             (value) => value.body,
           ),
     );
   }
 
-  Widget _vehicleStatusBuilder(int index, setState) =>
-      index == _vehicleToEdit!.status.length
+  Widget _operationStatusBuilder(
+    int index,
+    setState,
+  ) =>
+      index == _operationToEdit!.status.length
           ? ListTile(
               title: Text(
                 'Nuovo stato',
@@ -97,8 +102,8 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                       onPressed: () {
                         Navigator.pop(context);
                         setState(
-                          () => _vehicleToEdit!.status.add(
-                            VehicleStatus(
+                          () => _operationToEdit!.status.add(
+                            OperationStatus(
                               timestamp: DateTime.parse(
                                 _newStateDateTimeController.text,
                               ),
@@ -159,24 +164,86 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                 ),
               ),
             )
-          : _vehicleToEdit!.status[index].isDeleted == false
+          : _operationToEdit!.status[index].isDeleted == false
               ? ListTile(
                   leading: Text(
-                    '${_vehicleToEdit!.status[index].timestamp.toIso8601String().substring(0, 19).replaceAll("T", " ")}',
+                    '${_operationToEdit!.status[index].timestamp.toIso8601String().substring(0, 19).replaceAll("T", " ")}',
                   ),
                   title: Text(
-                    _vehicleToEdit!.status[index].name,
+                    _operationToEdit!.status[index].name,
                   ),
                   trailing: IconButton(
                     icon: Icon(
                       Icons.delete_outline,
                     ),
                     onPressed: () => setState(
-                      () => _vehicleToEdit!.status[index].isDeleted = true,
+                      () => _operationToEdit!.status[index].isDeleted = true,
                     ),
                   ),
                 )
               : SizedBox();
+
+  Widget _operationItemsBuilder(
+    int index,
+    setState,
+    List<int> items,
+  ) =>
+      index == _operationToEdit!.status.length
+          ? ListTile(
+              title: Text(
+                'Aggiungi',
+              ),
+              leading: Icon(
+                Icons.add,
+              ),
+              onTap: () => showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: Text(
+                    'Aggiungi',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        'Annulla',
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        setState(
+                          () => items.add(_currentNewItem),
+                        );
+                      },
+                      child: Text(
+                        'Salva',
+                      ),
+                    ),
+                  ],
+                  content: StatefulBuilder(
+                    builder: (ctx, setState1) =>
+                        DropdownButton<Map<String, dynamic>>(
+                      value: _currentNewItem,
+                      onChanged: (value) => setState1(
+                        () => _currentNewItem = value,
+                      ),
+                      items: _statusNames //TODO: ids
+                          .map(
+                            (e) => DropdownMenuItem<Map<String, dynamic>>(
+                              value: e,
+                              child: Text(
+                                e['nome'],
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                ),
+              ),
+            )
+          : ListTile();
 
   InputDecoration _getInputDecoration(
     String hintText,
@@ -207,24 +274,12 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
         ),
       );
 
-  Widget _getInfoWidgets(int index, VehicleModel vehicle) {
+  Widget _getInfoWidgets(
+    int index,
+    OperationModel operation,
+  ) {
     switch (index) {
       case 0:
-        return Text(
-          'Targa: ',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.grey.shade600,
-          ),
-        );
-      case 1:
-        return Text(
-          vehicle.plate,
-          style: TextStyle(
-            color: Colors.grey.shade500,
-          ),
-        );
-      case 2:
         return Text(
           'Tipo: ',
           style: TextStyle(
@@ -232,14 +287,28 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
             color: Colors.grey.shade600,
           ),
         );
-      case 3:
+      case 1:
         return Text(
-          vehicle.type,
+          operation.type,
           style: TextStyle(
             color: Colors.grey.shade500,
           ),
         );
-
+      case 2:
+        return Text(
+          'Descrizione: ',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.grey.shade600,
+          ),
+        );
+      case 3:
+        return Text(
+          operation.description,
+          style: TextStyle(
+            color: Colors.grey.shade500,
+          ),
+        );
       case 4:
         return Text(
           'Stato: ',
@@ -250,7 +319,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
         );
       case 5:
         return Text(
-          vehicle.status.last.name,
+          operation.status.last.name,
           style: TextStyle(
             color: Colors.grey.shade500,
           ),
@@ -260,7 +329,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
     }
   }
 
-  Widget _vehiclesBuilder(
+  Widget _operationsBuilder(
     BuildContext context,
     int index,
     Animation<double> animation,
@@ -278,10 +347,10 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
           child: GestureDetector(
             onTap: () => setState(
               () {
-                _vehicleToEdit = VehicleModel.deepCopy(
-                  _vehicles[index],
+                _operationToEdit = OperationModel.deepCopy(
+                  _operations[index],
                 );
-                _plateTextController.text = _vehicleToEdit!.plate;
+                _descriptionTextController.text = _operationToEdit!.description;
                 _currentStatusName = _statusNames.first;
               },
             ),
@@ -311,7 +380,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Veicolo #${_vehicles[index].id}',
+                            'Movimentazione #${_operations[index].id}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Color(0xff262539),
@@ -337,7 +406,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                                         right: 16,
                                       ),
                                       title: Text(
-                                        'Elimina veicolo',
+                                        'Elimina movimentazione',
                                       ),
                                       actions: [
                                         TextButton(
@@ -368,7 +437,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Text(
-                                              'Eliminando il veicolo non sarà più visibile in questa sezione e tutti gli stati associati saranno rimossi dal sistema.',
+                                              'Eliminando la movimentazione non sarà più visibile in questa sezione e tutti gli stati associati saranno rimossi dal sistema.',
                                             ),
                                           ],
                                         ),
@@ -376,8 +445,8 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                                     ),
                                   ).then(
                                     (value) => value != null && value
-                                        ? _deleteVehicle(
-                                            _vehicles[index],
+                                        ? _deleteOperation(
+                                            _operations[index],
                                           )
                                         : {},
                                   );
@@ -409,7 +478,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                         ),
                         itemBuilder: (context, grid_index) => _getInfoWidgets(
                           grid_index,
-                          _vehicles[index],
+                          _operations[index],
                         ),
                       ),
                     ],
@@ -421,7 +490,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
         ),
       );
 
-  Widget _buildAllVehiclesWidget() => Column(
+  Widget _buildAllOperationsWidget() => Column(
         key: ValueKey('Column 1'),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -435,7 +504,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                   Ionicons.search,
                   color: Colors.grey.shade400,
                 ),
-                hintText: 'Cerca veicoli',
+                hintText: 'Cerca movimentazioni',
                 contentPadding: const EdgeInsets.fromLTRB(
                   16,
                   16,
@@ -480,7 +549,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                 children: [
                   Countup(
                     begin: 0,
-                    end: _vehicles.length.toDouble(),
+                    end: _operations.length.toDouble(),
                     duration: Duration(
                       seconds: 1,
                     ),
@@ -491,7 +560,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                     ),
                   ),
                   Text(
-                    ' Veicoli',
+                    ' Movimentazioni',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       color: Color(0xff262539),
@@ -504,7 +573,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   MaterialButton(
-                    onPressed: () => context.read<VehiclesCubit>().fetch(
+                    onPressed: () => context.read<OperationsCubit>().fetch(
                           user: HomeScreen.of(context)!.getUser(),
                         ),
                     elevation: 0,
@@ -552,8 +621,8 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
               showItemInterval: Duration(
                 microseconds: 200,
               ),
-              itemCount: _vehicles.length,
-              itemBuilder: _vehiclesBuilder,
+              itemCount: _operations.length,
+              itemBuilder: _operationsBuilder,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4,
                 childAspectRatio: 2,
@@ -563,14 +632,14 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
         ],
       );
 
-  Widget _buildVehicleToEditWidget() => Column(
+  Widget _buildOperationToEditWidget() => Column(
         key: ValueKey('Column 2'),
         children: [
           Row(
             children: [
               MaterialButton(
                 onPressed: () => setState(
-                  () => _vehicleToEdit = null,
+                  () => _operationToEdit = null,
                 ),
                 elevation: 0,
                 padding: const EdgeInsets.all(16),
@@ -588,7 +657,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                 width: 16,
               ),
               Text(
-                'Veicolo #${_vehicleToEdit!.id}',
+                'Movimentazione #${_operationToEdit!.id}',
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   color: Color(0xff262539),
@@ -618,7 +687,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                   ),
                 ),
                 Text(
-                  _vehicleToEdit!.id.toString(),
+                  _operationToEdit!.id.toString(),
                   style: TextStyle(
                     fontSize: 18,
                   ),
@@ -635,9 +704,9 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     DropdownButton<String>(
-                      value: _vehicleToEdit!.type,
+                      value: _operationToEdit!.type,
                       onChanged: (value) => setState(
-                        () => _vehicleToEdit!.type = _types
+                        () => _operationToEdit!.type = _types
                             .where(
                               (element) => element == value,
                             )
@@ -660,7 +729,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                   ],
                 ),
                 Text(
-                  'Targa',
+                  'Descrizione',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.grey.shade600,
@@ -673,15 +742,256 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                   children: [
                     Container(
                       height: 50,
-                      width: 300,
+                      width: 500,
                       padding: const EdgeInsets.only(
                         top: 8,
                       ),
                       child: TextField(
                         decoration: _getInputDecoration(
-                          'Targa',
+                          'Descrizione',
                         ),
-                        controller: _plateTextController,
+                        controller: _descriptionTextController,
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  'Navi',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade600,
+                    fontSize: 18,
+                  ),
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    MaterialButton(
+                      height: 50,
+                      padding: const EdgeInsets.only(
+                        top: 8,
+                        left: 16,
+                        right: 16,
+                      ),
+                      onPressed: () async => await showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(
+                                'Chiudi',
+                              ),
+                            ),
+                          ],
+                          title: Text(
+                            'Navi',
+                          ),
+                          content: Container(
+                            height: 500,
+                            width: 500,
+                            child: StatefulBuilder(
+                              builder: (context, setState) => ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: _operationToEdit!.ships.length + 1,
+                                itemBuilder: (ctx, index) =>
+                                    _operationItemsBuilder(
+                                  index,
+                                  setState,
+                                  _operationToEdit!.ships,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        'VISUALIZZA',
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  'Merci',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade600,
+                    fontSize: 18,
+                  ),
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    MaterialButton(
+                      height: 50,
+                      padding: const EdgeInsets.only(
+                        top: 8,
+                        left: 16,
+                        right: 16,
+                      ),
+                      onPressed: () async => await showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(
+                                'Chiudi',
+                              ),
+                            ),
+                          ],
+                          title: Text(
+                            'Merci',
+                          ),
+                          content: Container(
+                            height: 500,
+                            width: 500,
+                            child: StatefulBuilder(
+                              builder: (context, setState) => ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: _operationToEdit!.goods.length + 1,
+                                itemBuilder: (ctx, index) =>
+                                    _operationItemsBuilder(
+                                  index,
+                                  setState,
+                                  _operationToEdit!.goods,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        'VISUALIZZA',
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  'Persone',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade600,
+                    fontSize: 18,
+                  ),
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    MaterialButton(
+                      height: 50,
+                      padding: const EdgeInsets.only(
+                        top: 8,
+                        left: 16,
+                        right: 16,
+                      ),
+                      onPressed: () async => await showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(
+                                'Chiudi',
+                              ),
+                            ),
+                          ],
+                          title: Text(
+                            'Persone',
+                          ),
+                          content: Container(
+                            height: 500,
+                            width: 500,
+                            child: StatefulBuilder(
+                              builder: (context, setState) => ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: _operationToEdit!.people.length + 1,
+                                itemBuilder: (ctx, index) =>
+                                    _operationItemsBuilder(
+                                  index,
+                                  setState,
+                                  _operationToEdit!.people,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        'VISUALIZZA',
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  'Veicoli',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade600,
+                    fontSize: 18,
+                  ),
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    MaterialButton(
+                      height: 50,
+                      padding: const EdgeInsets.only(
+                        top: 8,
+                        left: 16,
+                        right: 16,
+                      ),
+                      onPressed: () async => await showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(
+                                'Chiudi',
+                              ),
+                            ),
+                          ],
+                          title: Text(
+                            'Veicoli',
+                          ),
+                          content: Container(
+                            height: 500,
+                            width: 500,
+                            child: StatefulBuilder(
+                              builder: (context, setState) => ListView.builder(
+                                shrinkWrap: true,
+                                itemCount:
+                                    _operationToEdit!.vehicles.length + 1,
+                                itemBuilder: (ctx, index) =>
+                                    _operationItemsBuilder(
+                                  index,
+                                  setState,
+                                  _operationToEdit!.vehicles,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        'VISUALIZZA',
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ],
@@ -725,9 +1035,9 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                             child: StatefulBuilder(
                               builder: (context, setState) => ListView.builder(
                                 shrinkWrap: true,
-                                itemCount: _vehicleToEdit!.status.length + 1,
+                                itemCount: _operationToEdit!.status.length + 1,
                                 itemBuilder: (ctx, index) =>
-                                    _vehicleStatusBuilder(
+                                    _operationStatusBuilder(
                                   index,
                                   setState,
                                 ),
@@ -764,7 +1074,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                           vertical: 24,
                         ),
                         color: Theme.of(context).accentColor.withOpacity(0.8),
-                        onPressed: () => _editVehicle(),
+                        onPressed: () => _editOperation(),
                         child: Row(
                           children: [
                             Icon(
@@ -794,10 +1104,10 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
         ],
       );
 
-  Future _editVehicle() async {
-    if (_vehicleToEdit!.status.isEmpty ||
-        _vehicleToEdit!.status.where((element) => element.isDeleted).length ==
-            _vehicleToEdit!.status.length) {
+  Future _editOperation() async {
+    if (_operationToEdit!.status.isEmpty ||
+        _operationToEdit!.status.where((element) => element.isDeleted).length ==
+            _operationToEdit!.status.length) {
       await context.showErrorBar(
         content: Text(
           'Inserire almeno uno stato',
@@ -807,21 +1117,21 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
       await ServerService(
         HomeScreen.of(context)!.getUser(),
       )
-          .editVehicle(
-            _vehicleToEdit!..plate = _plateTextController.text,
+          .editOperation(
+            _operationToEdit!..description = _descriptionTextController.text,
           )
           .then(
             (value) async => value.statusCode == HttpStatus.ok
                 ? await _fetch().then(
                     (value) {
-                      setState(() {
-                        _vehicleToEdit = null;
-                      });
-                      return context.showInfoBar(
+                      context.showInfoBar(
                         content: Text(
-                          'Veicolo aggiornato con successo',
+                          'Movimentazione aggiornata con successo',
                         ),
                       );
+                      setState(() {
+                        _operationToEdit = null;
+                      });
                     },
                   )
                 : context.showErrorBar(
@@ -833,21 +1143,21 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
     }
   }
 
-  Future _deleteVehicle(
-    VehicleModel vehicleModel,
+  Future _deleteOperation(
+    OperationModel operationModel,
   ) async =>
       await ServerService(
         HomeScreen.of(context)!.getUser(),
       )
-          .deleteVehicle(
-            vehicleModel,
+          .deleteOperation(
+            operationModel,
           )
           .then(
             (value) async => value.statusCode == HttpStatus.ok
                 ? await _fetch().then(
                     (value) => context.showInfoBar(
                       content: Text(
-                        'Veicolo eliminato con successo',
+                        'Movimentazione eliminata con successo',
                       ),
                     ),
                   )
@@ -860,10 +1170,10 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
 
   @override
   Widget build(BuildContext context) =>
-      BlocBuilder<VehiclesCubit, VehiclesState>(
-        builder: (context, vehicleState) {
-          if (vehicleState is VehiclesLoaded) {
-            _vehicles = vehicleState.vehicles;
+      BlocBuilder<OperationsCubit, OperationsState>(
+        builder: (context, operationState) {
+          if (operationState is OperationsLoaded) {
+            _operations = operationState.operations;
             return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(
@@ -876,14 +1186,14 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                   duration: Duration(
                     milliseconds: 500,
                   ),
-                  child: _vehicleToEdit == null
-                      ? _buildAllVehiclesWidget()
-                      : _buildVehicleToEditWidget(),
+                  child: _operationToEdit == null
+                      ? _buildAllOperationsWidget()
+                      : _buildOperationToEditWidget(),
                 ),
               ),
             );
-          } else if (vehicleState is VehiclesLoading ||
-              vehicleState is VehiclesInitial) {
+          } else if (operationState is OperationsLoading ||
+              operationState is OperationsInitial) {
             return LoadingIndicator();
           } else {
             return Center(

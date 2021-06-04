@@ -20,7 +20,7 @@ class CreateTripWidget extends StatefulWidget {
 }
 
 class _CreateTripWidgetState extends State<CreateTripWidget> {
-  late final TripModel _tripToCreate;
+  late TripModel _tripToCreate;
   List<Quay> _quays = [];
   final TextEditingController _idTextController = TextEditingController();
   final TextEditingController _expectedArrivalDateController =
@@ -42,7 +42,7 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
     super.dispose();
   }
 
-  Future _fetch() async {
+  Future<void> _fetch() async {
     if (_quays.isEmpty) {
       try {
         _quays = await jsonDecode(
@@ -51,7 +51,16 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
           ).fetchQuays().then(
                 (value) => value.body,
               ),
-        );
+        )
+            .map<Quay>(
+              (
+                item,
+              ) =>
+                  Quay.fromJson(
+                item,
+              ),
+            )
+            .toList();
         _tripToCreate = TripModel(
           operations: [],
           quay: _quays.first,
@@ -68,12 +77,29 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
     }
   }
 
-  Future _createTrip() async => await ServerService(
+  Future _createTrip() async {
+    if (_expectedArrivalDateController.text.isNotEmpty &&
+        _expectedDeparturedDateController.text.isNotEmpty) {
+      await ServerService(
         HomeScreen.of(context)!.getUser(),
       )
           .createTrip(
         _tripToCreate
-          ..id = _idTextController.text == ''
+          ..time.expectedArrivalTime =
+              DateTime.parse(_expectedArrivalDateController.text)
+          ..time.expectedDepartureTime =
+              DateTime.parse(_expectedDeparturedDateController.text)
+          ..time.actualArrivalTime = DateTime.parse(
+            _actualArrivalDateController.text.isNotEmpty
+                ? _actualArrivalDateController.text
+                : _expectedArrivalDateController.text,
+          )
+          ..time.actualDepartureTime = DateTime.parse(
+            _actualDepartureDateController.text.isNotEmpty
+                ? _actualDepartureDateController.text
+                : _expectedDeparturedDateController.text,
+          )
+          ..id = _idTextController.text.isEmpty
               ? null
               : int.parse(
                   _idTextController.text,
@@ -97,6 +123,14 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
           }
         },
       );
+    } else {
+      await context.showErrorBar(
+        content: Text(
+          'Inserire almeno le date di arrivo e partenza previste',
+        ),
+      );
+    }
+  }
 
   InputDecoration _getInputDecoration(
     String hintText,
@@ -420,52 +454,6 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
                               ),
                             ],
                           ),
-                          SizedBox(),
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 8,
-                                  right: 16,
-                                ),
-                                child: MaterialButton(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(60),
-                                  ),
-                                  elevation: 0,
-                                  highlightElevation: 0,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 40,
-                                    vertical: 24,
-                                  ),
-                                  color: Theme.of(context)
-                                      .accentColor
-                                      .withOpacity(0.8),
-                                  onPressed: () => _createTrip(),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Ionicons.save_outline,
-                                        color: Colors.white,
-                                      ),
-                                      SizedBox(
-                                        width: 16,
-                                      ),
-                                      Text(
-                                        'Salva',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(),
                           Row(
                             children: [
                               Padding(

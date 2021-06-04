@@ -216,14 +216,14 @@ class _DashboardWidgetState extends State<DashboardWidget> {
           FlSpot(
             work4.keys.toList().indexOf(key).toDouble(),
             value['In lavorazione'] != null
-                ? value['In lavorazione'].length
+                ? value['In lavorazione'].length.toDouble()
                 : 0,
           ),
         );
         _completedOperationsChartSpots.add(
           FlSpot(
             work4.keys.toList().indexOf(key).toDouble(),
-            value['Completata'] != null ? value['Completata'].length : 0,
+            value['Completata'] != null ? value['Completata'].length.toDouble() : 0,
           ),
         );
       },

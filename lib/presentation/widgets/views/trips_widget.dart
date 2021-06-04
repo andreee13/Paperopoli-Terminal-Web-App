@@ -784,14 +784,14 @@ class _TripsWidgetState extends State<TripsWidget> {
           (value) async => value.statusCode == HttpStatus.ok
               ? await _fetch().then(
                   (value) {
-                    setState(() {
-                      _tripToEdit = null;
-                    });
-                    return context.showInfoBar(
+                    context.showInfoBar(
                       content: Text(
                         'Viaggio aggiornato con successo',
                       ),
                     );
+                    setState(() {
+                      _tripToEdit = null;
+                    });
                   },
                 )
               : context.showErrorBar(

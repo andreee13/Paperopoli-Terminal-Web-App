@@ -813,14 +813,14 @@ class _GoodsWidgetState extends State<GoodsWidget> {
             (value) async => value.statusCode == HttpStatus.ok
                 ? await _fetch().then(
                     (value) {
-                      setState(() {
-                        _goodToEdit = null;
-                      });
-                      return context.showInfoBar(
+                      context.showInfoBar(
                         content: Text(
                           'Merce aggiornata con successo',
                         ),
                       );
+                      setState(() {
+                        _goodToEdit = null;
+                      });
                     },
                   )
                 : context.showErrorBar(

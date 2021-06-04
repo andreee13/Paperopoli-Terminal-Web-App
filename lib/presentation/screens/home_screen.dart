@@ -7,19 +7,19 @@ import 'package:paperopoli_terminal/core/utils/constants.dart';
 import 'package:paperopoli_terminal/cubits/authentication/authentication_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperopoli_terminal/data/models/category_model.dart';
-import 'package:paperopoli_terminal/presentation/widgets/categories/goodsWidget.dart';
+import 'package:paperopoli_terminal/presentation/widgets/categories/goods_widget.dart';
 import 'package:paperopoli_terminal/presentation/widgets/categories/people_widget.dart';
-import 'package:paperopoli_terminal/presentation/widgets/categories/shipsWidget.dart';
-import 'package:paperopoli_terminal/presentation/widgets/categories/vehiclesWidget.dart';
+import 'package:paperopoli_terminal/presentation/widgets/categories/ships_widget.dart';
+import 'package:paperopoli_terminal/presentation/widgets/categories/vehicles_widget.dart';
 import 'package:paperopoli_terminal/presentation/widgets/creation/create_good_widget.dart';
 import 'package:paperopoli_terminal/presentation/widgets/creation/create_operation_widget.dart';
 import 'package:paperopoli_terminal/presentation/widgets/creation/create_person_widget.dart';
 import 'package:paperopoli_terminal/presentation/widgets/creation/create_ship_widget.dart';
 import 'package:paperopoli_terminal/presentation/widgets/creation/create_trip_widget.dart';
 import 'package:paperopoli_terminal/presentation/widgets/creation/create_vehicle_widget.dart';
-import 'package:paperopoli_terminal/presentation/widgets/views/operationsWidget.dart';
-import 'package:paperopoli_terminal/presentation/widgets/views/dashboardWidget.dart';
-import 'package:paperopoli_terminal/presentation/widgets/views/tripsWidget.dart';
+import 'package:paperopoli_terminal/presentation/widgets/views/operations_widget.dart';
+import 'package:paperopoli_terminal/presentation/widgets/views/dashboard_widget.dart';
+import 'package:paperopoli_terminal/presentation/widgets/views/trips_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   @override

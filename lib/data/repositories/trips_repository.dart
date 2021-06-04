@@ -23,16 +23,15 @@ class TripsRepository {
         (response) {
           if (response.statusCode == HttpStatus.ok ||
               response.statusCode == HttpStatus.notModified) {
-            return jsonDecode(
-              response.body,
-            )
-                .values
-                .map<TripModel>(
-                  (item) => TripModel.fromJson(
-                    item,
-                  ),
-                )
-                .toList();
+            var v = <TripModel>[];
+            jsonDecode(response.body).forEach(
+              (String k, value) => v.add(
+                TripModel.fromJson(
+                  value,
+                ),
+              ),
+            );
+            return v;
           } else {
             throw ServerException();
           }

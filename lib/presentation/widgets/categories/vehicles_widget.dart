@@ -12,25 +12,24 @@ import 'package:ionicons/ionicons.dart';
 import 'package:paperopoli_terminal/core/services/server_service.dart';
 import 'package:paperopoli_terminal/core/utils/constants.dart';
 import 'package:paperopoli_terminal/core/utils/packages/flutter-countup/lib/countup.dart';
-import 'package:paperopoli_terminal/cubits/people/people_cubit.dart';
-import 'package:paperopoli_terminal/data/models/person/person_model.dart';
-import 'package:paperopoli_terminal/data/models/person/person_status.dart';
+import 'package:paperopoli_terminal/cubits/vehicles/vehicles_cubit.dart';
+import 'package:paperopoli_terminal/data/models/vehicle/vehicle_model.dart';
+import 'package:paperopoli_terminal/data/models/vehicle/vehicle_status.dart';
 import 'package:paperopoli_terminal/presentation/screens/home_screen.dart';
 
 import '../loading_indicator.dart';
 
-class PeopleWidget extends StatefulWidget {
+class VehiclesWidget extends StatefulWidget {
   @override
-  _PeopleWidgetState createState() => _PeopleWidgetState();
+  _VehiclesWidgetState createState() => _VehiclesWidgetState();
 }
 
-class _PeopleWidgetState extends State<PeopleWidget> {
-  late List<PersonModel> _persons;
-  final TextEditingController _fullnameTextController = TextEditingController();
-  final TextEditingController _cfTextController = TextEditingController();
+class _VehiclesWidgetState extends State<VehiclesWidget> {
+  late List<VehicleModel> _vehicles;
+  final TextEditingController _plateTextController = TextEditingController();
   final TextEditingController _newStateDateTimeController =
       TextEditingController();
-  PersonModel? _personToEdit;
+  VehicleModel? _vehicleToEdit;
   List<String> _types = [];
   List _statusNames = [];
   var _currentStatusName;
@@ -43,20 +42,19 @@ class _PeopleWidgetState extends State<PeopleWidget> {
 
   @override
   void dispose() {
-    _cfTextController.dispose();
-    _fullnameTextController.dispose();
+    _plateTextController.dispose();
     _newStateDateTimeController.dispose();
     super.dispose();
   }
 
   Future _fetch() async {
-    await context.read<PeopleCubit>().fetch(
+    await context.read<VehiclesCubit>().fetch(
           user: HomeScreen.of(context)!.getUser(),
         );
     _types = await jsonDecode(
       await ServerService(
         HomeScreen.of(context)!.getUser(),
-      ).fetchPersonTypes().then(
+      ).fetchVehicleTypes().then(
             (value) => value.body,
           ),
     )
@@ -67,14 +65,14 @@ class _PeopleWidgetState extends State<PeopleWidget> {
     _statusNames = await jsonDecode(
       await ServerService(
         HomeScreen.of(context)!.getUser(),
-      ).fetchPeopleStatusNames().then(
+      ).fetchVehiclesStatusNames().then(
             (value) => value.body,
           ),
     );
   }
 
-  Widget _personStatusBuilder(int index, setState) =>
-      index == _personToEdit!.status.length
+  Widget _vehicleStatusBuilder(int index, setState) =>
+      index == _vehicleToEdit!.status.length
           ? ListTile(
               title: Text(
                 'Nuovo stato',
@@ -99,8 +97,8 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                       onPressed: () {
                         Navigator.pop(context);
                         setState(
-                          () => _personToEdit!.status.add(
-                            PersonStatus(
+                          () => _vehicleToEdit!.status.add(
+                            VehicleStatus(
                               timestamp: DateTime.parse(
                                 _newStateDateTimeController.text,
                               ),
@@ -161,20 +159,20 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                 ),
               ),
             )
-          : _personToEdit!.status[index].isDeleted == false
+          : _vehicleToEdit!.status[index].isDeleted == false
               ? ListTile(
                   leading: Text(
-                    '${_personToEdit!.status[index].timestamp.toIso8601String().substring(0, 19).replaceAll("T", " ")}',
+                    '${_vehicleToEdit!.status[index].timestamp.toIso8601String().substring(0, 19).replaceAll("T", " ")}',
                   ),
                   title: Text(
-                    _personToEdit!.status[index].name,
+                    _vehicleToEdit!.status[index].name,
                   ),
                   trailing: IconButton(
                     icon: Icon(
                       Icons.delete_outline,
                     ),
                     onPressed: () => setState(
-                      () => _personToEdit!.status[index].isDeleted = true,
+                      () => _vehicleToEdit!.status[index].isDeleted = true,
                     ),
                   ),
                 )
@@ -209,14 +207,11 @@ class _PeopleWidgetState extends State<PeopleWidget> {
         ),
       );
 
-  Widget _getInfoWidgets(
-    int index,
-    PersonModel person,
-  ) {
+  Widget _getInfoWidgets(int index, VehicleModel vehicle) {
     switch (index) {
       case 0:
         return Text(
-          'Nome: ',
+          'Targa: ',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.grey.shade600,
@@ -224,28 +219,12 @@ class _PeopleWidgetState extends State<PeopleWidget> {
         );
       case 1:
         return Text(
-          person.fullname,
+          vehicle.plate,
           style: TextStyle(
             color: Colors.grey.shade500,
           ),
         );
-
       case 2:
-        return Text(
-          'Codice fiscale: ',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.grey.shade600,
-          ),
-        );
-      case 3:
-        return Text(
-          person.cf,
-          style: TextStyle(
-            color: Colors.grey.shade500,
-          ),
-        );
-      case 4:
         return Text(
           'Tipo: ',
           style: TextStyle(
@@ -253,14 +232,15 @@ class _PeopleWidgetState extends State<PeopleWidget> {
             color: Colors.grey.shade600,
           ),
         );
-      case 5:
+      case 3:
         return Text(
-          person.type,
+          vehicle.type,
           style: TextStyle(
             color: Colors.grey.shade500,
           ),
         );
-      case 6:
+
+      case 4:
         return Text(
           'Stato: ',
           style: TextStyle(
@@ -268,9 +248,9 @@ class _PeopleWidgetState extends State<PeopleWidget> {
             color: Colors.grey.shade600,
           ),
         );
-      case 7:
+      case 5:
         return Text(
-          person.status.last.name,
+          vehicle.status.last.name,
           style: TextStyle(
             color: Colors.grey.shade500,
           ),
@@ -280,7 +260,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
     }
   }
 
-  Widget _personsBuilder(
+  Widget _vehiclesBuilder(
     BuildContext context,
     int index,
     Animation<double> animation,
@@ -298,11 +278,10 @@ class _PeopleWidgetState extends State<PeopleWidget> {
           child: GestureDetector(
             onTap: () => setState(
               () {
-                _personToEdit = PersonModel.deepCopy(
-                  _persons[index],
+                _vehicleToEdit = VehicleModel.deepCopy(
+                  _vehicles[index],
                 );
-                _cfTextController.text = _personToEdit!.cf;
-                _fullnameTextController.text = _personToEdit!.fullname;
+                _plateTextController.text = _vehicleToEdit!.plate;
                 _currentStatusName = _statusNames.first;
               },
             ),
@@ -332,7 +311,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Persona #${_persons[index].id}',
+                            'Veicolo #${_vehicles[index].id}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Color(0xff262539),
@@ -358,7 +337,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                                         right: 16,
                                       ),
                                       title: Text(
-                                        'Elimina persona',
+                                        'Elimina veicolo',
                                       ),
                                       actions: [
                                         TextButton(
@@ -389,7 +368,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Text(
-                                              'Eliminando la persona non sarà più visibile in questa sezione e tutti gli stati associati saranno rimossi dal sistema.',
+                                              'Eliminando il veicolo non sarà più visibile in questa sezione e tutti gli stati associati saranno rimossi dal sistema.',
                                             ),
                                           ],
                                         ),
@@ -397,8 +376,8 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                                     ),
                                   ).then(
                                     (value) => value != null && value
-                                        ? _deletePerson(
-                                            _persons[index],
+                                        ? _deleteVehicle(
+                                            _vehicles[index],
                                           )
                                         : {},
                                   );
@@ -430,7 +409,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                         ),
                         itemBuilder: (context, grid_index) => _getInfoWidgets(
                           grid_index,
-                          _persons[index],
+                          _vehicles[index],
                         ),
                       ),
                     ],
@@ -442,7 +421,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
         ),
       );
 
-  Widget _buildAllPeopleWidget() => Column(
+  Widget _buildAllVehiclesWidget() => Column(
         key: ValueKey('Column 1'),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -456,7 +435,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                   Ionicons.search,
                   color: Colors.grey.shade400,
                 ),
-                hintText: 'Cerca persone',
+                hintText: 'Cerca veicoli',
                 contentPadding: const EdgeInsets.fromLTRB(
                   16,
                   16,
@@ -501,7 +480,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                 children: [
                   Countup(
                     begin: 0,
-                    end: _persons.length.toDouble(),
+                    end: _vehicles.length.toDouble(),
                     duration: Duration(
                       seconds: 1,
                     ),
@@ -512,7 +491,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                     ),
                   ),
                   Text(
-                    ' Persone',
+                    ' Veicoli',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       color: Color(0xff262539),
@@ -525,7 +504,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   MaterialButton(
-                    onPressed: () => context.read<PeopleCubit>().fetch(
+                    onPressed: () => context.read<VehiclesCubit>().fetch(
                           user: HomeScreen.of(context)!.getUser(),
                         ),
                     elevation: 0,
@@ -573,8 +552,8 @@ class _PeopleWidgetState extends State<PeopleWidget> {
               showItemInterval: Duration(
                 microseconds: 200,
               ),
-              itemCount: _persons.length,
-              itemBuilder: _personsBuilder,
+              itemCount: _vehicles.length,
+              itemBuilder: _vehiclesBuilder,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4,
                 childAspectRatio: 2,
@@ -584,14 +563,14 @@ class _PeopleWidgetState extends State<PeopleWidget> {
         ],
       );
 
-  Widget _buildPersonToEditWidget() => Column(
+  Widget _buildVehicleToEditWidget() => Column(
         key: ValueKey('Column 2'),
         children: [
           Row(
             children: [
               MaterialButton(
                 onPressed: () => setState(
-                  () => _personToEdit = null,
+                  () => _vehicleToEdit = null,
                 ),
                 elevation: 0,
                 padding: const EdgeInsets.all(16),
@@ -609,7 +588,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                 width: 16,
               ),
               Text(
-                'Persona #${_personToEdit!.id}',
+                'Veicolo #${_vehicleToEdit!.id}',
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   color: Color(0xff262539),
@@ -639,7 +618,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                   ),
                 ),
                 Text(
-                  _personToEdit!.id.toString(),
+                  _vehicleToEdit!.id.toString(),
                   style: TextStyle(
                     fontSize: 18,
                   ),
@@ -656,9 +635,9 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     DropdownButton<String>(
-                      value: _personToEdit!.type,
+                      value: _vehicleToEdit!.type,
                       onChanged: (value) => setState(
-                        () => _personToEdit!.type = _types
+                        () => _vehicleToEdit!.type = _types
                             .where(
                               (element) => element == value,
                             )
@@ -681,34 +660,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                   ],
                 ),
                 Text(
-                  'Nome completo',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade600,
-                    fontSize: 18,
-                  ),
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      height: 50,
-                      width: 500,
-                      padding: const EdgeInsets.only(
-                        top: 8,
-                      ),
-                      child: TextField(
-                        decoration: _getInputDecoration(
-                          'Nome completo',
-                        ),
-                        controller: _fullnameTextController,
-                      ),
-                    ),
-                  ],
-                ),
-                Text(
-                  'Codice fiscale',
+                  'Targa',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.grey.shade600,
@@ -727,10 +679,9 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                       ),
                       child: TextField(
                         decoration: _getInputDecoration(
-                          'Codice fiscale',
+                          'Targa',
                         ),
-                        maxLength: 16,
-                        controller: _cfTextController,
+                        controller: _plateTextController,
                       ),
                     ),
                   ],
@@ -774,9 +725,9 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                             child: StatefulBuilder(
                               builder: (context, setState) => ListView.builder(
                                 shrinkWrap: true,
-                                itemCount: _personToEdit!.status.length + 1,
+                                itemCount: _vehicleToEdit!.status.length + 1,
                                 itemBuilder: (ctx, index) =>
-                                    _personStatusBuilder(
+                                    _vehicleStatusBuilder(
                                   index,
                                   setState,
                                 ),
@@ -813,7 +764,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                           vertical: 24,
                         ),
                         color: Theme.of(context).accentColor.withOpacity(0.8),
-                        onPressed: () => _editPerson(),
+                        onPressed: () => _editVehicle(),
                         child: Row(
                           children: [
                             Icon(
@@ -843,10 +794,10 @@ class _PeopleWidgetState extends State<PeopleWidget> {
         ],
       );
 
-  Future _editPerson() async {
-    if (_personToEdit!.status.isEmpty ||
-        _personToEdit!.status.where((element) => element.isDeleted).length ==
-            _personToEdit!.status.length) {
+  Future _editVehicle() async {
+    if (_vehicleToEdit!.status.isEmpty ||
+        _vehicleToEdit!.status.where((element) => element.isDeleted).length ==
+            _vehicleToEdit!.status.length) {
       await context.showErrorBar(
         content: Text(
           'Inserire almeno uno stato',
@@ -856,10 +807,8 @@ class _PeopleWidgetState extends State<PeopleWidget> {
       await ServerService(
         HomeScreen.of(context)!.getUser(),
       )
-          .editPerson(
-            _personToEdit!
-              ..fullname = _fullnameTextController.text
-              ..cf = _cfTextController.text.toUpperCase(),
+          .editVehicle(
+            _vehicleToEdit!..plate = _plateTextController.text,
           )
           .then(
             (value) async => value.statusCode == HttpStatus.ok
@@ -867,11 +816,11 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                     (value) {
                       context.showInfoBar(
                         content: Text(
-                          'Persona aggiornata con successo',
+                          'Veicolo aggiornato con successo',
                         ),
                       );
                       setState(() {
-                        _personToEdit = null;
+                        _vehicleToEdit = null;
                       });
                     },
                   )
@@ -884,21 +833,21 @@ class _PeopleWidgetState extends State<PeopleWidget> {
     }
   }
 
-  Future _deletePerson(
-    PersonModel personModel,
+  Future _deleteVehicle(
+    VehicleModel vehicleModel,
   ) async =>
       await ServerService(
         HomeScreen.of(context)!.getUser(),
       )
-          .deletePerson(
-            personModel,
+          .deleteVehicle(
+            vehicleModel,
           )
           .then(
             (value) async => value.statusCode == HttpStatus.ok
                 ? await _fetch().then(
                     (value) => context.showInfoBar(
                       content: Text(
-                        'Persona eliminata con successo',
+                        'Veicolo eliminato con successo',
                       ),
                     ),
                   )
@@ -910,10 +859,11 @@ class _PeopleWidgetState extends State<PeopleWidget> {
           );
 
   @override
-  Widget build(BuildContext context) => BlocBuilder<PeopleCubit, PeopleState>(
-        builder: (context, personState) {
-          if (personState is PeopleLoaded) {
-            _persons = personState.people;
+  Widget build(BuildContext context) =>
+      BlocBuilder<VehiclesCubit, VehiclesState>(
+        builder: (context, vehicleState) {
+          if (vehicleState is VehiclesLoaded) {
+            _vehicles = vehicleState.vehicles;
             return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(
@@ -926,14 +876,14 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                   duration: Duration(
                     milliseconds: 500,
                   ),
-                  child: _personToEdit == null
-                      ? _buildAllPeopleWidget()
-                      : _buildPersonToEditWidget(),
+                  child: _vehicleToEdit == null
+                      ? _buildAllVehiclesWidget()
+                      : _buildVehicleToEditWidget(),
                 ),
               ),
             );
-          } else if (personState is PeopleLoading ||
-              personState is PeopleInitial) {
+          } else if (vehicleState is VehiclesLoading ||
+              vehicleState is VehiclesInitial) {
             return LoadingIndicator();
           } else {
             return Center(

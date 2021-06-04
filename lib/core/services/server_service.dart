@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:paperopoli_terminal/core/utils/constants.dart';
 import 'package:paperopoli_terminal/core/utils/encoder.dart';
 import 'package:paperopoli_terminal/data/models/good/good_model.dart';
+import 'package:paperopoli_terminal/data/models/operation/operation_model.dart';
 import 'package:paperopoli_terminal/data/models/person/person_model.dart';
 import 'package:paperopoli_terminal/data/models/ship/ship_model.dart';
 import 'package:paperopoli_terminal/data/models/trip/trip_model.dart';
@@ -23,6 +24,77 @@ class ServerService {
   Future<http.Response> fetchQuays() async => await http.get(
         Uri.parse(
           '$TERMINAL_API_URL/quays/index',
+        ),
+        headers: {
+          HttpHeaders.contentTypeHeader: ContentType.json.value,
+          HttpHeaders.authorizationHeader: await _user.getIdToken(),
+        },
+      );
+
+  /* OPERATION */
+
+  Future<http.Response> editOperation(
+    OperationModel model,
+  ) async =>
+      await http.post(
+        Uri.parse(
+          '$TERMINAL_API_URL/operations/edit',
+        ),
+        body: jsonEncode(
+          model.toJson(),
+          toEncodable: customEncoder,
+        ),
+        headers: {
+          HttpHeaders.contentTypeHeader: ContentType.json.value,
+          HttpHeaders.authorizationHeader: await _user.getIdToken(),
+        },
+      );
+
+  Future<http.Response> createOperation(
+    OperationModel model,
+  ) async =>
+      await http.post(
+        Uri.parse(
+          '$TERMINAL_API_URL/operations/create',
+        ),
+        body: jsonEncode(
+          model.toJson(),
+        ),
+        headers: {
+          HttpHeaders.contentTypeHeader: ContentType.json.value,
+          HttpHeaders.authorizationHeader: await _user.getIdToken(),
+        },
+      );
+
+  Future<http.Response> deleteOperation(
+    OperationModel model,
+  ) async =>
+      await http.post(
+        Uri.parse(
+          '$TERMINAL_API_URL/operations/delete',
+        ),
+        body: jsonEncode({
+          'id': model.id,
+        }),
+        headers: {
+          HttpHeaders.contentTypeHeader: ContentType.json.value,
+          HttpHeaders.authorizationHeader: await _user.getIdToken(),
+        },
+      );
+
+  Future<http.Response> fetchOperationTypes() async => await http.get(
+        Uri.parse(
+          '$TERMINAL_API_URL/operations/types',
+        ),
+        headers: {
+          HttpHeaders.contentTypeHeader: ContentType.json.value,
+          HttpHeaders.authorizationHeader: await _user.getIdToken(),
+        },
+      );
+
+  Future<http.Response> fetchOperationsStatusNames() async => await http.get(
+        Uri.parse(
+          '$TERMINAL_API_URL/operations/status_names',
         ),
         headers: {
           HttpHeaders.contentTypeHeader: ContentType.json.value,

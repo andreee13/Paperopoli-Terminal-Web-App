@@ -49,7 +49,7 @@ class TripModel {
       json.forEach(
         (e) => _operations.where((element) => e['ID'] == element.id).isEmpty
             ? _operations.add(
-                OperationModel.fromJson(
+                OperationModel.fromTripJson(
                   e,
                 ),
               )
@@ -62,6 +62,8 @@ class TripModel {
                   (e) => OperationStatus(
                     timestamp: DateTime.parse(e['timestamp']),
                     name: e['nome_stato'],
+                    isDeleted: false,
+                    isNew: false,
                   ),
                 ),
           );

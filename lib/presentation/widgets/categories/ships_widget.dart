@@ -813,14 +813,14 @@ class _ShipsWidgetState extends State<ShipsWidget> {
             (value) async => value.statusCode == HttpStatus.ok
                 ? await _fetch().then(
                     (value) {
-                      setState(() {
-                        _shipToEdit = null;
-                      });
-                      return context.showInfoBar(
+                      context.showInfoBar(
                         content: Text(
                           'Nave aggiornata con successo',
                         ),
                       );
+                      setState(() {
+                        _shipToEdit = null;
+                      });
                     },
                   )
                 : context.showErrorBar(

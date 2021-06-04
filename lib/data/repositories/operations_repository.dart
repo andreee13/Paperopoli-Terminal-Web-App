@@ -26,6 +26,7 @@ class OperationsRepository {
             return jsonDecode(
               response.body,
             )
+                .values
                 .map<OperationModel>(
                   (item) => OperationModel.fromJson(
                     item,
