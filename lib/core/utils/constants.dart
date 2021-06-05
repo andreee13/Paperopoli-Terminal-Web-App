@@ -5,8 +5,8 @@ import 'package:paperopoli_terminal/data/models/category_model.dart';
 
 const bool IS_WEB = kIsWeb;
 
-const String TERMINAL_API_URL = 'http://192.168.0.4/paperopoli_terminal';
-//const String TERMINAL_API_URL = 'http://localhost/paperopoli_terminal';
+//const String TERMINAL_API_URL = 'http://192.168.0.4/paperopoli_terminal';
+const String TERMINAL_API_URL = 'http://paperopoliterminal.ddns.net/paperopoli_terminal';
 
 const String OPEN_WEATHER_API_KEY = '3fad3e73d27847a54f8ba8da4f5c8112';
 
