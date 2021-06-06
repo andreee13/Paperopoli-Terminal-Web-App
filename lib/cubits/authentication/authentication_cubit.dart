@@ -86,7 +86,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
           AuthenticationNotLogged(),
         );
       }
-    } on AuthenticationException catch (e, _) {
+    } on Exception catch (e) {
+      print(e);
       emit(
         AuthenticationError(
           e,

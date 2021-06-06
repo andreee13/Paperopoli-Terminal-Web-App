@@ -61,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: ListTile(
                     title: Text(
-                      CATEGORIES[index].name,
+                      CATEGORIES[index].primaryName,
                       style: TextStyle(
                         color: _selectedCategory == CATEGORIES[index]
                             ? Colors.white
@@ -96,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: ListTile(
                 title: Text(
-                  CATEGORIES[index].name,
+                  CATEGORIES[index].primaryName,
                   style: TextStyle(
                     color: _selectedCategory == CATEGORIES[index]
                         ? Colors.white
@@ -165,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildMainWidget() {
-    switch (_selectedCategory.name) {
+    switch (_selectedCategory.primaryName) {
       case 'Dashboard':
         return DashboardWidget();
       case 'Viaggi':
@@ -342,6 +342,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       child: ListView.separated(
                         shrinkWrap: true,
+                        physics: BouncingScrollPhysics(),
                         separatorBuilder: _buildSeparator,
                         itemBuilder: _buildCategories,
                         itemCount: CATEGORIES.length,

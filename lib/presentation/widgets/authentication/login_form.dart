@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:paperopoli_terminal/cubits/authentication/authentication_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flash/flash.dart';
+import 'package:paperopoli_terminal/presentation/screens/authentication_screen.dart';
 
 class LoginFormWidget extends StatefulWidget {
   @override
@@ -102,7 +103,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                 top: 16,
               ),
               child: Text(
-                'LOGIN',
+                'Login',
                 style: TextStyle(
                   fontSize: 36,
                   color: Color(0xff242342),
@@ -141,49 +142,10 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
               ),
             ),
             SizedBox(
-              height: 40,
-            ),
-            Center(
-              child: MaterialButton(
-                onPressed: () async {
-                  await context
-                      .read<AuthenticationCubit>()
-                      .logInWithCredentials(
-                        email: _emailController.text,
-                        password: _passwordController.text,
-                      );
-                  var state = context.read<AuthenticationCubit>().state;
-                  if (state is AuthenticationNotLogged ||
-                      state is AuthenticationError) {
-                    await context.showErrorBar(
-                      content: Text(
-                        'Email o password errati',
-                      ),
-                    );
-                  }
-                },
-                minWidth: 320,
-                height: 56,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(10),
-                  ),
-                ),
-                color: Color(0xff242342).withOpacity(0.7),
-                elevation: 0,
-                highlightElevation: 0,
-                child: Text(
-                  'Accedi',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17,
-                  ),
-                ),
-              ),
+              height: 8,
             ),
             Padding(
               padding: const EdgeInsets.only(
-                top: 24,
                 right: 8,
               ),
               child: Align(
@@ -253,9 +215,72 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                     'Password dimenticata?',
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
-                      fontSize: 13,
+                      fontSize: 12,
                       color: Colors.grey,
                     ),
+                  ),
+                ),
+              ),
+            ),
+            Center(
+              child: MaterialButton(
+                onPressed: () async {
+                  await context
+                      .read<AuthenticationCubit>()
+                      .logInWithCredentials(
+                        email: _emailController.text,
+                        password: _passwordController.text,
+                      );
+                  var state = context.read<AuthenticationCubit>().state;
+                  if (state is AuthenticationNotLogged ||
+                      state is AuthenticationError) {
+                    await context.showErrorBar(
+                      content: Text(
+                        'Email o password errati',
+                      ),
+                    );
+                  }
+                },
+                minWidth: 320,
+                height: 56,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(10),
+                  ),
+                ),
+                color: Color(0xff242342).withOpacity(0.7),
+                elevation: 0,
+                highlightElevation: 0,
+                child: Text(
+                  'Accedi',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 17,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            Center(
+              child: MaterialButton(
+                onPressed: () => AuthenticatonScreen.of(context)!.setFormMode(true),
+                minWidth: 320,
+                height: 56,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(10),
+                  ),
+                ),
+                color: Colors.transparent,
+                elevation: 0,
+                highlightElevation: 0,
+                child: Text(
+                  'Registrati',
+                  style: TextStyle(
+                    color: Color(0xff242342).withOpacity(0.7),
+                    fontSize: 17,
                   ),
                 ),
               ),

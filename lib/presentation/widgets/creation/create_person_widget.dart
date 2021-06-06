@@ -66,7 +66,12 @@ class _CreatePersonWidgetState extends State<CreatePersonWidget> {
           cf: '',
         );
       } catch (e) {
-        //TODO: show error
+        HomeScreen.of(context)!.setCreatingMode(1);
+        await context.showErrorBar(
+          content: Text(
+            'Si è verificato un errore',
+          ),
+        );
       }
     }
   }

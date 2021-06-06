@@ -15,15 +15,18 @@ import 'package:paperopoli_terminal/core/constants/constants.dart';
 import 'package:paperopoli_terminal/core/utils/packages/flutter-countup/lib/countup.dart';
 import 'package:paperopoli_terminal/core/utils/utils.dart';
 import 'package:paperopoli_terminal/cubits/operations/operations_cubit.dart';
+import 'package:paperopoli_terminal/data/models/category_model.dart';
 import 'package:paperopoli_terminal/data/models/good/good_model.dart';
 import 'package:paperopoli_terminal/data/models/operation/operation_model.dart';
 import 'package:paperopoli_terminal/data/models/operation/operation_status.dart';
 import 'package:paperopoli_terminal/data/models/person/person_model.dart';
 import 'package:paperopoli_terminal/data/models/ship/ship_model.dart';
+import 'package:paperopoli_terminal/data/models/trip/trip_model.dart';
 import 'package:paperopoli_terminal/data/models/vehicle/vehicle_model.dart';
 import 'package:paperopoli_terminal/data/repositories/goods_repository.dart';
 import 'package:paperopoli_terminal/data/repositories/people_repository.dart';
 import 'package:paperopoli_terminal/data/repositories/ships_repository.dart';
+import 'package:paperopoli_terminal/data/repositories/trips_repository.dart';
 import 'package:paperopoli_terminal/data/repositories/vehicles_repository.dart';
 import 'package:paperopoli_terminal/presentation/screens/home_screen.dart';
 import 'package:search_choices/search_choices.dart';
@@ -39,6 +42,8 @@ class _OperationsWidgetState extends State<OperationsWidget> {
   late List<OperationModel> _operations;
   final TextEditingController _descriptionTextController =
       TextEditingController();
+  late final TextEditingController _searchTextController =
+      TextEditingController()..addListener(() => setState(() {}));
   final TextEditingController _newStateDateTimeController =
       TextEditingController();
   OperationModel? _operationToEdit;
@@ -48,8 +53,9 @@ class _OperationsWidgetState extends State<OperationsWidget> {
   List<GoodModel> _goodsAll = [];
   List<PersonModel> _peopleAll = [];
   List<VehicleModel> _vehiclesAll = [];
+  List<TripModel> _tripsAll = [];
   var _currentStatusName;
-  MainModel? _currenNewItem;
+  MainModel? _currentNewItem;
 
   @override
   void initState() {
@@ -61,6 +67,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
   void dispose() {
     _descriptionTextController.dispose();
     _newStateDateTimeController.dispose();
+    _searchTextController.dispose();
     super.dispose();
   }
 
@@ -96,6 +103,9 @@ class _OperationsWidgetState extends State<OperationsWidget> {
       user: HomeScreen.of(context)!.getUser(),
     );
     _vehiclesAll = await VehiclesRepository().fetch(
+      user: HomeScreen.of(context)!.getUser(),
+    );
+    _tripsAll = await TripsRepository().fetch(
       user: HomeScreen.of(context)!.getUser(),
     );
   }
@@ -215,82 +225,146 @@ class _OperationsWidgetState extends State<OperationsWidget> {
     setState,
     List<int> items,
     List<MainModel> allItems,
-    String category,
+    CategoryModel category,
   ) =>
       index == items.length
-          ? ListTile(
-              title: Text(
-                'Aggiungi',
-              ),
-              leading: Icon(
-                Icons.add,
-              ),
-              onTap: () {
-                _currenNewItem = null;
-                showDialog(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: Text(
-                      'Aggiungi',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text(
-                          'Annulla',
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          setState(
-                            () => _currenNewItem != null
-                                ? items.add(_currenNewItem!.id!)
-                                : {},
-                          );
-                        },
-                        child: Text(
-                          'Salva',
-                        ),
-                      ),
-                    ],
-                    content: Container(
-                      width: 200,
-                      height: 70,
-                      child: SearchChoices<MainModel>.single(
-                        value: _currenNewItem,
-                        hint: category,
-                        searchHint: 'Cerca',
-                        onChanged: (value) => setState(() {
-                          _currenNewItem = value;
-                        }),
-                        closeButton: 'Chiudi',
-                        isExpanded: true,
-                        items: allItems
-                            .where(
-                              (element) => !items.contains(element.id!),
-                            )
-                            .map(
-                              (e) => DropdownMenuItem<MainModel>(
-                                value: e,
-                                child: Text(
-                                  '#${e.id}  •  ${e.description}',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                            )
-                            .toList(),
-                      ),
-                    ),
+          ? allItems
+                  .where(
+                    (element) => !items.contains(element.id!),
+                  )
+                  .isNotEmpty
+              ? ListTile(
+                  title: Text(
+                    'Aggiungi',
                   ),
-                );
-              },
-            )
+                  leading: Icon(
+                    Icons.add,
+                  ),
+                  onTap: () {
+                    _currentNewItem = null;
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: Text(
+                          'Aggiungi',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text(
+                              'Annulla',
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              setState(
+                                () => _currentNewItem != null
+                                    ? items.add(_currentNewItem!.id!)
+                                    : {},
+                              );
+                            },
+                            child: Text(
+                              'Salva',
+                            ),
+                          ),
+                        ],
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '${allItems.length} elementi totali',
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                top: 16,
+                              ),
+                              child: SearchChoices<MainModel>.single(
+                                value: _currentNewItem,
+                                hint: category.primaryName,
+                                searchHint: 'Cerca',
+                                onChanged: (value) => setState(() {
+                                  _currentNewItem = value;
+                                }),
+                                closeButton: 'Chiudi',
+                                isExpanded: true,
+                                searchFn: (String keyword,
+                                    List<DropdownMenuItem<MainModel>> items) {
+                                  var v = items
+                                      .where(
+                                        (element) =>
+                                            element.value!.id
+                                                .toString()
+                                                .contains(
+                                                  keyword,
+                                                ) ||
+                                            element.value!.description
+                                                .toLowerCase()
+                                                .contains(
+                                                  keyword.toLowerCase(),
+                                                ),
+                                      )
+                                      .toList();
+                                  var t = <int>[];
+                                  v.forEach((element) {
+                                    t.add(
+                                      items.indexOf(
+                                        element,
+                                      ),
+                                    );
+                                  });
+                                  return t;
+                                },
+                                items: allItems
+                                    .where(
+                                      (element) => !items.contains(element.id!),
+                                    )
+                                    .map(
+                                      (e) => DropdownMenuItem<MainModel>(
+                                        value: e,
+                                        child: ListTile(
+                                          leading: Icon(
+                                            category.mainIcon,
+                                          ),
+                                          title: Text(
+                                            '${category.secondaryName} #${e.id}',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          subtitle: Text(
+                                            e.description,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                )
+              : SizedBox()
           : ListTile(
+              leading: Icon(
+                category.mainIcon,
+              ),
               title: Text(
-                '$category #${items[index]}',
+                '${category.secondaryName} #${items[index]}',
+              ),
+              trailing: IconButton(
+                icon: Icon(
+                  Icons.delete_outline,
+                ),
+                onPressed: () => setState(
+                  () => items.removeAt(
+                    index,
+                  ),
+                ),
               ),
             );
 
@@ -316,7 +390,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
         );
       case 2:
         return Text(
-          'Descrizione: ',
+          'Viaggio: ',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.grey.shade600,
@@ -324,12 +398,27 @@ class _OperationsWidgetState extends State<OperationsWidget> {
         );
       case 3:
         return Text(
-          operation.description,
+          '#${operation.trip}',
           style: TextStyle(
             color: Colors.grey.shade500,
           ),
         );
       case 4:
+        return Text(
+          'Descrizione: ',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.grey.shade600,
+          ),
+        );
+      case 5:
+        return Text(
+          operation.description,
+          style: TextStyle(
+            color: Colors.grey.shade500,
+          ),
+        );
+      case 6:
         return Text(
           'Stato: ',
           style: TextStyle(
@@ -337,7 +426,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
             color: Colors.grey.shade600,
           ),
         );
-      case 5:
+      case 7:
         return Text(
           operation.status.last.name,
           style: TextStyle(
@@ -388,7 +477,28 @@ class _OperationsWidgetState extends State<OperationsWidget> {
               ),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
-                color: ACCENT_COLORS[index.remainder(ACCENT_COLORS.length)],
+                color: _operations[index].id.toString().contains(
+                              _searchTextController.text,
+                            ) ||
+                        _operations[index].description.toLowerCase().contains(
+                              _searchTextController.text.toLowerCase(),
+                            ) ||
+                        _operations[index].type.toLowerCase().contains(
+                              _searchTextController.text.toLowerCase(),
+                            ) ||
+                        _operations[index]
+                            .status
+                            .last
+                            .name
+                            .toLowerCase()
+                            .contains(
+                              _searchTextController.text.toLowerCase(),
+                            ) ||
+                        _operations[index].trip.toString().contains(
+                              _searchTextController.text,
+                            )
+                    ? ACCENT_COLORS[index.remainder(ACCENT_COLORS.length)]
+                    : Colors.grey.shade100,
               ),
               child: Stack(
                 children: [
@@ -519,6 +629,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
               bottom: 40,
             ),
             child: TextField(
+              controller: _searchTextController,
               decoration: InputDecoration(
                 prefixIcon: Icon(
                   Ionicons.search,
@@ -749,6 +860,43 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                   ],
                 ),
                 Text(
+                  'Viaggio',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade600,
+                    fontSize: 18,
+                  ),
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    DropdownButton<int>(
+                      value: _operationToEdit!.trip,
+                      onChanged: (value) => setState(
+                        () => _operationToEdit!.trip = _tripsAll
+                            .where(
+                              (element) => element.id == value,
+                            )
+                            .first
+                            .id,
+                      ),
+                      items: _tripsAll
+                          .map(
+                            (e) => DropdownMenuItem<int>(
+                              value: e.id,
+                              child: Text(
+                                e.id.toString(),
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ],
+                ),
+                Text(
                   'Descrizione',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -821,7 +969,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                                   setState,
                                   _operationToEdit!.ships,
                                   _shipsAll,
-                                  'Nave',
+                                  CATEGORIES[3],
                                 ),
                               ),
                             ),
@@ -883,7 +1031,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                                   setState,
                                   _operationToEdit!.goods,
                                   _goodsAll,
-                                  'Merce',
+                                  CATEGORIES[4],
                                 ),
                               ),
                             ),
@@ -945,7 +1093,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                                   setState,
                                   _operationToEdit!.people,
                                   _peopleAll,
-                                  'Persona',
+                                  CATEGORIES[5],
                                 ),
                               ),
                             ),
@@ -1008,7 +1156,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                                   setState,
                                   _operationToEdit!.vehicles,
                                   _vehiclesAll,
-                                  'Veicolo',
+                                  CATEGORIES[6],
                                 ),
                               ),
                             ),

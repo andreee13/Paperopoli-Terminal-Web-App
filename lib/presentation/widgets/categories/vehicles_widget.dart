@@ -30,6 +30,8 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
   final TextEditingController _plateTextController = TextEditingController();
   final TextEditingController _newStateDateTimeController =
       TextEditingController();
+  late final TextEditingController _searchTextController =
+      TextEditingController()..addListener(() => setState(() {}));
   VehicleModel? _vehicleToEdit;
   List<String> _types = [];
   List _statusNames = [];
@@ -45,6 +47,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
   void dispose() {
     _plateTextController.dispose();
     _newStateDateTimeController.dispose();
+    _searchTextController.dispose();
     super.dispose();
   }
 
@@ -271,7 +274,25 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
               ),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
-                color: ACCENT_COLORS[index.remainder(ACCENT_COLORS.length)],
+                color: _vehicles[index].id.toString().contains(
+                              _searchTextController.text,
+                            ) ||
+                        _vehicles[index].description.toLowerCase().contains(
+                              _searchTextController.text.toLowerCase(),
+                            ) ||
+                        _vehicles[index].type.toLowerCase().contains(
+                              _searchTextController.text.toLowerCase(),
+                            ) ||
+                        _vehicles[index]
+                            .status
+                            .last
+                            .name
+                            .toLowerCase()
+                            .contains(
+                              _searchTextController.text.toLowerCase(),
+                            )
+                    ? ACCENT_COLORS[index.remainder(ACCENT_COLORS.length)]
+                    : Colors.grey.shade100,
               ),
               child: Stack(
                 children: [
@@ -402,6 +423,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
               bottom: 40,
             ),
             child: TextField(
+              controller: _searchTextController,
               decoration: InputDecoration(
                 prefixIcon: Icon(
                   Ionicons.search,

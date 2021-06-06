@@ -3,16 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:paperopoli_terminal/presentation/widgets/authentication/login_form.dart';
+import 'package:paperopoli_terminal/presentation/widgets/authentication/signup_form.dart';
 
 class AuthenticatonScreen extends StatefulWidget {
   @override
   _AuthenticatonScreenState createState() => _AuthenticatonScreenState();
+
+  static _AuthenticatonScreenState? of(BuildContext context) =>
+      context.findAncestorStateOfType<_AuthenticatonScreenState>();
 }
 
 class _AuthenticatonScreenState extends State<AuthenticatonScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
+  bool _inSignupMode = false;
+
+  void setFormMode(bool b) => setState(
+        () => _inSignupMode = b,
+      );
 
   @override
   void initState() {
@@ -113,7 +122,9 @@ class _AuthenticatonScreenState extends State<AuthenticatonScreen>
                       margin: EdgeInsets.only(
                         top: 80,
                       ),
-                      child: LoginFormWidget(),
+                      child: _inSignupMode
+                          ? SignUpFormWidget()
+                          : LoginFormWidget(),
                     ),
                   ],
                 ),

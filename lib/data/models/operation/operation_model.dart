@@ -14,7 +14,7 @@ class OperationModel extends MainModel {
   String type;
   @override
   String description;
-  int trip;
+  int? trip;
 
   OperationModel({
     this.id,

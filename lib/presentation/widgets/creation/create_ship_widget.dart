@@ -64,7 +64,12 @@ class _CreateShipWidgetState extends State<CreateShipWidget> {
           description: '',
         );
       } catch (e) {
-        //TODO: show error
+        HomeScreen.of(context)!.setCreatingMode(1);
+        await context.showErrorBar(
+          content: Text(
+            'Si è verificato un errore',
+          ),
+        );
       }
     }
   }

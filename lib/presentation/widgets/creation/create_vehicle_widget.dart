@@ -64,7 +64,12 @@ class _CreateVehicleWidgetState extends State<CreateVehicleWidget> {
           plate: '',
         );
       } catch (e) {
-        //TODO: show error
+        HomeScreen.of(context)!.setCreatingMode(1);
+        await context.showErrorBar(
+          content: Text(
+            'Si è verificato un errore',
+          ),
+        );
       }
     }
   }

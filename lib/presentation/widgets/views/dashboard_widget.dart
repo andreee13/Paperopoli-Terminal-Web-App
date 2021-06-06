@@ -107,7 +107,13 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                       color: Colors.grey.shade500,
                     ),
                   ),
-                  Row(),
+                  Text(
+                    _trips[index].quay.description,
+                    style: TextStyle(
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
+                  Row(), //TODO: add users
                 ],
               ),
             )
@@ -128,7 +134,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
         tr2.addAll(
           [
             element.time.expectedArrivalTime,
-            element.time.actualDepartureTime,
+            element.time.expectedDepartureTime,
           ],
         );
       },
@@ -137,7 +143,10 @@ class _DashboardWidgetState extends State<DashboardWidget> {
       _mappedTrips.addAll({
         element: tr2
             .where(
-              (e) => e.year == element.year && e.month == element.month && e.day == element.day,
+              (e) =>
+                  e.year == element.year &&
+                  e.month == element.month &&
+                  e.day == element.day,
             )
             .map(
               (e) => Event(
@@ -223,15 +232,22 @@ class _DashboardWidgetState extends State<DashboardWidget> {
         _completedOperationsChartSpots.add(
           FlSpot(
             work4.keys.toList().indexOf(key).toDouble(),
-            value['Completata'] != null ? value['Completata'].length.toDouble() : 0,
+            value['Completata'] != null
+                ? value['Completata'].length.toDouble()
+                : 0,
           ),
         );
       },
     );
   }
 
-  Widget _recentOperationsBuilder(BuildContext context, int index) => Column(
+  Widget _recentOperationsBuilder(
+    BuildContext context,
+    int index,
+  ) =>
+      Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             width: double.infinity,
@@ -294,7 +310,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                   32,
                   32,
                   0,
-                  32,
+                  0,
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -414,6 +430,9 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                       .isNotEmpty
                                   ? ListView.builder(
                                       shrinkWrap: true,
+                                      physics: BouncingScrollPhysics(
+                                        parent: AlwaysScrollableScrollPhysics(),
+                                      ),
                                       scrollDirection: Axis.horizontal,
                                       itemCount: _trips.length,
                                       itemBuilder: _tripsBuilder,
@@ -497,7 +516,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                         bottomTitles: SideTitles(
                                           getTitles: (value) =>
                                               value.toString(),
-                                          showTitles: true,
+                                          showTitles: false,
                                           margin: 16,
                                           getTextStyles: (value) => TextStyle(
                                             color: Colors.grey.shade600,
@@ -505,7 +524,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                         ),
                                         leftTitles: SideTitles(
                                           getTitles: (value) =>
-                                              value.toString(),
+                                              value.toStringAsFixed(0),
                                           showTitles: true,
                                           margin: 24,
                                           getTextStyles: (value) => TextStyle(
@@ -972,7 +991,6 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                           Padding(
                             padding: const EdgeInsets.only(
                               top: 16,
-                              bottom: 40,
                             ),
                             child: CalendarCarousel<Event>(
                               width: MediaQuery.of(context).size.width * 0.2,
@@ -1027,7 +1045,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Movimentazioni recenti',
+                                'Operazioni recenti',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w700,
                                   color: Color(0xff262539),
@@ -1036,13 +1054,16 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                               ),
                               Container(
                                 height:
-                                    MediaQuery.of(context).size.width * 0.25,
+                                    MediaQuery.of(context).size.width * 0.273,
                                 width: MediaQuery.of(context).size.width * 0.2,
                                 padding: const EdgeInsets.only(
                                   top: 32,
                                 ),
                                 child: ListView.builder(
                                   itemCount: 10,
+                                  physics: BouncingScrollPhysics(
+                                    parent: AlwaysScrollableScrollPhysics(),
+                                  ),
                                   itemBuilder: _recentOperationsBuilder,
                                 ),
                               ),

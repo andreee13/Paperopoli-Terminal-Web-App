@@ -26,6 +26,8 @@ class TripsWidget extends StatefulWidget {
 
 class _TripsWidgetState extends State<TripsWidget> {
   late List<TripModel> _trips;
+  late final TextEditingController _searchTextController =
+      TextEditingController()..addListener(() => setState(() {}));
   final TextEditingController _deleteTextController = TextEditingController();
   TripModel? _tripToEdit;
   List<QuayModel> _quays = [];
@@ -51,6 +53,7 @@ class _TripsWidgetState extends State<TripsWidget> {
     _actualArrivalDateController.dispose();
     _actualDepartureDateController.dispose();
     _deleteTextController.dispose();
+    _searchTextController.dispose();
     super.dispose();
   }
 
@@ -148,168 +151,183 @@ class _TripsWidgetState extends State<TripsWidget> {
     int index,
     Animation<double> animation,
   ) =>
-      FadeTransition(
-        opacity: Tween<double>(
-          begin: 0,
-          end: 1,
-        ).animate(animation),
-        child: SlideTransition(
-          position: Tween<Offset>(
-            begin: Offset(0, -0.1),
-            end: Offset.zero,
-          ).animate(animation),
-          child: GestureDetector(
-            onTap: () => setState(
-              () {
-                _tripToEdit = TripModel.deepCopy(
-                  _trips[index],
-                );
-                _expectedArrivalDateController.text =
-                    _tripToEdit!.time.expectedArrivalTime.toIso8601String();
-                _expectedDeparturedDateController.text =
-                    _tripToEdit!.time.expectedDepartureTime.toIso8601String();
-                _actualArrivalDateController.text =
-                    _tripToEdit!.time.actualArrivalTime.toIso8601String();
-                _actualDepartureDateController.text =
-                    _tripToEdit!.time.actualDepartureTime.toIso8601String();
-              },
-            ),
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(
-                24,
-                16,
-                16,
-                16,
-              ),
-              height: 160,
-              margin: const EdgeInsets.only(
-                right: 24,
-                bottom: 24,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
-                color: ACCENT_COLORS[index.remainder(ACCENT_COLORS.length)],
-              ),
-              child: Stack(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Viaggio #${_trips[index].id}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xff262539),
-                              fontSize: 16,
-                            ),
-                          ),
-                          PopupMenuButton(
-                            elevation: 48,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            icon: Icon(
-                              Icons.more_horiz,
-                              color: Color(0xff262539),
-                            ),
-                            onSelected: (value) async {
-                              switch (value) {
-                                case 0:
-                                  _deleteTextController.clear();
-                                  return await showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      actionsPadding: const EdgeInsets.only(
-                                        right: 16,
-                                      ),
-                                      title: Text(
-                                        'Elimina viaggio',
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                          child: Text(
-                                            'Annulla',
-                                          ),
-                                        ),
-                                        TextButton(
-                                          onPressed: () => Navigator.pop(
-                                            context,
-                                            _deleteTextController.text,
-                                          ),
-                                          child: Text(
-                                            'ELIMINA',
-                                            style: TextStyle(
-                                              color: Colors.red,
+      _trips[index].id.toString().contains(
+                    _searchTextController.text,
+                  ) ||
+              _trips[index].quay.description.toLowerCase().contains(
+                    _searchTextController.text.toLowerCase(),
+                  )
+          ? FadeTransition(
+              opacity: Tween<double>(
+                begin: 0,
+                end: 1,
+              ).animate(animation),
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: Offset(0, -0.1),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: GestureDetector(
+                  onTap: () => setState(
+                    () {
+                      _tripToEdit = TripModel.deepCopy(
+                        _trips[index],
+                      );
+                      _expectedArrivalDateController.text = _tripToEdit!
+                          .time.expectedArrivalTime
+                          .toIso8601String();
+                      _expectedDeparturedDateController.text = _tripToEdit!
+                          .time.expectedDepartureTime
+                          .toIso8601String();
+                      _actualArrivalDateController.text =
+                          _tripToEdit!.time.actualArrivalTime.toIso8601String();
+                      _actualDepartureDateController.text = _tripToEdit!
+                          .time.actualDepartureTime
+                          .toIso8601String();
+                    },
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(
+                      24,
+                      16,
+                      16,
+                      16,
+                    ),
+                    height: 160,
+                    margin: const EdgeInsets.only(
+                      right: 24,
+                      bottom: 24,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      color:
+                          ACCENT_COLORS[index.remainder(ACCENT_COLORS.length)],
+                    ),
+                    child: Stack(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Viaggio #${_trips[index].id}',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xff262539),
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                PopupMenuButton(
+                                  elevation: 48,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  icon: Icon(
+                                    Icons.more_horiz,
+                                    color: Color(0xff262539),
+                                  ),
+                                  onSelected: (value) async {
+                                    switch (value) {
+                                      case 0:
+                                        _deleteTextController.clear();
+                                        return await showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            actionsPadding:
+                                                const EdgeInsets.only(
+                                              right: 16,
+                                            ),
+                                            title: Text(
+                                              'Elimina viaggio',
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () =>
+                                                    Navigator.pop(context),
+                                                child: Text(
+                                                  'Annulla',
+                                                ),
+                                              ),
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(
+                                                  context,
+                                                  _deleteTextController.text,
+                                                ),
+                                                child: Text(
+                                                  'ELIMINA',
+                                                  style: TextStyle(
+                                                    color: Colors.red,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                            content: SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.20,
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Text(
+                                                    'Eliminando il viaggio non sarà più visibile in questa sezione e tutte le movimentazioni associate saranno rimosse dal sistema.',
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      ],
-                                      content: SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.20,
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              'Eliminando il viaggio non sarà più visibile in questa sezione e tutte le movimentazioni associate saranno rimosse dal sistema.',
-                                            ),
-                                          ],
-                                        ),
+                                        ).then(
+                                          (value) => value != null
+                                              ? _deleteTrip(
+                                                  _trips[index],
+                                                )
+                                              : {},
+                                        );
+                                      default:
+                                        break;
+                                    }
+                                  },
+                                  itemBuilder: (context) => [
+                                    PopupMenuItem<int>(
+                                      value: 0,
+                                      enabled: true,
+                                      height: 40,
+                                      child: Text(
+                                        'Elimina',
                                       ),
                                     ),
-                                  ).then(
-                                    (value) => value != null
-                                        ? _deleteTrip(
-                                            _trips[index],
-                                          )
-                                        : {},
-                                  );
-                                default:
-                                  break;
-                              }
-                            },
-                            itemBuilder: (context) => [
-                              PopupMenuItem<int>(
-                                value: 0,
-                                enabled: true,
-                                height: 40,
-                                child: Text(
-                                  'Elimina',
+                                  ],
                                 ),
+                              ],
+                            ),
+                            GridView.builder(
+                              shrinkWrap: true,
+                              itemCount: 8,
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                childAspectRatio: 8,
+                                mainAxisSpacing: 0,
+                                crossAxisSpacing: 0,
                               ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      GridView.builder(
-                        shrinkWrap: true,
-                        itemCount: 8,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 8,
-                          mainAxisSpacing: 0,
-                          crossAxisSpacing: 0,
+                              itemBuilder: (context, grid_index) =>
+                                  _getInfoWidgets(
+                                grid_index,
+                                _trips[index],
+                              ),
+                            ),
+                          ],
                         ),
-                        itemBuilder: (context, grid_index) => _getInfoWidgets(
-                          grid_index,
-                          _trips[index],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ),
-      );
+            )
+          : SizedBox();
 
   Widget _buildAllTripsWidget() => Column(
         key: ValueKey('Column 1'),
@@ -320,6 +338,7 @@ class _TripsWidgetState extends State<TripsWidget> {
               bottom: 40,
             ),
             child: TextField(
+              controller: _searchTextController,
               decoration: InputDecoration(
                 prefixIcon: Icon(
                   Ionicons.search,

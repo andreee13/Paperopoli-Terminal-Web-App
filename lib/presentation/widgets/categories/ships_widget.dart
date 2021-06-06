@@ -31,6 +31,8 @@ class _ShipsWidgetState extends State<ShipsWidget> {
       TextEditingController();
   final TextEditingController _newStateDateTimeController =
       TextEditingController();
+  late final TextEditingController _searchTextController =
+      TextEditingController()..addListener(() => setState(() {}));
   ShipModel? _shipToEdit;
   List<String> _types = [];
   List _statusNames = [];
@@ -46,6 +48,7 @@ class _ShipsWidgetState extends State<ShipsWidget> {
   void dispose() {
     _descriptionTextController.dispose();
     _newStateDateTimeController.dispose();
+    _searchTextController.dispose();
     super.dispose();
   }
 
@@ -271,7 +274,20 @@ class _ShipsWidgetState extends State<ShipsWidget> {
               ),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
-                color: ACCENT_COLORS[index.remainder(ACCENT_COLORS.length)],
+                color: _ships[index].id.toString().contains(
+                              _searchTextController.text,
+                            ) ||
+                        _ships[index].description.toLowerCase().contains(
+                              _searchTextController.text.toLowerCase(),
+                            ) ||
+                        _ships[index].type.toLowerCase().contains(
+                              _searchTextController.text.toLowerCase(),
+                            ) ||
+                        _ships[index].status.last.name.toLowerCase().contains(
+                              _searchTextController.text.toLowerCase(),
+                            )
+                    ? ACCENT_COLORS[index.remainder(ACCENT_COLORS.length)]
+                    : Colors.grey.shade100,
               ),
               child: Stack(
                 children: [
@@ -402,6 +418,7 @@ class _ShipsWidgetState extends State<ShipsWidget> {
               bottom: 40,
             ),
             child: TextField(
+              controller: _searchTextController,
               decoration: InputDecoration(
                 prefixIcon: Icon(
                   Ionicons.search,

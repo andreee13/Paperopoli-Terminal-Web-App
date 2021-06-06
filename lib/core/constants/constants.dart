@@ -21,31 +21,38 @@ const List<Color> ACCENT_COLORS = [
 
 const List<CategoryModel> CATEGORIES = [
   CategoryModel(
-    name: 'Dashboard',
+    primaryName: 'Dashboard',
+    secondaryName: 'Dashboard',
     mainIcon: Ionicons.grid_outline,
   ),
   CategoryModel(
-    name: 'Viaggi',
+    primaryName: 'Viaggi',
+    secondaryName: 'Viaggio',
     mainIcon: Icons.calendar_today_outlined,
   ),
   CategoryModel(
-    name: 'Movimentazioni',
+    primaryName: 'Movimentazioni',
+    secondaryName: 'Movimentazione',
     mainIcon: Icons.stacked_line_chart_outlined,
   ),
   CategoryModel(
-    name: 'Navi',
+    primaryName: 'Navi',
+    secondaryName: 'Nave',
     mainIcon: Ionicons.boat_outline,
   ),
   CategoryModel(
-    name: 'Merci',
+    primaryName: 'Merci',
+    secondaryName: 'Merce',
     mainIcon: Ionicons.cube_outline,
   ),
   CategoryModel(
-    name: 'Persone',
+    primaryName: 'Persone',
+    secondaryName: 'Persona',
     mainIcon: Ionicons.people_outline,
   ),
   CategoryModel(
-    name: 'Veicoli',
+    primaryName: 'Veicoli',
+    secondaryName: 'Veicolo',
     mainIcon: Ionicons.car_outline,
   ),
 ];
