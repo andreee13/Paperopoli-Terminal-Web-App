@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:paperopoli_terminal/core/services/server_service.dart';
+import 'package:paperopoli_terminal/core/utils/utils.dart';
 import 'package:paperopoli_terminal/data/models/person/person_model.dart';
 import 'package:paperopoli_terminal/data/models/person/person_status.dart';
 import 'package:paperopoli_terminal/presentation/screens/home_screen.dart';
@@ -216,35 +217,6 @@ class _CreatePersonWidgetState extends State<CreatePersonWidget> {
     }
   }
 
-  InputDecoration _getInputDecoration(
-    String hintText,
-  ) =>
-      InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
-        ),
-        fillColor: Colors.grey.withOpacity(0.1),
-        filled: false,
-        hintStyle: TextStyle(
-          color: Colors.black45,
-        ),
-        hintText: hintText,
-        border: UnderlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(7),
-          ),
-          borderSide: BorderSide(
-            color: Colors.grey,
-          ),
-        ),
-        focusedBorder: UnderlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(7),
-          ),
-        ),
-      );
-
   @override
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.fromLTRB(
@@ -320,7 +292,7 @@ class _CreatePersonWidgetState extends State<CreatePersonWidget> {
                                   top: 8,
                                 ),
                                 child: TextField(
-                                  decoration: _getInputDecoration(
+                                  decoration: getDefaultInputDecoration(
                                     'ID',
                                   ),
                                   inputFormatters: <TextInputFormatter>[
@@ -388,7 +360,7 @@ class _CreatePersonWidgetState extends State<CreatePersonWidget> {
                                   top: 8,
                                 ),
                                 child: TextField(
-                                  decoration: _getInputDecoration(
+                                  decoration: getDefaultInputDecoration(
                                     'Nome completo',
                                   ),
                                   controller: _fullnameTextController,
@@ -415,7 +387,7 @@ class _CreatePersonWidgetState extends State<CreatePersonWidget> {
                                   top: 8,
                                 ),
                                 child: TextField(
-                                  decoration: _getInputDecoration(
+                                  decoration: getDefaultInputDecoration(
                                     'Codice fiscale',
                                   ),
                                   maxLength: 16,

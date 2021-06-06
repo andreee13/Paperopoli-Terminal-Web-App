@@ -1,13 +1,18 @@
+import 'package:paperopoli_terminal/core/models/main_model_abstract.dart';
+
 import 'operation_status.dart';
 
-class OperationModel {
+class OperationModel extends MainModel {
+  @override
   int? id;
+  @override
   final List<OperationStatus> status;
   final List<int> ships;
   final List<int> goods;
   final List<int> people;
   final List<int> vehicles;
   String type;
+  @override
   String description;
   int trip;
 

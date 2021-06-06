@@ -1,9 +1,14 @@
+import 'package:paperopoli_terminal/core/models/main_model_abstract.dart';
+
 import 'good_status.dart';
 
-class GoodModel {
+class GoodModel extends MainModel {
+  @override
   int? id;
+  @override
   String description;
   String type;
+  @override
   final List<GoodStatus> status;
 
   GoodModel({

@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:paperopoli_terminal/core/utils/constants.dart';
+import 'package:paperopoli_terminal/core/constants/constants.dart';
 import 'package:paperopoli_terminal/cubits/trips/trips_cubit.dart';
 import 'package:paperopoli_terminal/data/models/operation/operation_model.dart';
 import 'package:paperopoli_terminal/data/models/operation/operation_status.dart';

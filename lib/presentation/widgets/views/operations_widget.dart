@@ -9,13 +9,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:auto_animated/auto_animated.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:paperopoli_terminal/core/models/main_model_abstract.dart';
 import 'package:paperopoli_terminal/core/services/server_service.dart';
-import 'package:paperopoli_terminal/core/utils/constants.dart';
+import 'package:paperopoli_terminal/core/constants/constants.dart';
 import 'package:paperopoli_terminal/core/utils/packages/flutter-countup/lib/countup.dart';
+import 'package:paperopoli_terminal/core/utils/utils.dart';
 import 'package:paperopoli_terminal/cubits/operations/operations_cubit.dart';
+import 'package:paperopoli_terminal/data/models/good/good_model.dart';
 import 'package:paperopoli_terminal/data/models/operation/operation_model.dart';
 import 'package:paperopoli_terminal/data/models/operation/operation_status.dart';
+import 'package:paperopoli_terminal/data/models/person/person_model.dart';
+import 'package:paperopoli_terminal/data/models/ship/ship_model.dart';
+import 'package:paperopoli_terminal/data/models/vehicle/vehicle_model.dart';
+import 'package:paperopoli_terminal/data/repositories/goods_repository.dart';
+import 'package:paperopoli_terminal/data/repositories/people_repository.dart';
+import 'package:paperopoli_terminal/data/repositories/ships_repository.dart';
+import 'package:paperopoli_terminal/data/repositories/vehicles_repository.dart';
 import 'package:paperopoli_terminal/presentation/screens/home_screen.dart';
+import 'package:search_choices/search_choices.dart';
 
 import '../loading_indicator.dart';
 
@@ -33,8 +44,12 @@ class _OperationsWidgetState extends State<OperationsWidget> {
   OperationModel? _operationToEdit;
   List<String> _types = [];
   List _statusNames = [];
+  List<ShipModel> _shipsAll = [];
+  List<GoodModel> _goodsAll = [];
+  List<PersonModel> _peopleAll = [];
+  List<VehicleModel> _vehiclesAll = [];
   var _currentStatusName;
-  var _currentNewItem;
+  MainModel? _currenNewItem;
 
   @override
   void initState() {
@@ -70,6 +85,18 @@ class _OperationsWidgetState extends State<OperationsWidget> {
       ).fetchOperationsStatusNames().then(
             (value) => value.body,
           ),
+    );
+    _shipsAll = await ShipsRepository().fetch(
+      user: HomeScreen.of(context)!.getUser(),
+    );
+    _goodsAll = await GoodsRepository().fetch(
+      user: HomeScreen.of(context)!.getUser(),
+    );
+    _peopleAll = await PeopleRepository().fetch(
+      user: HomeScreen.of(context)!.getUser(),
+    );
+    _vehiclesAll = await VehiclesRepository().fetch(
+      user: HomeScreen.of(context)!.getUser(),
     );
   }
 
@@ -187,8 +214,10 @@ class _OperationsWidgetState extends State<OperationsWidget> {
     int index,
     setState,
     List<int> items,
+    List<MainModel> allItems,
+    String category,
   ) =>
-      index == _operationToEdit!.status.length
+      index == items.length
           ? ListTile(
               title: Text(
                 'Aggiungi',
@@ -196,83 +225,74 @@ class _OperationsWidgetState extends State<OperationsWidget> {
               leading: Icon(
                 Icons.add,
               ),
-              onTap: () => showDialog(
-                context: context,
-                builder: (ctx) => AlertDialog(
-                  title: Text(
-                    'Aggiungi',
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(
-                        'Annulla',
-                      ),
+              onTap: () {
+                _currenNewItem = null;
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: Text(
+                      'Aggiungi',
                     ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        setState(
-                          () => items.add(_currentNewItem),
-                        );
-                      },
-                      child: Text(
-                        'Salva',
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(
+                          'Annulla',
+                        ),
                       ),
-                    ),
-                  ],
-                  content: StatefulBuilder(
-                    builder: (ctx, setState1) =>
-                        DropdownButton<Map<String, dynamic>>(
-                      value: _currentNewItem,
-                      onChanged: (value) => setState1(
-                        () => _currentNewItem = value,
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          setState(
+                            () => _currenNewItem != null
+                                ? items.add(_currenNewItem!.id!)
+                                : {},
+                          );
+                        },
+                        child: Text(
+                          'Salva',
+                        ),
                       ),
-                      items: _statusNames //TODO: ids
-                          .map(
-                            (e) => DropdownMenuItem<Map<String, dynamic>>(
-                              value: e,
-                              child: Text(
-                                e['nome'],
+                    ],
+                    content: Container(
+                      width: 200,
+                      height: 70,
+                      child: SearchChoices<MainModel>.single(
+                        value: _currenNewItem,
+                        hint: category,
+                        searchHint: 'Cerca',
+                        onChanged: (value) => setState(() {
+                          _currenNewItem = value;
+                        }),
+                        closeButton: 'Chiudi',
+                        isExpanded: true,
+                        items: allItems
+                            .where(
+                              (element) => !items.contains(element.id!),
+                            )
+                            .map(
+                              (e) => DropdownMenuItem<MainModel>(
+                                value: e,
+                                child: Text(
+                                  '#${e.id}  •  ${e.description}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
                               ),
-                            ),
-                          )
-                          .toList(),
+                            )
+                            .toList(),
+                      ),
                     ),
                   ),
-                ),
-              ),
+                );
+              },
             )
-          : ListTile();
-
-  InputDecoration _getInputDecoration(
-    String hintText,
-  ) =>
-      InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
-        ),
-        fillColor: Colors.grey.withOpacity(0.1),
-        filled: false,
-        hintStyle: TextStyle(
-          color: Colors.black45,
-        ),
-        hintText: hintText,
-        border: UnderlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(7),
-          ),
-          borderSide: BorderSide(
-            color: Colors.grey,
-          ),
-        ),
-        focusedBorder: UnderlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(7),
-          ),
-        ),
-      );
+          : ListTile(
+              title: Text(
+                '$category #${items[index]}',
+              ),
+            );
 
   Widget _getInfoWidgets(
     int index,
@@ -747,7 +767,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                         top: 8,
                       ),
                       child: TextField(
-                        decoration: _getInputDecoration(
+                        decoration: getDefaultInputDecoration(
                           'Descrizione',
                         ),
                         controller: _descriptionTextController,
@@ -800,6 +820,8 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                                   index,
                                   setState,
                                   _operationToEdit!.ships,
+                                  _shipsAll,
+                                  'Nave',
                                 ),
                               ),
                             ),
@@ -860,6 +882,8 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                                   index,
                                   setState,
                                   _operationToEdit!.goods,
+                                  _goodsAll,
+                                  'Merce',
                                 ),
                               ),
                             ),
@@ -920,6 +944,8 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                                   index,
                                   setState,
                                   _operationToEdit!.people,
+                                  _peopleAll,
+                                  'Persona',
                                 ),
                               ),
                             ),
@@ -981,6 +1007,8 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                                   index,
                                   setState,
                                   _operationToEdit!.vehicles,
+                                  _vehiclesAll,
+                                  'Veicolo',
                                 ),
                               ),
                             ),
@@ -1118,28 +1146,30 @@ class _OperationsWidgetState extends State<OperationsWidget> {
         HomeScreen.of(context)!.getUser(),
       )
           .editOperation(
-            _operationToEdit!..description = _descriptionTextController.text,
-          )
+        _operationToEdit!..description = _descriptionTextController.text,
+      )
           .then(
-            (value) async => value.statusCode == HttpStatus.ok
-                ? await _fetch().then(
-                    (value) {
-                      context.showInfoBar(
-                        content: Text(
-                          'Movimentazione aggiornata con successo',
-                        ),
-                      );
-                      setState(() {
-                        _operationToEdit = null;
-                      });
-                    },
-                  )
-                : context.showErrorBar(
-                    content: Text(
-                      'Si è verificato un errore',
-                    ),
+        (value) async {
+          return value.statusCode == HttpStatus.ok
+              ? await _fetch().then(
+                  (value) {
+                    context.showInfoBar(
+                      content: Text(
+                        'Movimentazione aggiornata con successo',
+                      ),
+                    );
+                    setState(() {
+                      _operationToEdit = null;
+                    });
+                  },
+                )
+              : context.showErrorBar(
+                  content: Text(
+                    'Si è verificato un errore',
                   ),
-          );
+                );
+        },
+      );
     }
   }
 

@@ -1,11 +1,16 @@
+import 'package:paperopoli_terminal/core/models/main_model_abstract.dart';
 import 'package:paperopoli_terminal/data/models/vehicle/vehicle_status.dart';
 
 import 'vehicle_status.dart';
 
-class VehicleModel {
+class VehicleModel extends MainModel {
+  @override
   int? id;
   String plate;
   String type;
+  @override
+  late String description = plate;
+  @override
   final List<VehicleStatus> status;
 
   VehicleModel({

@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:paperopoli_terminal/core/utils/constants.dart';
-import 'package:paperopoli_terminal/core/utils/encoder.dart';
+import 'package:paperopoli_terminal/core/constants/constants.dart';
+import 'package:paperopoli_terminal/core/utils/utils.dart';
 import 'package:paperopoli_terminal/data/models/good/good_model.dart';
 import 'package:paperopoli_terminal/data/models/operation/operation_model.dart';
 import 'package:paperopoli_terminal/data/models/person/person_model.dart';
@@ -104,6 +104,16 @@ class ServerService {
 
   /* VEHICLES */
 
+  Future<http.Response> fetchVehicles() async => await http.get(
+        Uri.parse(
+          '$TERMINAL_API_URL/vehicles/index',
+        ),
+        headers: {
+          HttpHeaders.contentTypeHeader: ContentType.json.value,
+          HttpHeaders.authorizationHeader: await _user.getIdToken(),
+        },
+      );
+
   Future<http.Response> editVehicle(
     VehicleModel model,
   ) async =>
@@ -174,6 +184,16 @@ class ServerService {
       );
 
   /* PEOPLE */ 
+
+  Future<http.Response> fetchPeople() async => await http.get(
+        Uri.parse(
+          '$TERMINAL_API_URL/people/index',
+        ),
+        headers: {
+          HttpHeaders.contentTypeHeader: ContentType.json.value,
+          HttpHeaders.authorizationHeader: await _user.getIdToken(),
+        },
+      );
 
   Future<http.Response> editPerson(
     PersonModel model,
@@ -246,6 +266,16 @@ class ServerService {
 
   /* GOODS */
 
+  Future<http.Response> fetchGoods() async => await http.get(
+        Uri.parse(
+          '$TERMINAL_API_URL/goods/index',
+        ),
+        headers: {
+          HttpHeaders.contentTypeHeader: ContentType.json.value,
+          HttpHeaders.authorizationHeader: await _user.getIdToken(),
+        },
+      );
+
   Future<http.Response> editGood(
     GoodModel model,
   ) async =>
@@ -317,6 +347,16 @@ class ServerService {
 
   /* SHIPS */
 
+  Future<http.Response> fetchShips() async => await http.get(
+        Uri.parse(
+          '$TERMINAL_API_URL/ships/index',
+        ),
+        headers: {
+          HttpHeaders.contentTypeHeader: ContentType.json.value,
+          HttpHeaders.authorizationHeader: await _user.getIdToken(),
+        },
+      );
+
   Future<http.Response> editShip(
     ShipModel model,
   ) async =>
@@ -387,6 +427,16 @@ class ServerService {
       );
 
   /* TRIPS */
+
+  Future<http.Response> fetchTrips() async => await http.get(
+        Uri.parse(
+          '$TERMINAL_API_URL/trips/index',
+        ),
+        headers: {
+          HttpHeaders.contentTypeHeader: ContentType.json.value,
+          HttpHeaders.authorizationHeader: await _user.getIdToken(),
+        },
+      );
 
   Future<http.Response> editTrip(
     TripModel tripModel,

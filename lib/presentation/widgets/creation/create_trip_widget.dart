@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:paperopoli_terminal/core/services/server_service.dart';
+import 'package:paperopoli_terminal/core/utils/utils.dart';
 import 'package:paperopoli_terminal/data/models/quay/quay_model.dart';
 import 'package:paperopoli_terminal/data/models/trip/trip_model.dart';
 import 'package:paperopoli_terminal/data/models/trip/trip_time.dart';
@@ -21,7 +22,7 @@ class CreateTripWidget extends StatefulWidget {
 
 class _CreateTripWidgetState extends State<CreateTripWidget> {
   late TripModel _tripToCreate;
-  List<Quay> _quays = [];
+  List<QuayModel> _quays = [];
   final TextEditingController _idTextController = TextEditingController();
   final TextEditingController _expectedArrivalDateController =
       TextEditingController();
@@ -52,11 +53,11 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
                 (value) => value.body,
               ),
         )
-            .map<Quay>(
+            .map<QuayModel>(
               (
                 item,
               ) =>
-                  Quay.fromJson(
+                  QuayModel.fromJson(
                 item,
               ),
             )
@@ -131,35 +132,6 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
       );
     }
   }
-
-  InputDecoration _getInputDecoration(
-    String hintText,
-  ) =>
-      InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
-        ),
-        fillColor: Colors.grey.withOpacity(0.1),
-        filled: false,
-        hintStyle: TextStyle(
-          color: Colors.black45,
-        ),
-        hintText: hintText,
-        border: UnderlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(7),
-          ),
-          borderSide: BorderSide(
-            color: Colors.grey,
-          ),
-        ),
-        focusedBorder: UnderlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(7),
-          ),
-        ),
-      );
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -236,7 +208,7 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
                                   top: 8,
                                 ),
                                 child: TextField(
-                                  decoration: _getInputDecoration(
+                                  decoration: getDefaultInputDecoration(
                                     'ID',
                                   ),
                                   inputFormatters: <TextInputFormatter>[

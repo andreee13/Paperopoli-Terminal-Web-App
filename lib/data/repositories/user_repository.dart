@@ -15,15 +15,17 @@ class UserRepository {
   }) async =>
       await firebaseAuth
           .createUserWithEmailAndPassword(
-            email: email,
-            password: password,
-          )
+        email: email,
+        password: password,
+      )
           .then(
-            (userCredential) => userCredential.user!
-              ..updateProfile(
-                displayName: fullName,
-              ),
+        (userCredential) async {
+          await userCredential.user!.updateProfile(
+            displayName: fullName,
           );
+          return userCredential.user!;
+        },
+      );
 
   Future<User?> signInWithEmailPassword({
     required String email,

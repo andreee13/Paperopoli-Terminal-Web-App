@@ -21,7 +21,7 @@ import 'package:paperopoli_terminal/data/repositories/ships_repository.dart';
 import 'package:paperopoli_terminal/data/repositories/trips_repository.dart';
 import 'package:paperopoli_terminal/data/repositories/vehicles_repository.dart';
 
-import 'core/utils/constants.dart';
+import 'core/constants/constants.dart';
 import 'core/utils/themes/default_theme.dart';
 import 'cubits/authentication/authentication_cubit.dart';
 import 'data/repositories/user_repository.dart';

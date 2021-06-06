@@ -1,10 +1,16 @@
+import 'package:paperopoli_terminal/core/models/main_model_abstract.dart';
+
 import 'person_status.dart';
 
-class PersonModel {
+class PersonModel extends MainModel {
+  @override
   int? id;
   String cf;
   String fullname;
   String type;
+  @override
+  late String description = fullname;
+  @override
   final List<PersonStatus> status;
 
   PersonModel({

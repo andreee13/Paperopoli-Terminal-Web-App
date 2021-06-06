@@ -5,7 +5,7 @@ import 'package:paperopoli_terminal/data/models/trip/trip_time.dart';
 
 class TripModel {
   int? id;
-  Quay quay;
+  QuayModel quay;
   TripTime time;
   final List<OperationModel> operations;
 
@@ -31,7 +31,7 @@ class TripModel {
   factory TripModel.deepCopy(TripModel trip) => TripModel(
         operations: [],
         id: trip.id,
-        quay: Quay(
+        quay: QuayModel(
           description: trip.quay.description,
           id: trip.quay.id,
         ),
@@ -78,7 +78,7 @@ class TripModel {
     return TripModel(
       operations: _operations,
       id: json[0]['viaggio_id'],
-      quay: Quay(
+      quay: QuayModel(
         description: json[0]['banchina_descrizione'],
         id: json[0]['banchina_id'],
       ),

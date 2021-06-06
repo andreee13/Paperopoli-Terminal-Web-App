@@ -10,8 +10,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:auto_animated/auto_animated.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:paperopoli_terminal/core/services/server_service.dart';
-import 'package:paperopoli_terminal/core/utils/constants.dart';
+import 'package:paperopoli_terminal/core/constants/constants.dart';
 import 'package:paperopoli_terminal/core/utils/packages/flutter-countup/lib/countup.dart';
+import 'package:paperopoli_terminal/core/utils/utils.dart';
 import 'package:paperopoli_terminal/cubits/people/people_cubit.dart';
 import 'package:paperopoli_terminal/data/models/person/person_model.dart';
 import 'package:paperopoli_terminal/data/models/person/person_status.dart';
@@ -179,35 +180,6 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                   ),
                 )
               : SizedBox();
-
-  InputDecoration _getInputDecoration(
-    String hintText,
-  ) =>
-      InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
-        ),
-        fillColor: Colors.grey.withOpacity(0.1),
-        filled: false,
-        hintStyle: TextStyle(
-          color: Colors.black45,
-        ),
-        hintText: hintText,
-        border: UnderlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(7),
-          ),
-          borderSide: BorderSide(
-            color: Colors.grey,
-          ),
-        ),
-        focusedBorder: UnderlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(7),
-          ),
-        ),
-      );
 
   Widget _getInfoWidgets(
     int index,
@@ -699,7 +671,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                         top: 8,
                       ),
                       child: TextField(
-                        decoration: _getInputDecoration(
+                        decoration: getDefaultInputDecoration(
                           'Nome completo',
                         ),
                         controller: _fullnameTextController,
@@ -726,7 +698,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                         top: 8,
                       ),
                       child: TextField(
-                        decoration: _getInputDecoration(
+                        decoration: getDefaultInputDecoration(
                           'Codice fiscale',
                         ),
                         maxLength: 16,

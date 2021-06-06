@@ -29,6 +29,7 @@ dependencies:
   auto_animated: ^3.0.0
   flash: ^2.0.0
   date_time_picker: ^2.0.0
+  search_choices: ^2.0.3
   
 dev_dependencies:
   flutter_test:

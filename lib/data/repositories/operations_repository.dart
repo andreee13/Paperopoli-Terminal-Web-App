@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:paperopoli_terminal/core/errors/exceptions.dart';
-import 'package:paperopoli_terminal/core/utils/constants.dart';
+import 'package:paperopoli_terminal/core/constants/constants.dart';
 import 'package:paperopoli_terminal/data/models/operation/operation_model.dart';
 
 class OperationsRepository {

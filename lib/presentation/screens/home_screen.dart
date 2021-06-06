@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:paperopoli_terminal/core/utils/constants.dart';
+import 'package:paperopoli_terminal/core/constants/constants.dart';
 import 'package:paperopoli_terminal/cubits/authentication/authentication_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperopoli_terminal/data/models/category_model.dart';

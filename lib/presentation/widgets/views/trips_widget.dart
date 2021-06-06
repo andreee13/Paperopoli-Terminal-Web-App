@@ -10,7 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:auto_animated/auto_animated.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:paperopoli_terminal/core/services/server_service.dart';
-import 'package:paperopoli_terminal/core/utils/constants.dart';
+import 'package:paperopoli_terminal/core/constants/constants.dart';
 import 'package:paperopoli_terminal/core/utils/packages/flutter-countup/lib/countup.dart';
 import 'package:paperopoli_terminal/cubits/trips/trips_cubit.dart';
 import 'package:paperopoli_terminal/data/models/quay/quay_model.dart';
@@ -28,7 +28,7 @@ class _TripsWidgetState extends State<TripsWidget> {
   late List<TripModel> _trips;
   final TextEditingController _deleteTextController = TextEditingController();
   TripModel? _tripToEdit;
-  List<Quay> _quays = [];
+  List<QuayModel> _quays = [];
   final TextEditingController _expectedArrivalDateController =
       TextEditingController();
   final TextEditingController _actualArrivalDateController =
@@ -65,11 +65,11 @@ class _TripsWidgetState extends State<TripsWidget> {
             (value) => value.body,
           ),
     )
-        .map<Quay>(
+        .map<QuayModel>(
           (
             item,
           ) =>
-              Quay.fromJson(
+              QuayModel.fromJson(
             item,
           ),
         )

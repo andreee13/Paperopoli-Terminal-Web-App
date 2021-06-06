@@ -1,9 +1,13 @@
+import 'package:paperopoli_terminal/core/models/main_model_abstract.dart';
 import 'package:paperopoli_terminal/data/models/ship/ship_status.dart';
 
-class ShipModel {
+class ShipModel extends MainModel {
+  @override
   int? id;
+  @override
   final List<ShipStatus> status;
   String type;
+  @override
   String description;
 
   ShipModel({
