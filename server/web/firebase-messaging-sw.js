@@ -1,7 +1,5 @@
 importScripts("https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js");
-importScripts(
-  "https://www.gstatic.com/firebasejs/8.6.1/firebase-messaging.js"
-);
+importScripts("https://www.gstatic.com/firebasejs/8.6.1/firebase-messaging.js");
 
 firebase.initializeApp({
   apiKey: "AIzaSyBfumL6wAQrRQz1qg0oGSEyCoH3MoWMA_E",
@@ -12,7 +10,6 @@ firebase.initializeApp({
   appId: "1:1094311692688:web:0836643acff8f308fd0b15",
   measurementId: "G-GW1YBLG8EZ",
 });
-firebase.analytics();
 
 const messaging = firebase.messaging();
 messaging.setBackgroundMessageHandler(function (payload) {
@@ -35,5 +32,5 @@ messaging.setBackgroundMessageHandler(function (payload) {
   return promiseChain;
 });
 self.addEventListener("notificationclick", function (event) {
-  console.log("notification received: ", event);
+  console.log("Notification received: ", event);
 });
