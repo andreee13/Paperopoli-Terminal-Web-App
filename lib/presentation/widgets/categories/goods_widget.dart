@@ -418,6 +418,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
               bottom: 40,
             ),
             child: TextField(
+              controller: _searchTextController,
               decoration: InputDecoration(
                 prefixIcon: Icon(
                   Ionicons.search,

@@ -273,6 +273,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                     Radius.circular(10),
                   ),
                 ),
+                hoverElevation: 0,
                 color: Colors.transparent,
                 elevation: 0,
                 highlightElevation: 0,

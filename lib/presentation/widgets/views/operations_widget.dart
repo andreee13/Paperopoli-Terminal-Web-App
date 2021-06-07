@@ -398,7 +398,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
         );
       case 3:
         return Text(
-          '#${operation.trip}',
+          operation.trip.toString(),
           style: TextStyle(
             color: Colors.grey.shade500,
           ),

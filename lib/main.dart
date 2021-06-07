@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +31,6 @@ import 'presentation/widgets/loading_indicator.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   await _initializeDeviceProperties();
   _initializeFirebaseMessaging();
   runZonedGuarded(
@@ -82,7 +80,10 @@ void main() async {
         ),
       );
     },
-    FirebaseCrashlytics.instance.recordError,
+    (obj, stk) {
+      print(obj);
+      print(stk);
+    },
   );
 }
 
@@ -111,7 +112,9 @@ void _initializeFirebaseMessaging() {
   );
 }
 
-Future<void> _manageNotification(RemoteMessage msg) async => {}; //TODO
+Future<void> _manageNotification(RemoteMessage msg) async {
+  print(msg.toString());
+} //TODO
 
 class AppBootstrapper extends StatefulWidget {
   @override
