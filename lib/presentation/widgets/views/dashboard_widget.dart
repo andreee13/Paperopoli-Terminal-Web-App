@@ -59,7 +59,10 @@ class _DashboardWidgetState extends State<DashboardWidget> {
         user: HomeScreen.of(context)!.getUser(),
       )
       .then(
-        (value) async => await WsService.connect(context),
+        (value) async => await WsService.connect(
+          context,
+          _scrollController,
+        ),
       );
 
   int checkDate(TripModel trip) {

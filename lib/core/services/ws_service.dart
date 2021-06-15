@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:paperopoli_terminal/core/constants/constants.dart';
 import 'package:paperopoli_terminal/data/models/chat/message_model.dart';
 import 'package:paperopoli_terminal/presentation/screens/home_screen.dart';
@@ -14,6 +15,7 @@ class WsService {
 
   static Future<void> connect(
     BuildContext context,
+    ScrollController scrollController,
   ) async {
     if (_channel == null || _channel!.closeCode != null) {
       try {
@@ -46,6 +48,15 @@ class WsService {
             );
             // ignore: invalid_use_of_protected_member
             HomeScreen.of(context)!.setState(() {});
+            SchedulerBinding.instance!.addPostFrameCallback((timeStamp) async {
+              await scrollController.animateTo(
+                scrollController.position.maxScrollExtent,
+                duration: const Duration(
+                  milliseconds: 200,
+                ),
+                curve: Curves.easeOut,
+              );
+            });
           } catch (_) {}
         });
       } catch (_) {}
