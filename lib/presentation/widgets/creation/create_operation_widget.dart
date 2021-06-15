@@ -240,7 +240,6 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget> {
       )
           .then(
         (value) {
-          print(value.body);
           if (value.statusCode == HttpStatus.ok) {
             context.showSuccessBar(
               content: Text(

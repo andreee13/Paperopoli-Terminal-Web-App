@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,7 +19,6 @@ import 'package:paperopoli_terminal/data/repositories/ships_repository.dart';
 import 'package:paperopoli_terminal/data/repositories/trips_repository.dart';
 import 'package:paperopoli_terminal/data/repositories/vehicles_repository.dart';
 
-import 'core/constants/constants.dart';
 import 'core/utils/themes/default_theme.dart';
 import 'cubits/authentication/authentication_cubit.dart';
 import 'data/repositories/user_repository.dart';
@@ -32,7 +30,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await _initializeDeviceProperties();
-  _initializeFirebaseMessaging();
   runZonedGuarded(
     () {
       runApp(
@@ -81,8 +78,8 @@ void main() async {
       );
     },
     (obj, stk) {
-      print(obj);
-      print(stk);
+     // print(obj);
+      //print(stk);
     },
   );
 }
@@ -96,25 +93,6 @@ Future<void> _initializeDeviceProperties() async {
     ),
   );
 }
-
-void _initializeFirebaseMessaging() {
-  if (IS_WEB) {
-    FirebaseMessaging.instance.requestPermission(
-      alert: true,
-      announcement: true,
-      badge: true,
-      criticalAlert: true,
-      sound: true,
-    );
-  }
-  FirebaseMessaging.onBackgroundMessage(
-    _manageNotification,
-  );
-}
-
-Future<void> _manageNotification(RemoteMessage msg) async {
-  print(msg.toString());
-} //TODO
 
 class AppBootstrapper extends StatefulWidget {
   @override

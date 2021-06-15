@@ -183,31 +183,34 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                           ),
                         ),
                       ],
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Inserisci il tuo indirizzo email per il recupero password.',
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(10),
+                      content: Container(
+                        width: MediaQuery.of(context).size.width * 0.16,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Inserisci il tuo indirizzo email per il recupero password.',
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                              ),
+                              child: TextFormField(
+                                controller: _passwordResetController,
+                                autofocus: true,
+                                decoration: _getInputDecoration(
+                                  'Email',
+                                  Icons.email_outlined,
+                                ),
                               ),
                             ),
-                            child: TextFormField(
-                              controller: _passwordResetController,
-                              autofocus: true,
-                              decoration: _getInputDecoration(
-                                'Email',
-                                Icons.email_outlined,
-                              ),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -265,7 +268,8 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
             ),
             Center(
               child: MaterialButton(
-                onPressed: () => AuthenticatonScreen.of(context)!.setFormMode(true),
+                onPressed: () =>
+                    AuthenticatonScreen.of(context)!.setFormMode(true),
                 minWidth: 320,
                 height: 56,
                 shape: RoundedRectangleBorder(

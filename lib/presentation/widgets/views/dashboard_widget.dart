@@ -1,13 +1,18 @@
 import 'package:collection/collection.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:paperopoli_terminal/core/constants/constants.dart';
+import 'package:paperopoli_terminal/core/services/ws_service.dart';
 import 'package:paperopoli_terminal/cubits/trips/trips_cubit.dart';
+import 'package:paperopoli_terminal/data/models/chat/message_model.dart';
+import 'package:paperopoli_terminal/data/models/chat/user_model.dart';
 import 'package:paperopoli_terminal/data/models/operation/operation_model.dart';
 import 'package:paperopoli_terminal/data/models/operation/operation_status.dart';
 import 'package:paperopoli_terminal/data/models/trip/trip_model.dart';
@@ -18,9 +23,14 @@ import '../loading_indicator.dart';
 class DashboardWidget extends StatefulWidget {
   @override
   _DashboardWidgetState createState() => _DashboardWidgetState();
+
+  static _DashboardWidgetState? of(BuildContext context) =>
+      context.findAncestorStateOfType<_DashboardWidgetState>();
 }
 
 class _DashboardWidgetState extends State<DashboardWidget> {
+  final ScrollController _scrollController = ScrollController();
+  final TextEditingController _chatTextController = TextEditingController();
   final List<OperationsChartData> _operationsCounterChartData = [];
   final List<FlSpot> _completedOperationsChartSpots = [];
   final List<FlSpot> _workingOperationsChartSpots = [];
@@ -36,8 +46,20 @@ class _DashboardWidgetState extends State<DashboardWidget> {
     _fetch();
   }
 
-  Future _fetch() async => await context.read<TripsCubit>().fetch(
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _chatTextController.dispose();
+    super.dispose();
+  }
+
+  Future _fetch() async => await context
+      .read<TripsCubit>()
+      .fetch(
         user: HomeScreen.of(context)!.getUser(),
+      )
+      .then(
+        (value) async => await WsService.connect(context),
       );
 
   int checkDate(TripModel trip) {
@@ -104,6 +126,15 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                   Text(
                     '${checkDate(_trips[index]) == 1 ? "Arrivo" : "Partenza"} alle ${_trips[index].time.expectedArrivalTime.toIso8601String().substring(11, 16)} - ${_trips[index].time.actualArrivalTime.toIso8601String().substring(11, 16)}',
                     style: TextStyle(
+                      color: Colors.grey.shade700,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    '${_trips[index].operations.length} movimentazioni',
+                    style: TextStyle(
                       color: Colors.grey.shade500,
                     ),
                   ),
@@ -113,7 +144,6 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                       color: Colors.grey.shade500,
                     ),
                   ),
-                  Row(), //TODO: add users
                 ],
               ),
             )
@@ -133,8 +163,16 @@ class _DashboardWidgetState extends State<DashboardWidget> {
       (element) {
         tr2.addAll(
           [
-            element.time.expectedArrivalTime,
-            element.time.expectedDepartureTime,
+            DateTime(
+              element.time.expectedArrivalTime.year,
+              element.time.expectedArrivalTime.month,
+              element.time.expectedArrivalTime.day,
+            ),
+            DateTime(
+              element.time.expectedDepartureTime.year,
+              element.time.expectedDepartureTime.month,
+              element.time.expectedDepartureTime.day,
+            ),
           ],
         );
       },
@@ -156,6 +194,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
             .toList(),
       });
     });
+
     _totalOperations = tr2.length;
     //daily operations counter
     var count1 = <OperationModel>[];
@@ -241,7 +280,35 @@ class _DashboardWidgetState extends State<DashboardWidget> {
     );
   }
 
-  Widget _recentOperationsBuilder(
+  void _sendMessage(String text) {
+    if (text != '') {
+      WsService.send(
+        MessageModel(
+          sender: UserModel.fromFirebaseUser(
+            HomeScreen.of(context)!.getUser(),
+          ),
+          body: text,
+          date: DateTime.now(),
+        ),
+      ).then(
+        (value) {
+          setState(() {});
+          _chatTextController.clear();
+          SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: const Duration(
+                milliseconds: 200,
+              ),
+              curve: Curves.easeOut,
+            );
+          });
+        },
+      );
+    }
+  }
+
+  Widget _chatBuilder(
     BuildContext context,
     int index,
   ) =>
@@ -249,36 +316,312 @@ class _DashboardWidgetState extends State<DashboardWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(
-              vertical: 20,
-              horizontal: 24,
-            ),
-            decoration: BoxDecoration(
-              color: ACCENT_COLORS[index.remainder(ACCENT_COLORS.length)],
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Nuovo viaggio aggiunto. ',
-                    style: TextStyle(
-                      color: Theme.of(context).textTheme.bodyText1!.color,
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: WsService.messages[index].sender.uid !=
+                    HomeScreen.of(context)!.getUser().uid
+                ? [
+                    Tooltip(
+                      message: WsService.messages[index].sender.displayName,
+                      child: GestureDetector(
+                        onTap: () => showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            content: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CircleAvatar(
+                                  minRadius: 30,
+                                  backgroundColor: ACCENT_COLORS[
+                                      index.remainder(ACCENT_COLORS.length)],
+                                  foregroundColor: Colors.black,
+                                  child: Text(
+                                    WsService.messages[index].sender.displayName
+                                        .substring(0, 1)
+                                        .toUpperCase(),
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 24,
+                                    bottom: 8,
+                                  ),
+                                  child: Text(
+                                    WsService
+                                        .messages[index].sender.displayName,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  WsService.messages[index].sender.email,
+                                  style: TextStyle(
+                                    color: Colors.black54,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 8,
+                                  ),
+                                  child: Divider(),
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Registrazione:',
+                                          style: TextStyle(
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Ultimo accesso:',
+                                          style: TextStyle(
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          WsService.messages[index].sender
+                                              .creationTime
+                                              .toIso8601String()
+                                              .substring(
+                                                0,
+                                                10,
+                                              ),
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.black54,
+                                          ),
+                                        ),
+                                        Text(
+                                          WsService.messages[index].sender
+                                              .lastSignInTime
+                                              .toIso8601String()
+                                              .substring(
+                                                0,
+                                                10,
+                                              ),
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.black54,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        child: CircleAvatar(
+                          backgroundColor: ACCENT_COLORS[
+                              index.remainder(ACCENT_COLORS.length)],
+                          foregroundColor: Colors.black,
+                          child: Text(
+                            WsService.messages[index].sender.displayName
+                                .substring(0, 1)
+                                .toUpperCase(),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  TextSpan(
-                    text: '#46548',
-                    recognizer: TapGestureRecognizer()..onTap = () => _fetch(),
-                    style: TextStyle(
-                      color: Colors.black,
-                      decoration: TextDecoration.underline,
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 20,
+                          horizontal: 24,
+                        ),
+                        margin: const EdgeInsets.only(
+                          left: 16,
+                        ),
+                        decoration: BoxDecoration(
+                          color: ACCENT_COLORS[
+                              index.remainder(ACCENT_COLORS.length)],
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          WsService.messages[index].body,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
+                  ]
+                : [
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 20,
+                          horizontal: 24,
+                        ),
+                        margin: const EdgeInsets.only(
+                          right: 16,
+                        ),
+                        decoration: BoxDecoration(
+                          color: ACCENT_COLORS[
+                              index.remainder(ACCENT_COLORS.length)],
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          WsService.messages[index].body,
+                        ),
+                      ),
+                    ),
+                    Tooltip(
+                      message: WsService.messages[index].sender.displayName,
+                      child: GestureDetector(
+                        onTap: () => showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            content: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CircleAvatar(
+                                  minRadius: 30,
+                                  backgroundColor: ACCENT_COLORS[
+                                      index.remainder(ACCENT_COLORS.length)],
+                                  foregroundColor: Colors.black,
+                                  child: Text(
+                                    WsService.messages[index].sender.displayName
+                                        .substring(0, 1)
+                                        .toUpperCase(),
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 24,
+                                    bottom: 8,
+                                  ),
+                                  child: Text(
+                                    WsService.messages[index].sender
+                                            .displayName +
+                                        (WsService.messages[index].sender.uid ==
+                                                FirebaseAuth
+                                                    .instance.currentUser!.uid
+                                            ? ' (Tu)'
+                                            : ''),
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  WsService.messages[index].sender.email,
+                                  style: TextStyle(
+                                    color: Colors.black54,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 8,
+                                  ),
+                                  child: Divider(),
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Registrazione:',
+                                          style: TextStyle(
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Ultimo accesso:',
+                                          style: TextStyle(
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          WsService.messages[index].sender
+                                              .creationTime
+                                              .toIso8601String()
+                                              .substring(
+                                                0,
+                                                10,
+                                              ),
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.black54,
+                                          ),
+                                        ),
+                                        Text(
+                                          WsService.messages[index].sender
+                                              .lastSignInTime
+                                              .toIso8601String()
+                                              .substring(
+                                                0,
+                                                10,
+                                              ),
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.black54,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        child: CircleAvatar(
+                          backgroundColor: ACCENT_COLORS[
+                              index.remainder(ACCENT_COLORS.length)],
+                          foregroundColor: Colors.black,
+                          child: Text(
+                            WsService.messages[index].sender.displayName
+                                .substring(0, 1)
+                                .toUpperCase(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
           ),
           Padding(
             padding: const EdgeInsets.only(
@@ -287,9 +630,15 @@ class _DashboardWidgetState extends State<DashboardWidget> {
               bottom: 16,
             ),
             child: Align(
-              alignment: Alignment.topRight,
+              alignment: WsService.messages[index].sender.uid !=
+                      HomeScreen.of(context)!.getUser().uid
+                  ? Alignment.topRight
+                  : Alignment.topLeft,
               child: Text(
-                '16:20',
+                WsService.messages[index].date.toIso8601String().substring(
+                      11,
+                      16,
+                    ),
                 style: TextStyle(
                   color: Colors.grey.shade500,
                 ),
@@ -1041,30 +1390,94 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                               todayButtonColor: Color(0xff232343),
                             ),
                           ),
+                          Text(
+                            'Chat operatori',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xff262539),
+                              fontSize: 24,
+                            ),
+                          ),
                           Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(
-                                'Operazioni recenti',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  color: Color(0xff262539),
-                                  fontSize: 24,
+                              Container(
+                                height:
+                                    MediaQuery.of(context).size.width * 0.23,
+                                width: MediaQuery.of(context).size.width * 0.2,
+                                padding: const EdgeInsets.only(
+                                  top: 24,
+                                  bottom: 16,
+                                ),
+                                child: Stack(
+                                  children: [
+                                    ListView.builder(
+                                      shrinkWrap: true,
+                                      controller: _scrollController,
+                                      itemCount: WsService.messages.length,
+                                      physics: BouncingScrollPhysics(
+                                        parent: AlwaysScrollableScrollPhysics(),
+                                      ),
+                                      itemBuilder: _chatBuilder,
+                                    ),
+                                    Visibility(
+                                      visible: WsService.messages.isEmpty,
+                                      child: LoadingIndicator(),
+                                    ),
+                                  ],
                                 ),
                               ),
                               Container(
-                                height:
-                                    MediaQuery.of(context).size.width * 0.273,
                                 width: MediaQuery.of(context).size.width * 0.2,
-                                padding: const EdgeInsets.only(
-                                  top: 32,
-                                ),
-                                child: ListView.builder(
-                                  itemCount: 10,
-                                  physics: BouncingScrollPhysics(
-                                    parent: AlwaysScrollableScrollPhysics(),
-                                  ),
-                                  itemBuilder: _recentOperationsBuilder,
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Flexible(
+                                      child: TextField(
+                                        controller: _chatTextController,
+                                        decoration: InputDecoration(
+                                          filled: true,
+                                          fillColor: Color(0xffF9F9F9),
+                                          contentPadding: const EdgeInsets.only(
+                                            right: 24,
+                                            left: 24,
+                                          ),
+                                          hintText: 'Scrivi..',
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                              Radius.circular(25),
+                                            ),
+                                            borderSide: BorderSide.none,
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                              Radius.circular(25),
+                                            ),
+                                            borderSide: BorderSide.none,
+                                          ),
+                                        ),
+                                        onSubmitted: (value) =>
+                                            _sendMessage(value),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        left: 8,
+                                      ),
+                                      child: IconButton(
+                                        icon: Icon(
+                                          Ionicons.send,
+                                          color: Color(0xff242443),
+                                          size: 18,
+                                        ),
+                                        onPressed: () => _sendMessage(
+                                          _chatTextController.text,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],

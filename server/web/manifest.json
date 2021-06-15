@@ -1,10 +1,10 @@
 {
     "name": "Paperopoli Terminal App",
     "short_name": "Paperopoli Terminal",
-    "start_url": ".",
+    "start_url": "https://paperopoliterminal.ddns.net/app",
     "display": "standalone",
     "background_color": "#FFFFFF",
-    "theme_color": "#F44235",
+    "theme_color": "#242342",
     "description": "Applicaione terminal portuale di Paperopoli",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,

@@ -1,8 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:paperopoli_terminal/core/constants/constants.dart';
@@ -37,14 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
   CategoryModel _selectedCategory = CATEGORIES[0];
   int _inCreatingMode = 0;
   Widget? _createWidget;
-
-  @override
-  void initState() {
-    SchedulerBinding.instance!.addPostFrameCallback((timeStamp) async {
-      print(await FirebaseMessaging.instance.getToken());
-    });
-    super.initState();
-  }
 
   void setCreatingMode(int i) => setState(
         () => _inCreatingMode = i,
@@ -369,64 +359,139 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          PopupMenuButton(
-                            elevation: 48,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            offset: Offset(16, 8),
-                            tooltip: getUser().email,
-                            onSelected: (value) async {
-                              if (value == 0) {
-                                await showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: Text(
-                                      'Logout',
+                          GestureDetector(
+                            onTap: () async {
+                              var _currentUser =
+                                  FirebaseAuth.instance.currentUser!;
+                              await showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(
+                                        context,
+                                        true,
+                                      ),
+                                      child: Text(
+                                        'Logout',
+                                      ),
                                     ),
-                                    content: Text(
-                                      'Vuoi davverro effetuare il logout?',
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(
-                                          context,
-                                          false,
-                                        ),
+                                  ],
+                                  content: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      CircleAvatar(
+                                        minRadius: 30,
+                                        backgroundColor: Color(0xff3A3955),
+                                        foregroundColor: Colors.white,
                                         child: Text(
-                                          'Annulla',
+                                          _currentUser.displayName!
+                                              .substring(0, 1)
+                                              .toUpperCase(),
+                                          style: TextStyle(
+                                            fontSize: 24,
+                                          ),
                                         ),
                                       ),
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(
-                                          context,
-                                          true,
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          top: 24,
+                                          bottom: 8,
                                         ),
                                         child: Text(
-                                          'Logout',
+                                          _currentUser.displayName!,
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
+                                      ),
+                                      Text(
+                                        _currentUser.email!,
+                                        style: TextStyle(
+                                          color: Colors.black54,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 8,
+                                        ),
+                                        child: Divider(),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Registrazione:',
+                                                style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                              Text(
+                                                'Ultimo accesso:',
+                                                style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                _currentUser
+                                                    .metadata.creationTime!
+                                                    .toIso8601String()
+                                                    .substring(
+                                                      0,
+                                                      10,
+                                                    ),
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black54,
+                                                ),
+                                              ),
+                                              Text(
+                                                _currentUser
+                                                    .metadata.lastSignInTime!
+                                                    .toIso8601String()
+                                                    .substring(
+                                                      0,
+                                                      10,
+                                                    ),
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black54,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                ).then(
-                                  (value) async => value
-                                      ? await context
-                                          .read<AuthenticationCubit>()
-                                          .logOut()
-                                      : {},
-                                );
-                              }
-                            },
-                            itemBuilder: (context) => [
-                              PopupMenuItem<int>(
-                                value: 0,
-                                enabled: true,
-                                height: 35,
-                                child: Text(
-                                  'Logout',
                                 ),
-                              ),
-                            ],
+                              ).then(
+                                (value) async => value != null
+                                    ? await context
+                                        .read<AuthenticationCubit>()
+                                        .logOut()
+                                    : {},
+                              );
+                            },
                             child: Container(
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
