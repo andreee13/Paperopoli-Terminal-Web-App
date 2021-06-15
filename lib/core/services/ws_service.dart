@@ -54,12 +54,20 @@ class WsService {
 
   static Future<void> send(
     MessageModel messageModel,
+    ScrollController scrollController,
   ) async {
     try {
       _channel!.sink.add(
         messageModel.toJson(),
       );
       _messages.add(messageModel);
+      await scrollController.animateTo(
+        scrollController.position.maxScrollExtent,
+        duration: const Duration(
+          milliseconds: 200,
+        ),
+        curve: Curves.easeOut,
+      );
     } catch (_) {}
   }
 }

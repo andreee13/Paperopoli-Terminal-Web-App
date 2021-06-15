@@ -290,6 +290,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
           body: text,
           date: DateTime.now(),
         ),
+        _scrollController,
       ).then(
         (value) {
           setState(() {});
