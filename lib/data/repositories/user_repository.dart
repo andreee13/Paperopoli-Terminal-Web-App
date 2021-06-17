@@ -50,7 +50,14 @@ class UserRepository {
     return firebaseAuth.currentUser;
   }
 
-  Future<bool> isSignedIn() async => firebaseAuth.currentUser != null;
+  Future<bool> isSignedIn() async =>
+      firebaseAuth.currentUser != null ||
+      await firebaseAuth.authStateChanges().first != null;
 
-  Future<User?> getUser() async => firebaseAuth.currentUser;
+  Future<User?> getUser() async {
+    if (firebaseAuth.currentUser == null) {
+      return await firebaseAuth.authStateChanges().first;
+    }
+    return firebaseAuth.currentUser;
+  }
 }

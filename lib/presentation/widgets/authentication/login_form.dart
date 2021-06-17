@@ -174,9 +174,12 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                                 ),
                               ),
                             );
-                            await FirebaseAuth.instance.sendPasswordResetEmail(
-                              email: _passwordResetController.text,
-                            );
+                            try {
+                              await FirebaseAuth.instance
+                                  .sendPasswordResetEmail(
+                                email: _passwordResetController.text,
+                              );
+                            } catch (_) {}
                           },
                           child: Text(
                             'Invia',

@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:paperopoli_terminal/data/models/category_model.dart';
+import 'package:paperopoli_terminal/presentation/widgets/views/dashboard_widget.dart';
+
+late final DashboardWidget DASHBOARDWIDGET = DashboardWidget(
+  key: DASHBOARDWIDGET_GLOBALKEY,
+);
+
+final DASHBOARDWIDGET_GLOBALKEY = GlobalKey<DashboardWidgetState>();
+
 
 const String TERMINAL_WS_URL = 'wss://paperopoliterminal.ddns.net/ws/';
 const String TERMINAL_API_URL = 'https://paperopoliterminal.ddns.net/data';
-
-const String OPEN_WEATHER_API_KEY = '3fad3e73d27847a54f8ba8da4f5c8112';
 
 const List<Color> ACCENT_COLORS = [
   Color(0xffF9FEDF),

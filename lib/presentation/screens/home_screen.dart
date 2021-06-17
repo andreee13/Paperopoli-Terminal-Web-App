@@ -18,7 +18,6 @@ import 'package:paperopoli_terminal/presentation/widgets/creation/create_ship_wi
 import 'package:paperopoli_terminal/presentation/widgets/creation/create_trip_widget.dart';
 import 'package:paperopoli_terminal/presentation/widgets/creation/create_vehicle_widget.dart';
 import 'package:paperopoli_terminal/presentation/widgets/views/operations_widget.dart';
-import 'package:paperopoli_terminal/presentation/widgets/views/dashboard_widget.dart';
 import 'package:paperopoli_terminal/presentation/widgets/views/trips_widget.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -32,6 +31,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+ 
   CategoryModel _selectedCategory = CATEGORIES[0];
   int _inCreatingMode = 0;
   Widget? _createWidget;
@@ -167,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildMainWidget() {
     switch (_selectedCategory.primaryName) {
       case 'Dashboard':
-        return DashboardWidget();
+        return DASHBOARDWIDGET;
       case 'Viaggi':
         return TripsWidget();
       case 'Movimentazioni':

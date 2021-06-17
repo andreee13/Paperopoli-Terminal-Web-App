@@ -28,13 +28,13 @@ dependencies:
   flash: ^2.0.0
   date_time_picker: ^2.0.0
   search_choices: ^2.0.3
-  web_socket_channel: ^2.1.0  
+  web_socket_channel: ^2.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^2.0.4
   pedantic: ^1.11.0
-  flutter_native_splash: ^1.1.8+4
 
 flutter:
   uses-material-design: true
@@ -61,8 +61,3 @@ flutter:
           weight: 200 
         - asset: assets/fonts/SFProDisplay-Thin.ttf  
           weight: 100
-
-flutter_native_splash:
-  image: assets/images/icon.png
-  color: "#ffffff"
-  android_disable_fullscreen: true    
