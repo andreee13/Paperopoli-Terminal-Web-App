@@ -19,7 +19,7 @@ class Countup extends StatefulWidget {
   final String prefix;
   final String suffix;
 
-  Countup({
+  const Countup({
     Key? key,
     required this.begin,
     required this.end,
@@ -41,10 +41,10 @@ class Countup extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _CountupState createState() => _CountupState();
+  CountupState createState() => CountupState();
 }
 
-class _CountupState extends State<Countup> with TickerProviderStateMixin {
+class CountupState extends State<Countup> with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
   double? _latestBegin;
@@ -66,10 +66,8 @@ class _CountupState extends State<Countup> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    var curvedAnimation =
-        CurvedAnimation(parent: _controller, curve: widget.curve);
-    _animation = Tween<double>(begin: widget.begin, end: widget.end)
-        .animate(curvedAnimation);
+    var curvedAnimation = CurvedAnimation(parent: _controller, curve: widget.curve);
+    _animation = Tween<double>(begin: widget.begin, end: widget.end).animate(curvedAnimation);
 
     if (widget.begin != _latestBegin || widget.end != _latestEnd) {
       _controller.reset();
@@ -138,13 +136,8 @@ class _CountupAnimatedText extends AnimatedWidget {
   @override
   Widget build(BuildContext context) => Text(
         separator != null
-            ? '$prefix' +
-                animation.value.toStringAsFixed(precision).replaceAllMapped(
-                    reg, (Match match) => '${match[1]}$separator') +
-                '$suffix'
-            : '$prefix' +
-                animation.value.toStringAsFixed(precision) +
-                '$suffix',
+            ? '$prefix${animation.value.toStringAsFixed(precision).replaceAllMapped(reg, (Match match) => '${match[1]}$separator')}$suffix'
+            : '$prefix${animation.value.toStringAsFixed(precision)}$suffix',
         style: style,
         textAlign: textAlign,
         textDirection: textDirection,

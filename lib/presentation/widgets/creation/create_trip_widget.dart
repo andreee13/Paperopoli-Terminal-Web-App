@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:date_time_picker/date_time_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ionicons/ionicons.dart';
@@ -16,11 +15,13 @@ import 'package:paperopoli_terminal/presentation/widgets/loading_indicator.dart'
 import 'package:flash/flash.dart';
 
 class CreateTripWidget extends StatefulWidget {
+  const CreateTripWidget({Key? key}) : super(key: key);
+
   @override
-  _CreateTripWidgetState createState() => _CreateTripWidgetState();
+  CreateTripWidgetState createState() => CreateTripWidgetState();
 }
 
-class _CreateTripWidgetState extends State<CreateTripWidget> {
+class CreateTripWidgetState extends State<CreateTripWidget> {
   late TripModel _tripToCreate;
   List<QuayModel> _quays = [];
   final TextEditingController _idTextController = TextEditingController();
@@ -75,7 +76,7 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
       } catch (e) {
         HomeScreen.of(context)!.setCreatingMode(1);
         await context.showErrorBar(
-          content: Text(
+          content: const Text(
             'Si è verificato un errore',
           ),
         );
@@ -115,14 +116,14 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
         (value) {
           if (value.statusCode == HttpStatus.ok) {
             context.showSuccessBar(
-              content: Text(
+              content: const Text(
                 'Viaggio creato con successo',
               ),
             );
             HomeScreen.of(context)!.setCreatingMode(0);
           } else {
             context.showErrorBar(
-              content: Text(
+              content: const Text(
                 'Si è verificato un errore',
               ),
             );
@@ -131,7 +132,7 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
       );
     } else {
       await context.showErrorBar(
-        content: Text(
+        content: const Text(
           'Inserire almeno le date di arrivo e partenza previste',
         ),
       );
@@ -161,18 +162,18 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
                           padding: const EdgeInsets.all(16),
                           hoverElevation: 0,
                           highlightElevation: 0,
-                          shape: CircleBorder(),
-                          color: Color(0xffF9F9F9),
-                          child: Icon(
+                          shape: const CircleBorder(),
+                          color: const Color(0xffF9F9F9),
+                          child: const Icon(
                             Icons.arrow_back_ios_new,
                             color: Color(0xff333333),
                             size: 24,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 16,
                         ),
-                        Text(
+                        const Text(
                           'Nuovo viaggio',
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
@@ -252,7 +253,7 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
                                         value: e.id,
                                         child: Text(
                                           e.description,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 18,
                                           ),
                                         ),
@@ -281,8 +282,8 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
                                   top: 8,
                                 ),
                                 child: DateTimePicker(
-                                  icon: Padding(
-                                    padding: const EdgeInsets.only(
+                                  icon: const Padding(
+                                    padding: EdgeInsets.only(
                                       top: 8,
                                     ),
                                     child: Icon(
@@ -297,7 +298,7 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
                                       _expectedArrivalDateController.text = s!,
                                   type: DateTimePickerType.dateTime,
                                   controller: _expectedArrivalDateController,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 18,
                                   ),
                                 ),
@@ -323,8 +324,8 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
                                   top: 8,
                                 ),
                                 child: DateTimePicker(
-                                  icon: Padding(
-                                    padding: const EdgeInsets.only(
+                                  icon: const Padding(
+                                    padding: EdgeInsets.only(
                                       top: 8,
                                     ),
                                     child: Icon(
@@ -339,7 +340,7 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
                                   onSaved: (s) =>
                                       _actualArrivalDateController.text = s!,
                                   controller: _actualArrivalDateController,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 18,
                                   ),
                                 ),
@@ -365,8 +366,8 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
                                   top: 8,
                                 ),
                                 child: DateTimePicker(
-                                  icon: Padding(
-                                    padding: const EdgeInsets.only(
+                                  icon: const Padding(
+                                    padding: EdgeInsets.only(
                                       top: 8,
                                     ),
                                     child: Icon(
@@ -382,7 +383,7 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
                                       _expectedDeparturedDateController.text =
                                           s!,
                                   controller: _expectedDeparturedDateController,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 18,
                                   ),
                                 ),
@@ -408,8 +409,8 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
                                   top: 8,
                                 ),
                                 child: DateTimePicker(
-                                  icon: Padding(
-                                    padding: const EdgeInsets.only(
+                                  icon: const Padding(
+                                    padding: EdgeInsets.only(
                                       top: 8,
                                     ),
                                     child: Icon(
@@ -424,7 +425,7 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
                                   controller: _actualDepartureDateController,
                                   onSaved: (s) =>
                                       _actualDepartureDateController.text = s!,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 18,
                                   ),
                                 ),
@@ -449,11 +450,11 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
                                     vertical: 24,
                                   ),
                                   color: Theme.of(context)
-                                      .accentColor
+                                      .colorScheme.secondary
                                       .withOpacity(0.8),
                                   onPressed: () => _createTrip(),
                                   child: Row(
-                                    children: [
+                                    children: const [
                                       Icon(
                                         Ionicons.save_outline,
                                         color: Colors.white,
@@ -480,7 +481,7 @@ class _CreateTripWidgetState extends State<CreateTripWidget> {
                     ),
                   ],
                 )
-              : LoadingIndicator(),
+              : const LoadingIndicator(),
         ),
       );
 }

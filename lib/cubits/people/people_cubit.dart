@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
 import 'package:paperopoli_terminal/core/errors/exceptions.dart';
 import 'package:paperopoli_terminal/data/models/person/person_model.dart';
 import 'package:paperopoli_terminal/data/repositories/people_repository.dart';
@@ -13,7 +13,7 @@ class PeopleCubit extends Cubit<PeopleState> {
   PeopleCubit({
     required this.repository,
   }) : super(
-          PeopleInitial(),
+          const PeopleInitial(),
         );
 
   Future<void> fetch({
@@ -21,7 +21,7 @@ class PeopleCubit extends Cubit<PeopleState> {
   }) async {
     try {
       emit(
-        PeopleLoading(),
+        const PeopleLoading(),
       );
       emit(
         PeopleLoaded(
@@ -30,7 +30,7 @@ class PeopleCubit extends Cubit<PeopleState> {
           ),
         ),
       );
-    } on ServerException catch (e, _) {
+    } on ServerException catch (e) {
       emit(
         PeopleError(e),
       );

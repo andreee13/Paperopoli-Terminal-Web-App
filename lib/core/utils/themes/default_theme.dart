@@ -1,13 +1,14 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 
 final ThemeData DEFAULT_THEME = ThemeData(
   fontFamily: 'SFProDisplay',
-  accentColor: Color(0xff5564E8),
   scaffoldBackgroundColor: Colors.white,
-  iconTheme: IconThemeData(
+  iconTheme: const IconThemeData(
     color: Colors.white,
   ),
-  dialogTheme: DialogTheme(
+  dialogTheme: const DialogTheme(
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.all(
         Radius.circular(
@@ -17,8 +18,11 @@ final ThemeData DEFAULT_THEME = ThemeData(
     ),
   ),
   visualDensity: VisualDensity.comfortable,
-  appBarTheme: AppBarTheme(
+  appBarTheme: const AppBarTheme(
     color: Colors.red,
     elevation: 1,
+  ),
+  colorScheme: ColorScheme.fromSwatch().copyWith(
+    secondary: const Color(0xff5564E8),
   ),
 );

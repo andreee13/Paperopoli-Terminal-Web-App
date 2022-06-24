@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:paperopoli_terminal/cubits/authentication/authentication_cubit.dart';
@@ -6,11 +8,13 @@ import 'package:flash/flash.dart';
 import 'package:paperopoli_terminal/presentation/screens/authentication_screen.dart';
 
 class LoginFormWidget extends StatefulWidget {
+  const LoginFormWidget({Key? key}) : super(key: key);
+
   @override
-  _LoginFormWidgetState createState() => _LoginFormWidgetState();
+  LoginFormWidgetState createState() => LoginFormWidgetState();
 }
 
-class _LoginFormWidgetState extends State<LoginFormWidget> {
+class LoginFormWidgetState extends State<LoginFormWidget> {
   bool _passwordVisible = false;
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
@@ -43,7 +47,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
         ),
         fillColor: Colors.grey.withOpacity(0.1),
         filled: false,
-        hintStyle: TextStyle(
+        hintStyle: const TextStyle(
           color: Colors.black45,
         ),
         hintText: hintText,
@@ -61,7 +65,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                   _passwordVisible = !_passwordVisible;
                 }),
               ),
-        border: UnderlineInputBorder(
+        border: const UnderlineInputBorder(
           borderRadius: BorderRadius.all(
             Radius.circular(7),
           ),
@@ -69,7 +73,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
             color: Colors.grey,
           ),
         ),
-        focusedBorder: UnderlineInputBorder(
+        focusedBorder: const UnderlineInputBorder(
           borderRadius: BorderRadius.all(
             Radius.circular(7),
           ),
@@ -83,7 +87,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Color(0xffD0C0D4).withOpacity(0.3),
+              color: const Color(0xffD0C0D4).withOpacity(0.3),
               blurRadius: 128,
               spreadRadius: 64,
             ),
@@ -98,8 +102,8 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(
+            const Padding(
+              padding: EdgeInsets.only(
                 top: 16,
               ),
               child: Text(
@@ -141,7 +145,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
             Padding(
@@ -154,13 +158,13 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                   onPressed: () => showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: Text(
+                      title: const Text(
                         'Recupero password',
                       ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: Text(
+                          child: const Text(
                             'Annulla',
                           ),
                         ),
@@ -168,37 +172,34 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                           onPressed: () async {
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
+                              const SnackBar(
                                 content: Text(
                                   'Email inviata',
                                 ),
                               ),
                             );
-                            try {
-                              await FirebaseAuth.instance
-                                  .sendPasswordResetEmail(
-                                email: _passwordResetController.text,
-                              );
-                            } catch (_) {}
+                            await FirebaseAuth.instance.sendPasswordResetEmail(
+                              email: _passwordResetController.text,
+                            );
                           },
-                          child: Text(
+                          child: const Text(
                             'Invia',
                           ),
                         ),
                       ],
-                      content: Container(
+                      content: SizedBox(
                         width: MediaQuery.of(context).size.width * 0.16,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
+                            const Text(
                               'Inserisci il tuo indirizzo email per il recupero password.',
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                             ),
                             Container(
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(10),
                                 ),
@@ -217,7 +218,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                       ),
                     ),
                   ),
-                  child: Text(
+                  child: const Text(
                     'Password dimenticata?',
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
@@ -231,17 +232,14 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
             Center(
               child: MaterialButton(
                 onPressed: () async {
-                  await context
-                      .read<AuthenticationCubit>()
-                      .logInWithCredentials(
+                  await context.read<AuthenticationCubit>().logInWithCredentials(
                         email: _emailController.text,
                         password: _passwordController.text,
                       );
                   var state = context.read<AuthenticationCubit>().state;
-                  if (state is AuthenticationNotLogged ||
-                      state is AuthenticationError) {
+                  if (state is AuthenticationNotLogged || state is AuthenticationError) {
                     await context.showErrorBar(
-                      content: Text(
+                      content: const Text(
                         'Email o password errati',
                       ),
                     );
@@ -249,15 +247,15 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                 },
                 minWidth: 320,
                 height: 56,
-                shape: RoundedRectangleBorder(
+                shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(
                     Radius.circular(10),
                   ),
                 ),
-                color: Color(0xff242342).withOpacity(0.7),
+                color: const Color(0xff242342).withOpacity(0.7),
                 elevation: 0,
                 highlightElevation: 0,
-                child: Text(
+                child: const Text(
                   'Accedi',
                   style: TextStyle(
                     color: Colors.white,
@@ -266,16 +264,15 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
             Center(
               child: MaterialButton(
-                onPressed: () =>
-                    AuthenticatonScreen.of(context)!.setFormMode(true),
+                onPressed: () => AuthenticatonScreen.of(context)!.setFormMode(true),
                 minWidth: 320,
                 height: 56,
-                shape: RoundedRectangleBorder(
+                shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(
                     Radius.circular(10),
                   ),
@@ -287,7 +284,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                 child: Text(
                   'Registrati',
                   style: TextStyle(
-                    color: Color(0xff242342).withOpacity(0.7),
+                    color: const Color(0xff242342).withOpacity(0.7),
                     fontSize: 17,
                   ),
                 ),

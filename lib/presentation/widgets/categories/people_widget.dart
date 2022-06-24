@@ -1,16 +1,17 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flash/flash.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:auto_animated/auto_animated.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:paperopoli_terminal/core/services/server_service.dart';
-import 'package:paperopoli_terminal/core/constants/constants.dart';
+import 'package:paperopoli_terminal/core/constants/ui.dart';
 import 'package:paperopoli_terminal/core/utils/packages/flutter-countup/lib/countup.dart';
 import 'package:paperopoli_terminal/core/utils/utils.dart';
 import 'package:paperopoli_terminal/cubits/people/people_cubit.dart';
@@ -21,11 +22,13 @@ import 'package:paperopoli_terminal/presentation/screens/home_screen.dart';
 import '../loading_indicator.dart';
 
 class PeopleWidget extends StatefulWidget {
+  const PeopleWidget({Key? key}) : super(key: key);
+
   @override
-  _PeopleWidgetState createState() => _PeopleWidgetState();
+  PeopleWidgetState createState() => PeopleWidgetState();
 }
 
-class _PeopleWidgetState extends State<PeopleWidget> {
+class PeopleWidgetState extends State<PeopleWidget> {
   late List<PersonModel> _persons;
   final TextEditingController _fullnameTextController = TextEditingController();
   final TextEditingController _cfTextController = TextEditingController();
@@ -36,7 +39,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
   PersonModel? _personToEdit;
   List<String> _types = [];
   List _statusNames = [];
-  var _currentStatusName;
+  dynamic _currentStatusName;
 
   @override
   void initState() {
@@ -80,22 +83,22 @@ class _PeopleWidgetState extends State<PeopleWidget> {
   Widget _personStatusBuilder(int index, setState) =>
       index == _personToEdit!.status.length
           ? ListTile(
-              title: Text(
+              title: const Text(
                 'Nuovo stato',
               ),
-              leading: Icon(
+              leading: const Icon(
                 Icons.add,
               ),
               onTap: () => showDialog(
                 context: context,
                 builder: (ctx) => AlertDialog(
-                  title: Text(
+                  title: const Text(
                     'Nuovo stato',
                   ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text(
+                      child: const Text(
                         'Annulla',
                       ),
                     ),
@@ -109,14 +112,14 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                                 _newStateDateTimeController.text,
                               ),
                               name: _currentStatusName['nome'],
-                              name_id: _currentStatusName['ID'],
+                              nameId: _currentStatusName['ID'],
                               isNew: true,
                               isDeleted: false,
                             ),
                           ),
                         );
                       },
-                      child: Text(
+                      child: const Text(
                         'Salva',
                       ),
                     ),
@@ -126,8 +129,8 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         DateTimePicker(
-                          icon: Padding(
-                            padding: const EdgeInsets.only(
+                          icon: const Padding(
+                            padding: EdgeInsets.only(
                               top: 8,
                             ),
                             child: Icon(
@@ -140,7 +143,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                           type: DateTimePickerType.dateTime,
                           controller: _newStateDateTimeController,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 16,
                         ),
                         DropdownButton<Map<String, dynamic>>(
@@ -168,13 +171,13 @@ class _PeopleWidgetState extends State<PeopleWidget> {
           : _personToEdit!.status[index].isDeleted == false
               ? ListTile(
                   leading: Text(
-                    '${_personToEdit!.status[index].timestamp.toIso8601String().substring(0, 19).replaceAll("T", " ")}',
+                    _personToEdit!.status[index].timestamp.toIso8601String().substring(0, 19).replaceAll("T", " "),
                   ),
                   title: Text(
                     _personToEdit!.status[index].name,
                   ),
                   trailing: IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.delete_outline,
                     ),
                     onPressed: () => setState(
@@ -182,7 +185,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                     ),
                   ),
                 )
-              : SizedBox();
+              : const SizedBox();
 
   Widget _getInfoWidgets(
     int index,
@@ -251,7 +254,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
           ),
         );
       default:
-        return SizedBox();
+        return const SizedBox();
     }
   }
 
@@ -267,7 +270,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
         ).animate(animation),
         child: SlideTransition(
           position: Tween<Offset>(
-            begin: Offset(0, -0.1),
+            begin: const Offset(0, -0.1),
             end: Offset.zero,
           ).animate(animation),
           child: GestureDetector(
@@ -324,7 +327,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                         children: [
                           Text(
                             'Persona #${_persons[index].id}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Color(0xff262539),
                               fontSize: 16,
@@ -335,7 +338,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.more_horiz,
                               color: Color(0xff262539),
                             ),
@@ -348,14 +351,14 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                                       actionsPadding: const EdgeInsets.only(
                                         right: 16,
                                       ),
-                                      title: Text(
+                                      title: const Text(
                                         'Elimina persona',
                                       ),
                                       actions: [
                                         TextButton(
                                           onPressed: () =>
                                               Navigator.pop(context),
-                                          child: Text(
+                                          child: const Text(
                                             'Annulla',
                                           ),
                                         ),
@@ -364,7 +367,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                                             context,
                                             true,
                                           ),
-                                          child: Text(
+                                          child: const Text(
                                             'ELIMINA',
                                             style: TextStyle(
                                               color: Colors.red,
@@ -378,7 +381,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                                                 0.20,
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
-                                          children: [
+                                          children: const [
                                             Text(
                                               'Eliminando la persona non sarà più visibile in questa sezione e tutti gli stati associati saranno rimossi dal sistema.',
                                             ),
@@ -398,7 +401,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                               }
                             },
                             itemBuilder: (context) => [
-                              PopupMenuItem<int>(
+                              const PopupMenuItem<int>(
                                 value: 0,
                                 enabled: true,
                                 height: 40,
@@ -413,14 +416,14 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                       GridView.builder(
                         shrinkWrap: true,
                         itemCount: 8,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                           childAspectRatio: 8,
                           mainAxisSpacing: 0,
                           crossAxisSpacing: 0,
                         ),
-                        itemBuilder: (context, grid_index) => _getInfoWidgets(
-                          grid_index,
+                        itemBuilder: (context, gridIndex) => _getInfoWidgets(
+                          gridIndex,
                           _persons[index],
                         ),
                       ),
@@ -434,7 +437,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
       );
 
   Widget _buildAllPeopleWidget() => Column(
-        key: ValueKey('Column 1'),
+        key: const ValueKey('Column 1'),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
@@ -494,16 +497,16 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                   Countup(
                     begin: 0,
                     end: _persons.length.toDouble(),
-                    duration: Duration(
+                    duration: const Duration(
                       seconds: 1,
                     ),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w700,
                       color: Color(0xff262539),
                       fontSize: 40,
                     ),
                   ),
-                  Text(
+                  const Text(
                     ' Persone',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
@@ -524,9 +527,9 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                     padding: const EdgeInsets.all(16),
                     hoverElevation: 0,
                     highlightElevation: 0,
-                    shape: CircleBorder(),
-                    color: Color(0xffF9F9F9),
-                    child: Icon(
+                    shape: const CircleBorder(),
+                    color: const Color(0xffF9F9F9),
+                    child: const Icon(
                       Icons.refresh,
                       color: Color(0xff333333),
                       size: 26,
@@ -534,7 +537,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                   ),
                   IconButton(
                     onPressed: () {},
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_back_ios,
                       size: 20,
                       color: Color(0xff333333),
@@ -543,7 +546,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                   IconButton(
                     onPressed: () {},
                     padding: EdgeInsets.zero,
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_forward_ios,
                       size: 20,
                       color: Color(0xff333333),
@@ -559,15 +562,15 @@ class _PeopleWidgetState extends State<PeopleWidget> {
             ),
             child: LiveGrid(
               shrinkWrap: true,
-              showItemDuration: Duration(
+              showItemDuration: const Duration(
                 milliseconds: 300,
               ),
-              showItemInterval: Duration(
+              showItemInterval: const Duration(
                 microseconds: 200,
               ),
               itemCount: _persons.length,
               itemBuilder: _personsBuilder,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4,
                 childAspectRatio: 2,
               ),
@@ -577,7 +580,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
       );
 
   Widget _buildPersonToEditWidget() => Column(
-        key: ValueKey('Column 2'),
+        key: const ValueKey('Column 2'),
         children: [
           Row(
             children: [
@@ -589,20 +592,20 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                 padding: const EdgeInsets.all(16),
                 hoverElevation: 0,
                 highlightElevation: 0,
-                shape: CircleBorder(),
-                color: Color(0xffF9F9F9),
-                child: Icon(
+                shape: const CircleBorder(),
+                color: const Color(0xffF9F9F9),
+                child: const Icon(
                   Icons.arrow_back_ios_new,
                   color: Color(0xff333333),
                   size: 24,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 16,
               ),
               Text(
                 'Persona #${_personToEdit!.id}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   color: Color(0xff262539),
                   fontSize: 40,
@@ -632,7 +635,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                 ),
                 Text(
                   _personToEdit!.id.toString(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 18,
                   ),
                 ),
@@ -662,7 +665,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                               value: e,
                               child: Text(
                                 e,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 18,
                                 ),
                               ),
@@ -752,15 +755,15 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
-                              child: Text(
+                              child: const Text(
                                 'Chiudi',
                               ),
                             ),
                           ],
-                          title: Text(
+                          title: const Text(
                             'Stati',
                           ),
-                          content: Container(
+                          content: SizedBox(
                             height: 500,
                             width: 500,
                             child: StatefulBuilder(
@@ -777,7 +780,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                           ),
                         ),
                       ),
-                      child: Text(
+                      child: const Text(
                         'VISUALIZZA',
                         style: TextStyle(
                           fontSize: 16,
@@ -786,7 +789,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                     ),
                   ],
                 ),
-                SizedBox(),
+                const SizedBox(),
                 Row(
                   children: [
                     Padding(
@@ -804,10 +807,10 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                           horizontal: 40,
                           vertical: 24,
                         ),
-                        color: Theme.of(context).accentColor.withOpacity(0.8),
+                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.8),
                         onPressed: () => _editPerson(),
                         child: Row(
-                          children: [
+                          children: const [
                             Icon(
                               Ionicons.save_outline,
                               color: Colors.white,
@@ -840,7 +843,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
         _personToEdit!.status.where((element) => element.isDeleted).length ==
             _personToEdit!.status.length) {
       await context.showErrorBar(
-        content: Text(
+        content: const Text(
           'Inserire almeno uno stato',
         ),
       );
@@ -858,7 +861,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                 ? await _fetch().then(
                     (value) {
                       context.showInfoBar(
-                        content: Text(
+                        content: const Text(
                           'Persona aggiornata con successo',
                         ),
                       );
@@ -868,7 +871,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                     },
                   )
                 : context.showErrorBar(
-                    content: Text(
+                    content: const Text(
                       'Si è verificato un errore',
                     ),
                   ),
@@ -889,13 +892,13 @@ class _PeopleWidgetState extends State<PeopleWidget> {
             (value) async => value.statusCode == HttpStatus.ok
                 ? await _fetch().then(
                     (value) => context.showInfoBar(
-                      content: Text(
+                      content: const Text(
                         'Persona eliminata con successo',
                       ),
                     ),
                   )
                 : context.showErrorBar(
-                    content: Text(
+                    content: const Text(
                       'Si è verificato un errore',
                     ),
                   ),
@@ -915,7 +918,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                   32,
                 ),
                 child: AnimatedSwitcher(
-                  duration: Duration(
+                  duration: const Duration(
                     milliseconds: 500,
                   ),
                   child: _personToEdit == null
@@ -926,7 +929,7 @@ class _PeopleWidgetState extends State<PeopleWidget> {
             );
           } else if (personState is PeopleLoading ||
               personState is PeopleInitial) {
-            return LoadingIndicator();
+            return const LoadingIndicator();
           } else {
             return Center(
               child: Row(
@@ -943,14 +946,14 @@ class _PeopleWidgetState extends State<PeopleWidget> {
                     child: RichText(
                       text: TextSpan(
                         children: [
-                          TextSpan(
+                          const TextSpan(
                             text: 'Si è verificato un errore. ',
                           ),
                           TextSpan(
                             text: 'Riprova',
                             recognizer: TapGestureRecognizer()
                               ..onTap = () => _fetch(),
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.blue,
                             ),
                           ),

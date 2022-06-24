@@ -1,4 +1,6 @@
-import 'package:paperopoli_terminal/core/models/main_model_abstract.dart';
+// ignore_for_file: overridden_fields
+
+import 'package:paperopoli_terminal/core/models/main_model.dart';
 
 class QuayModel extends MainModel {
   @override

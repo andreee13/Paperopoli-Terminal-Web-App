@@ -1,16 +1,17 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flash/flash.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:auto_animated/auto_animated.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:paperopoli_terminal/core/services/server_service.dart';
-import 'package:paperopoli_terminal/core/constants/constants.dart';
+import 'package:paperopoli_terminal/core/constants/ui.dart';
 import 'package:paperopoli_terminal/core/utils/packages/flutter-countup/lib/countup.dart';
 import 'package:paperopoli_terminal/core/utils/utils.dart';
 import 'package:paperopoli_terminal/cubits/goods/goods_cubit.dart';
@@ -21,22 +22,22 @@ import 'package:paperopoli_terminal/presentation/screens/home_screen.dart';
 import '../loading_indicator.dart';
 
 class GoodsWidget extends StatefulWidget {
+  const GoodsWidget({Key? key}) : super(key: key);
+
   @override
-  _GoodsWidgetState createState() => _GoodsWidgetState();
+  GoodsWidgetState createState() => GoodsWidgetState();
 }
 
-class _GoodsWidgetState extends State<GoodsWidget> {
+class GoodsWidgetState extends State<GoodsWidget> {
   late List<GoodModel> _goods;
-  final TextEditingController _descriptionTextController =
-      TextEditingController();
-  final TextEditingController _newStateDateTimeController =
-      TextEditingController();
-  late final TextEditingController _searchTextController =
-      TextEditingController()..addListener(() => setState(() {}));
+  final TextEditingController _descriptionTextController = TextEditingController();
+  final TextEditingController _newStateDateTimeController = TextEditingController();
+  late final TextEditingController _searchTextController = TextEditingController()
+    ..addListener(() => setState(() {}));
   GoodModel? _goodToEdit;
   List<String> _types = [];
   List _statusNames = [];
-  var _currentStatusName;
+  dynamic _currentStatusName;
 
   @override
   void initState() {
@@ -76,112 +77,114 @@ class _GoodsWidgetState extends State<GoodsWidget> {
     );
   }
 
-  Widget _goodStatusBuilder(int index, setState) =>
-      index == _goodToEdit!.status.length
-          ? ListTile(
-              title: Text(
+  Widget _goodStatusBuilder(int index, setState) => index == _goodToEdit!.status.length
+      ? ListTile(
+          title: const Text(
+            'Nuovo stato',
+          ),
+          leading: const Icon(
+            Icons.add,
+          ),
+          onTap: () => showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: const Text(
                 'Nuovo stato',
               ),
-              leading: Icon(
-                Icons.add,
-              ),
-              onTap: () => showDialog(
-                context: context,
-                builder: (ctx) => AlertDialog(
-                  title: Text(
-                    'Nuovo stato',
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text(
+                    'Annulla',
                   ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(
-                        'Annulla',
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        setState(
-                          () => _goodToEdit!.status.add(
-                            GoodStatus(
-                              timestamp: DateTime.parse(
-                                _newStateDateTimeController.text,
-                              ),
-                              name: _currentStatusName['nome'],
-                              name_id: _currentStatusName['ID'],
-                              isNew: true,
-                              isDeleted: false,
-                            ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    setState(
+                      () => _goodToEdit!.status.add(
+                        GoodStatus(
+                          timestamp: DateTime.parse(
+                            _newStateDateTimeController.text,
                           ),
-                        );
-                      },
-                      child: Text(
-                        'Salva',
+                          name: _currentStatusName['nome'],
+                          nameId: _currentStatusName['ID'],
+                          isNew: true,
+                          isDeleted: false,
+                        ),
                       ),
+                    );
+                  },
+                  child: const Text(
+                    'Salva',
+                  ),
+                ),
+              ],
+              content: StatefulBuilder(
+                builder: (ctx, setState1) => Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    DateTimePicker(
+                      icon: const Padding(
+                        padding: EdgeInsets.only(
+                          top: 8,
+                        ),
+                        child: Icon(
+                          Icons.calendar_today,
+                        ),
+                      ),
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2021),
+                      lastDate: DateTime(2050),
+                      type: DateTimePickerType.dateTime,
+                      controller: _newStateDateTimeController,
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    DropdownButton<Map<String, dynamic>>(
+                      value: _currentStatusName,
+                      onChanged: (value) => setState1(
+                        () => _currentStatusName = value,
+                      ),
+                      items: _statusNames
+                          .map(
+                            (e) => DropdownMenuItem<Map<String, dynamic>>(
+                              value: e,
+                              child: Text(
+                                e['nome'],
+                              ),
+                            ),
+                          )
+                          .toList(),
                     ),
                   ],
-                  content: StatefulBuilder(
-                    builder: (ctx, setState1) => Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        DateTimePicker(
-                          icon: Padding(
-                            padding: const EdgeInsets.only(
-                              top: 8,
-                            ),
-                            child: Icon(
-                              Icons.calendar_today,
-                            ),
-                          ),
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(2021),
-                          lastDate: DateTime(2050),
-                          type: DateTimePickerType.dateTime,
-                          controller: _newStateDateTimeController,
-                        ),
-                        SizedBox(
-                          height: 16,
-                        ),
-                        DropdownButton<Map<String, dynamic>>(
-                          value: _currentStatusName,
-                          onChanged: (value) => setState1(
-                            () => _currentStatusName = value,
-                          ),
-                          items: _statusNames
-                              .map(
-                                (e) => DropdownMenuItem<Map<String, dynamic>>(
-                                  value: e,
-                                  child: Text(
-                                    e['nome'],
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ],
-                    ),
-                  ),
+                ),
+              ),
+            ),
+          ),
+        )
+      : _goodToEdit!.status[index].isDeleted == false
+          ? ListTile(
+              leading: Text(
+                _goodToEdit!.status[index].timestamp
+                    .toIso8601String()
+                    .substring(0, 19)
+                    .replaceAll("T", " "),
+              ),
+              title: Text(
+                _goodToEdit!.status[index].name,
+              ),
+              trailing: IconButton(
+                icon: const Icon(
+                  Icons.delete_outline,
+                ),
+                onPressed: () => setState(
+                  () => _goodToEdit!.status[index].isDeleted = true,
                 ),
               ),
             )
-          : _goodToEdit!.status[index].isDeleted == false
-              ? ListTile(
-                  leading: Text(
-                    '${_goodToEdit!.status[index].timestamp.toIso8601String().substring(0, 19).replaceAll("T", " ")}',
-                  ),
-                  title: Text(
-                    _goodToEdit!.status[index].name,
-                  ),
-                  trailing: IconButton(
-                    icon: Icon(
-                      Icons.delete_outline,
-                    ),
-                    onPressed: () => setState(
-                      () => _goodToEdit!.status[index].isDeleted = true,
-                    ),
-                  ),
-                )
-              : SizedBox();
+          : const SizedBox();
 
   Widget _getInfoWidgets(int index, GoodModel good) {
     switch (index) {
@@ -231,7 +234,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
           ),
         );
       default:
-        return SizedBox();
+        return const SizedBox();
     }
   }
 
@@ -247,7 +250,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
         ).animate(animation),
         child: SlideTransition(
           position: Tween<Offset>(
-            begin: Offset(0, -0.1),
+            begin: const Offset(0, -0.1),
             end: Offset.zero,
           ).animate(animation),
           child: GestureDetector(
@@ -300,7 +303,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                         children: [
                           Text(
                             'Merce #${_goods[index].id}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Color(0xff262539),
                               fontSize: 16,
@@ -311,7 +314,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.more_horiz,
                               color: Color(0xff262539),
                             ),
@@ -324,14 +327,13 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                                       actionsPadding: const EdgeInsets.only(
                                         right: 16,
                                       ),
-                                      title: Text(
+                                      title: const Text(
                                         'Elimina merce',
                                       ),
                                       actions: [
                                         TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                          child: Text(
+                                          onPressed: () => Navigator.pop(context),
+                                          child: const Text(
                                             'Annulla',
                                           ),
                                         ),
@@ -340,7 +342,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                                             context,
                                             true,
                                           ),
-                                          child: Text(
+                                          child: const Text(
                                             'ELIMINA',
                                             style: TextStyle(
                                               color: Colors.red,
@@ -349,12 +351,10 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                                         ),
                                       ],
                                       content: SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.20,
+                                        width: MediaQuery.of(context).size.width * 0.20,
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
-                                          children: [
+                                          children: const [
                                             Text(
                                               'Eliminando la merce non sarà più visibile in questa sezione e tutti gli stati associati saranno rimossi dal sistema.',
                                             ),
@@ -374,7 +374,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                               }
                             },
                             itemBuilder: (context) => [
-                              PopupMenuItem<int>(
+                              const PopupMenuItem<int>(
                                 value: 0,
                                 enabled: true,
                                 height: 40,
@@ -389,14 +389,14 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                       GridView.builder(
                         shrinkWrap: true,
                         itemCount: 8,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                           childAspectRatio: 8,
                           mainAxisSpacing: 0,
                           crossAxisSpacing: 0,
                         ),
-                        itemBuilder: (context, grid_index) => _getInfoWidgets(
-                          grid_index,
+                        itemBuilder: (context, gridIndex) => _getInfoWidgets(
+                          gridIndex,
                           _goods[index],
                         ),
                       ),
@@ -410,7 +410,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
       );
 
   Widget _buildAllGoodsWidget() => Column(
-        key: ValueKey('Column 1'),
+        key: const ValueKey('Column 1'),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
@@ -470,16 +470,16 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                   Countup(
                     begin: 0,
                     end: _goods.length.toDouble(),
-                    duration: Duration(
+                    duration: const Duration(
                       seconds: 1,
                     ),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w700,
                       color: Color(0xff262539),
                       fontSize: 40,
                     ),
                   ),
-                  Text(
+                  const Text(
                     ' Merci',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
@@ -500,9 +500,9 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                     padding: const EdgeInsets.all(16),
                     hoverElevation: 0,
                     highlightElevation: 0,
-                    shape: CircleBorder(),
-                    color: Color(0xffF9F9F9),
-                    child: Icon(
+                    shape: const CircleBorder(),
+                    color: const Color(0xffF9F9F9),
+                    child: const Icon(
                       Icons.refresh,
                       color: Color(0xff333333),
                       size: 26,
@@ -510,7 +510,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                   ),
                   IconButton(
                     onPressed: () {},
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_back_ios,
                       size: 20,
                       color: Color(0xff333333),
@@ -519,7 +519,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                   IconButton(
                     onPressed: () {},
                     padding: EdgeInsets.zero,
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_forward_ios,
                       size: 20,
                       color: Color(0xff333333),
@@ -535,15 +535,15 @@ class _GoodsWidgetState extends State<GoodsWidget> {
             ),
             child: LiveGrid(
               shrinkWrap: true,
-              showItemDuration: Duration(
+              showItemDuration: const Duration(
                 milliseconds: 300,
               ),
-              showItemInterval: Duration(
+              showItemInterval: const Duration(
                 microseconds: 200,
               ),
               itemCount: _goods.length,
               itemBuilder: _goodsBuilder,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4,
                 childAspectRatio: 2,
               ),
@@ -553,7 +553,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
       );
 
   Widget _buildGoodToEditWidget() => Column(
-        key: ValueKey('Column 2'),
+        key: const ValueKey('Column 2'),
         children: [
           Row(
             children: [
@@ -565,20 +565,20 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                 padding: const EdgeInsets.all(16),
                 hoverElevation: 0,
                 highlightElevation: 0,
-                shape: CircleBorder(),
-                color: Color(0xffF9F9F9),
-                child: Icon(
+                shape: const CircleBorder(),
+                color: const Color(0xffF9F9F9),
+                child: const Icon(
                   Icons.arrow_back_ios_new,
                   color: Color(0xff333333),
                   size: 24,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 16,
               ),
               Text(
                 'Merce #${_goodToEdit!.id}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   color: Color(0xff262539),
                   fontSize: 40,
@@ -608,7 +608,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                 ),
                 Text(
                   _goodToEdit!.id.toString(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 18,
                   ),
                 ),
@@ -638,7 +638,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                               value: e,
                               child: Text(
                                 e,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 18,
                                 ),
                               ),
@@ -700,15 +700,15 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
-                              child: Text(
+                              child: const Text(
                                 'Chiudi',
                               ),
                             ),
                           ],
-                          title: Text(
+                          title: const Text(
                             'Stati',
                           ),
-                          content: Container(
+                          content: SizedBox(
                             height: 500,
                             width: 500,
                             child: StatefulBuilder(
@@ -724,7 +724,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                           ),
                         ),
                       ),
-                      child: Text(
+                      child: const Text(
                         'VISUALIZZA',
                         style: TextStyle(
                           fontSize: 16,
@@ -733,7 +733,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                     ),
                   ],
                 ),
-                SizedBox(),
+                const SizedBox(),
                 Row(
                   children: [
                     Padding(
@@ -751,10 +751,10 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                           horizontal: 40,
                           vertical: 24,
                         ),
-                        color: Theme.of(context).accentColor.withOpacity(0.8),
+                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.8),
                         onPressed: () => _editGood(),
                         child: Row(
-                          children: [
+                          children: const [
                             Icon(
                               Ionicons.save_outline,
                               color: Colors.white,
@@ -787,7 +787,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
         _goodToEdit!.status.where((element) => element.isDeleted).length ==
             _goodToEdit!.status.length) {
       await context.showErrorBar(
-        content: Text(
+        content: const Text(
           'Inserire almeno uno stato',
         ),
       );
@@ -803,7 +803,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                 ? await _fetch().then(
                     (value) {
                       context.showInfoBar(
-                        content: Text(
+                        content: const Text(
                           'Merce aggiornata con successo',
                         ),
                       );
@@ -813,7 +813,7 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                     },
                   )
                 : context.showErrorBar(
-                    content: Text(
+                    content: const Text(
                       'Si è verificato un errore',
                     ),
                   ),
@@ -834,13 +834,13 @@ class _GoodsWidgetState extends State<GoodsWidget> {
             (value) async => value.statusCode == HttpStatus.ok
                 ? await _fetch().then(
                     (value) => context.showInfoBar(
-                      content: Text(
+                      content: const Text(
                         'Merce eliminata con successo',
                       ),
                     ),
                   )
                 : context.showErrorBar(
-                    content: Text(
+                    content: const Text(
                       'Si è verificato un errore',
                     ),
                   ),
@@ -860,17 +860,15 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                   32,
                 ),
                 child: AnimatedSwitcher(
-                  duration: Duration(
+                  duration: const Duration(
                     milliseconds: 500,
                   ),
-                  child: _goodToEdit == null
-                      ? _buildAllGoodsWidget()
-                      : _buildGoodToEditWidget(),
+                  child: _goodToEdit == null ? _buildAllGoodsWidget() : _buildGoodToEditWidget(),
                 ),
               ),
             );
           } else if (goodState is GoodsLoading || goodState is GoodsInitial) {
-            return LoadingIndicator();
+            return const LoadingIndicator();
           } else {
             return Center(
               child: Row(
@@ -887,14 +885,13 @@ class _GoodsWidgetState extends State<GoodsWidget> {
                     child: RichText(
                       text: TextSpan(
                         children: [
-                          TextSpan(
+                          const TextSpan(
                             text: 'Si è verificato un errore. ',
                           ),
                           TextSpan(
                             text: 'Riprova',
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () => _fetch(),
-                            style: TextStyle(
+                            recognizer: TapGestureRecognizer()..onTap = () => _fetch(),
+                            style: const TextStyle(
                               color: Colors.blue,
                             ),
                           ),

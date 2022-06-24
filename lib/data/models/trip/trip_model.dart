@@ -1,3 +1,5 @@
+// ignore_for_file: hash_and_equals
+
 import 'package:paperopoli_terminal/data/models/operation/operation_model.dart';
 import 'package:paperopoli_terminal/data/models/operation/operation_status.dart';
 import 'package:paperopoli_terminal/data/models/quay/quay_model.dart';
@@ -16,18 +18,6 @@ class TripModel {
     required this.time,
   });
 
-  @override
-  bool operator ==(Object other) => other is TripModel && other.id == id;
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'banchina': quay.id,
-        'arrivo_previsto': time.expectedArrivalTime.toIso8601String(),
-        'arrivo_effettivo': time.actualArrivalTime.toIso8601String(),
-        'partenza_prevista': time.expectedDepartureTime.toIso8601String(),
-        'partenza_effettiva': time.actualDepartureTime.toIso8601String(),
-      };
-
   factory TripModel.deepCopy(TripModel trip) => TripModel(
         operations: [],
         id: trip.id,
@@ -44,39 +34,37 @@ class TripModel {
       );
 
   factory TripModel.fromJson(List json) {
-    var _operations = <OperationModel>[];
+    var operations = <OperationModel>[];
     if (json[0]['ID'] != null) {
-      json.forEach(
-        (e) => _operations.where((element) => e['ID'] == element.id).isEmpty
-            ? _operations.add(
+      for (var e in json) {
+        operations.where((element) => e['ID'] == element.id).isEmpty
+            ? operations.add(
                 OperationModel.fromTripJson(
                   e,
                 ),
               )
-            : {},
-      );
-      _operations.forEach(
-        (op) {
-          op.status.addAll(
-            json.where((element) => element['ID'] == op.id).map(
-                  (e) => OperationStatus(
-                    timestamp: DateTime.parse(e['timestamp']),
-                    name: e['nome_stato'],
-                    isDeleted: false,
-                    isNew: false,
-                  ),
+            : {};
+      }
+      for (var op in operations) {
+        op.status.addAll(
+          json.where((element) => element['ID'] == op.id).map(
+                (e) => OperationStatus(
+                  timestamp: DateTime.parse(e['timestamp']),
+                  name: e['nome_stato'],
+                  isDeleted: false,
+                  isNew: false,
                 ),
-          );
-          op.status.sort(
-            (a, b) => a.timestamp.compareTo(
-              b.timestamp,
-            ),
-          );
-        },
-      );
+              ),
+        );
+        op.status.sort(
+          (a, b) => a.timestamp.compareTo(
+            b.timestamp,
+          ),
+        );
+      }
     }
     return TripModel(
-      operations: _operations,
+      operations: operations,
       id: json[0]['viaggio_id'],
       quay: QuayModel(
         description: json[0]['banchina_descrizione'],
@@ -90,4 +78,16 @@ class TripModel {
       ),
     );
   }
+
+  @override
+  bool operator ==(Object other) => other is TripModel && other.id == id;
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'banchina': quay.id,
+        'arrivo_previsto': time.expectedArrivalTime.toIso8601String(),
+        'arrivo_effettivo': time.actualArrivalTime.toIso8601String(),
+        'partenza_prevista': time.expectedDepartureTime.toIso8601String(),
+        'partenza_effettiva': time.actualDepartureTime.toIso8601String(),
+      };
 }

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flash/flash.dart';
@@ -5,18 +7,19 @@ import 'package:paperopoli_terminal/cubits/authentication/authentication_cubit.d
 import 'package:paperopoli_terminal/presentation/screens/authentication_screen.dart';
 
 class SignUpFormWidget extends StatefulWidget {
+  const SignUpFormWidget({Key? key}) : super(key: key);
+
   @override
-  _SignUpFormWidgetState createState() => _SignUpFormWidgetState();
+  SignUpFormWidgetState createState() => SignUpFormWidgetState();
 }
 
-class _SignUpFormWidgetState extends State<SignUpFormWidget> {
+class SignUpFormWidgetState extends State<SignUpFormWidget> {
   bool _passwordVisible1 = false;
   bool _passwordVisible2 = false;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController1 = TextEditingController();
   final TextEditingController _passwordController2 = TextEditingController();
-  final TextEditingController _passwordResetController =
-      TextEditingController();
+  final TextEditingController _passwordResetController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
 
   @override
@@ -41,7 +44,7 @@ class _SignUpFormWidgetState extends State<SignUpFormWidget> {
         ),
         fillColor: Colors.grey.withOpacity(0.1),
         filled: false,
-        hintStyle: TextStyle(
+        hintStyle: const TextStyle(
           color: Colors.black45,
         ),
         hintText: hintText,
@@ -63,7 +66,7 @@ class _SignUpFormWidgetState extends State<SignUpFormWidget> {
                   }
                 }),
               ),
-        border: UnderlineInputBorder(
+        border: const UnderlineInputBorder(
           borderRadius: BorderRadius.all(
             Radius.circular(7),
           ),
@@ -71,7 +74,7 @@ class _SignUpFormWidgetState extends State<SignUpFormWidget> {
             color: Colors.grey,
           ),
         ),
-        focusedBorder: UnderlineInputBorder(
+        focusedBorder: const UnderlineInputBorder(
           borderRadius: BorderRadius.all(
             Radius.circular(7),
           ),
@@ -85,7 +88,7 @@ class _SignUpFormWidgetState extends State<SignUpFormWidget> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Color(0xffD0C0D4).withOpacity(0.3),
+              color: const Color(0xffD0C0D4).withOpacity(0.3),
               blurRadius: 128,
               spreadRadius: 64,
             ),
@@ -110,18 +113,17 @@ class _SignUpFormWidgetState extends State<SignUpFormWidget> {
                       top: 12,
                     ),
                     child: IconButton(
-                      onPressed: () =>
-                          AuthenticatonScreen.of(context)!.setFormMode(false),
-                      icon: Icon(
+                      onPressed: () => AuthenticatonScreen.of(context)!.setFormMode(false),
+                      icon: const Icon(
                         Icons.arrow_back_ios,
                         color: Color(0xff242342),
                       ),
                     ),
                   ),
                 ),
-                Center(
+                const Center(
                   child: Padding(
-                    padding: const EdgeInsets.only(
+                    padding: EdgeInsets.only(
                       top: 16,
                     ),
                     child: Text(
@@ -199,7 +201,7 @@ class _SignUpFormWidgetState extends State<SignUpFormWidget> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 32,
             ),
             Center(
@@ -209,48 +211,44 @@ class _SignUpFormWidgetState extends State<SignUpFormWidget> {
                     if (_emailController.text.isNotEmpty) {
                       if (_passwordController1.text.isNotEmpty &&
                           _passwordController2.text.isNotEmpty) {
-                        if (_passwordController1.text ==
-                            _passwordController2.text) {
-                          await context
-                              .read<AuthenticationCubit>()
-                              .signUpWithCredentials(
+                        if (_passwordController1.text == _passwordController2.text) {
+                          await context.read<AuthenticationCubit>().signUpWithCredentials(
                                 email: _emailController.text,
                                 password: _passwordController1.text,
                                 fullName: _fullNameController.text,
                               );
                           var state = context.read<AuthenticationCubit>().state;
-                          if (state is AuthenticationNotLogged ||
-                              state is AuthenticationError) {
+                          if (state is AuthenticationNotLogged || state is AuthenticationError) {
                             await context.showErrorBar(
-                              content: Text(
+                              content: const Text(
                                 'Ricontrolla i dati',
                               ),
                             );
                           }
                         } else {
                           await context.showErrorBar(
-                            content: Text(
+                            content: const Text(
                               'Le password devono corrispondere',
                             ),
                           );
                         }
                       } else {
                         await context.showErrorBar(
-                          content: Text(
+                          content: const Text(
                             'Inserire le password richieste',
                           ),
                         );
                       }
                     } else {
                       await context.showErrorBar(
-                        content: Text(
+                        content: const Text(
                           'Inserire l\'indirizzo email',
                         ),
                       );
                     }
                   } else {
                     await context.showErrorBar(
-                      content: Text(
+                      content: const Text(
                         'Inserire il nome completo',
                       ),
                     );
@@ -258,15 +256,15 @@ class _SignUpFormWidgetState extends State<SignUpFormWidget> {
                 },
                 minWidth: 320,
                 height: 56,
-                shape: RoundedRectangleBorder(
+                shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(
                     Radius.circular(10),
                   ),
                 ),
-                color: Color(0xff242342).withOpacity(0.7),
+                color: const Color(0xff242342).withOpacity(0.7),
                 elevation: 0,
                 highlightElevation: 0,
-                child: Text(
+                child: const Text(
                   'Registrati',
                   style: TextStyle(
                     color: Colors.white,
@@ -275,7 +273,7 @@ class _SignUpFormWidgetState extends State<SignUpFormWidget> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
           ],

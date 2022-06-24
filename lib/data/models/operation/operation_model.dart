@@ -1,4 +1,6 @@
-import 'package:paperopoli_terminal/core/models/main_model_abstract.dart';
+// ignore_for_file: overridden_fields
+
+import 'package:paperopoli_terminal/core/models/main_model.dart';
 
 import 'operation_status.dart';
 
@@ -28,8 +30,7 @@ class OperationModel extends MainModel {
     required this.vehicles,
   });
 
-  factory OperationModel.fromTripJson(Map<String, dynamic> json) =>
-      OperationModel(
+  factory OperationModel.fromTripJson(Map<String, dynamic> json) => OperationModel(
         id: json['ID'],
         status: [],
         trip: json['viaggio'],
@@ -43,7 +44,7 @@ class OperationModel extends MainModel {
 
   factory OperationModel.fromJson(List json) {
     var v = <OperationStatus>[];
-    json.forEach((element) {
+    for (var element in json) {
       v.addAll({
         OperationStatus(
           id: element['movimentazione_stato_id'],
@@ -55,7 +56,7 @@ class OperationModel extends MainModel {
           isDeleted: false,
         ),
       });
-    });
+    }
     return OperationModel(
       id: json.first['ID'],
       status: v,

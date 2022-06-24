@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:lottie/lottie.dart';
 
 class LoadingIndicator extends StatelessWidget {
-  const LoadingIndicator();
+  const LoadingIndicator({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => Center(

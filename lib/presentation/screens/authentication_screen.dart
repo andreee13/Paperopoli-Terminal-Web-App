@@ -1,19 +1,19 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:paperopoli_terminal/presentation/widgets/authentication/login_form.dart';
 import 'package:paperopoli_terminal/presentation/widgets/authentication/signup_form.dart';
 
 class AuthenticatonScreen extends StatefulWidget {
-  @override
-  _AuthenticatonScreenState createState() => _AuthenticatonScreenState();
+  const AuthenticatonScreen({Key? key}) : super(key: key);
 
-  static _AuthenticatonScreenState? of(BuildContext context) =>
-      context.findAncestorStateOfType<_AuthenticatonScreenState>();
+  @override
+  AuthenticatonScreenState createState() => AuthenticatonScreenState();
+
+  static AuthenticatonScreenState? of(BuildContext context) =>
+      context.findAncestorStateOfType<AuthenticatonScreenState>();
 }
 
-class _AuthenticatonScreenState extends State<AuthenticatonScreen>
+class AuthenticatonScreenState extends State<AuthenticatonScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -36,7 +36,7 @@ class _AuthenticatonScreenState extends State<AuthenticatonScreen>
       end: 1,
     ).animate(_controller);
     Future.delayed(
-      Duration(
+      const Duration(
         seconds: 1,
       ),
       () {
@@ -56,14 +56,14 @@ class _AuthenticatonScreenState extends State<AuthenticatonScreen>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: Color(0xffFDFCFD),
+        backgroundColor: const Color(0xffFDFCFD),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.transparent,
           elevation: 0,
           hoverElevation: 0,
           highlightElevation: 0,
           onPressed: () {},
-          child: Icon(
+          child: const Icon(
             Icons.help_outline_outlined,
             color: Colors.black,
           ),
@@ -73,7 +73,7 @@ class _AuthenticatonScreenState extends State<AuthenticatonScreen>
             FadeTransition(
               opacity: _animation,
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage(
                       'assets/images/landing.png',
@@ -83,10 +83,10 @@ class _AuthenticatonScreenState extends State<AuthenticatonScreen>
                 ),
               ),
             ),
-            Align(
+            const Align(
               alignment: Alignment.bottomLeft,
               child: Padding(
-                padding: const EdgeInsets.only(
+                padding: EdgeInsets.only(
                   left: 16,
                   bottom: 16,
                 ),
@@ -107,24 +107,22 @@ class _AuthenticatonScreenState extends State<AuthenticatonScreen>
                     Image.asset(
                       'assets/images/ship_icon.png',
                       width: 170,
-                      color: Color(0xff5564E8).withOpacity(0.7),
+                      color: const Color(0xff5564E8).withOpacity(0.7),
                     ),
                     Text(
                       'Paperopoli Terminal',
                       style: GoogleFonts.nunito(
                         fontSize: 56,
-                        color: Color(0xff242342),
+                        color: const Color(0xff242342),
                         fontWeight: FontWeight.w900,
                       ),
                     ),
                     Container(
                       width: 380,
-                      margin: EdgeInsets.only(
+                      margin: const EdgeInsets.only(
                         top: 80,
                       ),
-                      child: _inSignupMode
-                          ? SignUpFormWidget()
-                          : LoginFormWidget(),
+                      child: _inSignupMode ? const SignUpFormWidget() : const LoginFormWidget(),
                     ),
                   ],
                 ),

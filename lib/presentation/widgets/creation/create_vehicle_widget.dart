@@ -1,8 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:date_time_picker/date_time_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ionicons/ionicons.dart';
@@ -15,15 +16,17 @@ import 'package:paperopoli_terminal/presentation/widgets/loading_indicator.dart'
 import 'package:flash/flash.dart';
 
 class CreateVehicleWidget extends StatefulWidget {
+  const CreateVehicleWidget({Key? key}) : super(key: key);
+
   @override
-  _CreateVehicleWidgetState createState() => _CreateVehicleWidgetState();
+  CreateVehicleWidgetState createState() => CreateVehicleWidgetState();
 }
 
-class _CreateVehicleWidgetState extends State<CreateVehicleWidget> {
+class CreateVehicleWidgetState extends State<CreateVehicleWidget> {
   late final VehicleModel _vehicleToCreate;
   List<String> _types = [];
   List _statusNames = [];
-  var _currentStatusName;
+  dynamic _currentStatusName;
   final TextEditingController _idTextController = TextEditingController();
   final TextEditingController _descriptionTextController =
       TextEditingController();
@@ -66,7 +69,7 @@ class _CreateVehicleWidgetState extends State<CreateVehicleWidget> {
       } catch (e) {
         HomeScreen.of(context)!.setCreatingMode(1);
         await context.showErrorBar(
-          content: Text(
+          content: const Text(
             'Si è verificato un errore',
           ),
         );
@@ -77,22 +80,22 @@ class _CreateVehicleWidgetState extends State<CreateVehicleWidget> {
   Widget _vehicleStatusBuilder(int index, setState) =>
       index == _vehicleToCreate.status.length
           ? ListTile(
-              title: Text(
+              title: const Text(
                 'Nuovo stato',
               ),
-              leading: Icon(
+              leading: const Icon(
                 Icons.add,
               ),
               onTap: () => showDialog(
                 context: context,
                 builder: (ctx) => AlertDialog(
-                  title: Text(
+                  title: const Text(
                     'Nuovo stato',
                   ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text(
+                      child: const Text(
                         'Annulla',
                       ),
                     ),
@@ -106,14 +109,14 @@ class _CreateVehicleWidgetState extends State<CreateVehicleWidget> {
                                 _newStateDateTimeController.text,
                               ),
                               name: _currentStatusName['nome'],
-                              name_id: _currentStatusName['ID'],
+                              nameId: _currentStatusName['ID'],
                               isNew: true,
                               isDeleted: false,
                             ),
                           ),
                         );
                       },
-                      child: Text(
+                      child: const Text(
                         'Salva',
                       ),
                     ),
@@ -123,8 +126,8 @@ class _CreateVehicleWidgetState extends State<CreateVehicleWidget> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         DateTimePicker(
-                          icon: Padding(
-                            padding: const EdgeInsets.only(
+                          icon: const Padding(
+                            padding: EdgeInsets.only(
                               top: 8,
                             ),
                             child: Icon(
@@ -137,7 +140,7 @@ class _CreateVehicleWidgetState extends State<CreateVehicleWidget> {
                           type: DateTimePickerType.dateTime,
                           controller: _newStateDateTimeController,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 16,
                         ),
                         DropdownButton<Map<String, dynamic>>(
@@ -164,13 +167,13 @@ class _CreateVehicleWidgetState extends State<CreateVehicleWidget> {
             )
           : ListTile(
               leading: Text(
-                '${_vehicleToCreate.status[index].timestamp.toIso8601String().substring(0, 19).replaceAll("T", " ")}',
+                _vehicleToCreate.status[index].timestamp.toIso8601String().substring(0, 19).replaceAll("T", " "),
               ),
               title: Text(
                 _vehicleToCreate.status[index].name,
               ),
               trailing: IconButton(
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.delete_outline,
                   ),
                   onPressed: () => setState(
@@ -181,7 +184,7 @@ class _CreateVehicleWidgetState extends State<CreateVehicleWidget> {
   Future _createVehicle() async {
     if (_vehicleToCreate.status.isEmpty) {
       await context.showErrorBar(
-        content: Text(
+        content: const Text(
           'Inserire almeno uno stato',
         ),
       );
@@ -202,14 +205,14 @@ class _CreateVehicleWidgetState extends State<CreateVehicleWidget> {
         (value) {
           if (value.statusCode == HttpStatus.ok) {
             context.showSuccessBar(
-              content: Text(
+              content: const Text(
                 'Veicolo creato con successo',
               ),
             );
             HomeScreen.of(context)!.setCreatingMode(0);
           } else {
             context.showErrorBar(
-              content: Text(
+              content: const Text(
                 'Si è verificato un errore',
               ),
             );
@@ -242,18 +245,18 @@ class _CreateVehicleWidgetState extends State<CreateVehicleWidget> {
                           padding: const EdgeInsets.all(16),
                           hoverElevation: 0,
                           highlightElevation: 0,
-                          shape: CircleBorder(),
-                          color: Color(0xffF9F9F9),
-                          child: Icon(
+                          shape: const CircleBorder(),
+                          color: const Color(0xffF9F9F9),
+                          child: const Icon(
                             Icons.arrow_back_ios_new,
                             color: Color(0xff333333),
                             size: 24,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 16,
                         ),
-                        Text(
+                        const Text(
                           'Nuovo veicolo',
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
@@ -333,7 +336,7 @@ class _CreateVehicleWidgetState extends State<CreateVehicleWidget> {
                                         value: e,
                                         child: Text(
                                           e,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 18,
                                           ),
                                         ),
@@ -395,15 +398,15 @@ class _CreateVehicleWidgetState extends State<CreateVehicleWidget> {
                                     actions: [
                                       TextButton(
                                         onPressed: () => Navigator.pop(context),
-                                        child: Text(
+                                        child: const Text(
                                           'Chiudi',
                                         ),
                                       ),
                                     ],
-                                    title: Text(
+                                    title: const Text(
                                       'Stati',
                                     ),
-                                    content: Container(
+                                    content: SizedBox(
                                       height: 500,
                                       width: 500,
                                       child: StatefulBuilder(
@@ -423,7 +426,7 @@ class _CreateVehicleWidgetState extends State<CreateVehicleWidget> {
                                     ),
                                   ),
                                 ),
-                                child: Text(
+                                child: const Text(
                                   'VISUALIZZA',
                                   style: TextStyle(
                                     fontSize: 16,
@@ -432,7 +435,7 @@ class _CreateVehicleWidgetState extends State<CreateVehicleWidget> {
                               ),
                             ],
                           ),
-                          SizedBox(),
+                          const SizedBox(),
                           Row(
                             children: [
                               Padding(
@@ -451,11 +454,11 @@ class _CreateVehicleWidgetState extends State<CreateVehicleWidget> {
                                     vertical: 24,
                                   ),
                                   color: Theme.of(context)
-                                      .accentColor
+                                      .colorScheme.secondary
                                       .withOpacity(0.8),
                                   onPressed: () => _createVehicle(),
                                   child: Row(
-                                    children: [
+                                    children: const [
                                       Icon(
                                         Ionicons.save_outline,
                                         color: Colors.white,
@@ -482,7 +485,7 @@ class _CreateVehicleWidgetState extends State<CreateVehicleWidget> {
                     ),
                   ],
                 )
-              : LoadingIndicator(),
+              : const LoadingIndicator(),
         ),
       );
 }

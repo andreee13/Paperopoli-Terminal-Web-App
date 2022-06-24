@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 
 dynamic customEncoder(dynamic item) {
@@ -13,30 +15,30 @@ void printWrapped(String text) {
 }
 
 InputDecoration getDefaultInputDecoration(
-    String hintText,
-  ) =>
-      InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
+  String hintText,
+) =>
+    InputDecoration(
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 16,
+      ),
+      fillColor: Colors.grey.withOpacity(0.1),
+      filled: false,
+      hintStyle: const TextStyle(
+        color: Colors.black45,
+      ),
+      hintText: hintText,
+      border: const UnderlineInputBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(7),
         ),
-        fillColor: Colors.grey.withOpacity(0.1),
-        filled: false,
-        hintStyle: TextStyle(
-          color: Colors.black45,
+        borderSide: BorderSide(
+          color: Colors.grey,
         ),
-        hintText: hintText,
-        border: UnderlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(7),
-          ),
-          borderSide: BorderSide(
-            color: Colors.grey,
-          ),
+      ),
+      focusedBorder: const UnderlineInputBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(7),
         ),
-        focusedBorder: UnderlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(7),
-          ),
-        ),
-      );
+      ),
+    );

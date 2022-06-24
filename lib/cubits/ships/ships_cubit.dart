@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
 import 'package:paperopoli_terminal/core/errors/exceptions.dart';
 import 'package:paperopoli_terminal/data/models/ship/ship_model.dart';
 import 'package:paperopoli_terminal/data/repositories/ships_repository.dart';
@@ -13,7 +13,7 @@ class ShipsCubit extends Cubit<ShipsState> {
   ShipsCubit({
     required this.repository,
   }) : super(
-          ShipsInitial(),
+          const ShipsInitial(),
         );
 
   Future<void> fetch({
@@ -21,7 +21,7 @@ class ShipsCubit extends Cubit<ShipsState> {
   }) async {
     try {
       emit(
-        ShipsLoading(),
+        const ShipsLoading(),
       );
       emit(
         ShipsLoaded(
@@ -30,7 +30,7 @@ class ShipsCubit extends Cubit<ShipsState> {
           ),
         ),
       );
-    } on ServerException catch (e, _) {
+    } on ServerException catch (e) {
       emit(
         ShipsError(e),
       );

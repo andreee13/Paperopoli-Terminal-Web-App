@@ -1,17 +1,18 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flash/flash.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:auto_animated/auto_animated.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:paperopoli_terminal/core/models/main_model_abstract.dart';
+import 'package:paperopoli_terminal/core/models/main_model.dart';
 import 'package:paperopoli_terminal/core/services/server_service.dart';
-import 'package:paperopoli_terminal/core/constants/constants.dart';
+import 'package:paperopoli_terminal/core/constants/ui.dart';
 import 'package:paperopoli_terminal/core/utils/packages/flutter-countup/lib/countup.dart';
 import 'package:paperopoli_terminal/core/utils/utils.dart';
 import 'package:paperopoli_terminal/cubits/operations/operations_cubit.dart';
@@ -34,18 +35,18 @@ import 'package:search_choices/search_choices.dart';
 import '../loading_indicator.dart';
 
 class OperationsWidget extends StatefulWidget {
+  const OperationsWidget({Key? key}) : super(key: key);
+
   @override
-  _OperationsWidgetState createState() => _OperationsWidgetState();
+  OperationsWidgetState createState() => OperationsWidgetState();
 }
 
-class _OperationsWidgetState extends State<OperationsWidget> {
+class OperationsWidgetState extends State<OperationsWidget> {
   late List<OperationModel> _operations;
-  final TextEditingController _descriptionTextController =
-      TextEditingController();
-  late final TextEditingController _searchTextController =
-      TextEditingController()..addListener(() => setState(() {}));
-  final TextEditingController _newStateDateTimeController =
-      TextEditingController();
+  final TextEditingController _descriptionTextController = TextEditingController();
+  late final TextEditingController _searchTextController = TextEditingController()
+    ..addListener(() => setState(() {}));
+  final TextEditingController _newStateDateTimeController = TextEditingController();
   OperationModel? _operationToEdit;
   List<String> _types = [];
   List _statusNames = [];
@@ -54,7 +55,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
   List<PersonModel> _peopleAll = [];
   List<VehicleModel> _vehiclesAll = [];
   List<TripModel> _tripsAll = [];
-  var _currentStatusName;
+  dynamic _currentStatusName;
   MainModel? _currentNewItem;
 
   @override
@@ -116,22 +117,22 @@ class _OperationsWidgetState extends State<OperationsWidget> {
   ) =>
       index == _operationToEdit!.status.length
           ? ListTile(
-              title: Text(
+              title: const Text(
                 'Nuovo stato',
               ),
-              leading: Icon(
+              leading: const Icon(
                 Icons.add,
               ),
               onTap: () => showDialog(
                 context: context,
                 builder: (ctx) => AlertDialog(
-                  title: Text(
+                  title: const Text(
                     'Nuovo stato',
                   ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text(
+                      child: const Text(
                         'Annulla',
                       ),
                     ),
@@ -145,14 +146,14 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                                 _newStateDateTimeController.text,
                               ),
                               name: _currentStatusName['nome'],
-                              name_id: _currentStatusName['ID'],
+                              nameId: _currentStatusName['ID'],
                               isNew: true,
                               isDeleted: false,
                             ),
                           ),
                         );
                       },
-                      child: Text(
+                      child: const Text(
                         'Salva',
                       ),
                     ),
@@ -162,8 +163,8 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         DateTimePicker(
-                          icon: Padding(
-                            padding: const EdgeInsets.only(
+                          icon: const Padding(
+                            padding: EdgeInsets.only(
                               top: 8,
                             ),
                             child: Icon(
@@ -176,7 +177,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                           type: DateTimePickerType.dateTime,
                           controller: _newStateDateTimeController,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 16,
                         ),
                         DropdownButton<Map<String, dynamic>>(
@@ -204,13 +205,16 @@ class _OperationsWidgetState extends State<OperationsWidget> {
           : _operationToEdit!.status[index].isDeleted == false
               ? ListTile(
                   leading: Text(
-                    '${_operationToEdit!.status[index].timestamp.toIso8601String().substring(0, 19).replaceAll("T", " ")}',
+                    _operationToEdit!.status[index].timestamp
+                        .toIso8601String()
+                        .substring(0, 19)
+                        .replaceAll("T", " "),
                   ),
                   title: Text(
                     _operationToEdit!.status[index].name,
                   ),
                   trailing: IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.delete_outline,
                     ),
                     onPressed: () => setState(
@@ -218,7 +222,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                     ),
                   ),
                 )
-              : SizedBox();
+              : const SizedBox();
 
   Widget _operationItemsBuilder(
     int index,
@@ -234,10 +238,10 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                   )
                   .isNotEmpty
               ? ListTile(
-                  title: Text(
+                  title: const Text(
                     'Aggiungi',
                   ),
-                  leading: Icon(
+                  leading: const Icon(
                     Icons.add,
                   ),
                   onTap: () {
@@ -245,13 +249,13 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                     showDialog(
                       context: context,
                       builder: (ctx) => AlertDialog(
-                        title: Text(
+                        title: const Text(
                           'Aggiungi',
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context),
-                            child: Text(
+                            child: const Text(
                               'Annulla',
                             ),
                           ),
@@ -259,12 +263,11 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                             onPressed: () {
                               Navigator.pop(context);
                               setState(
-                                () => _currentNewItem != null
-                                    ? items.add(_currentNewItem!.id!)
-                                    : {},
+                                () =>
+                                    _currentNewItem != null ? items.add(_currentNewItem!.id!) : {},
                               );
                             },
-                            child: Text(
+                            child: const Text(
                               'Salva',
                             ),
                           ),
@@ -289,31 +292,27 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                                 }),
                                 closeButton: 'Chiudi',
                                 isExpanded: true,
-                                searchFn: (String keyword,
-                                    List<DropdownMenuItem<MainModel>> items) {
+                                searchFn:
+                                    (String keyword, List<DropdownMenuItem<MainModel>> items) {
                                   var v = items
                                       .where(
                                         (element) =>
-                                            element.value!.id
-                                                .toString()
-                                                .contains(
+                                            element.value!.id.toString().contains(
                                                   keyword,
                                                 ) ||
-                                            element.value!.description
-                                                .toLowerCase()
-                                                .contains(
+                                            element.value!.description.toLowerCase().contains(
                                                   keyword.toLowerCase(),
                                                 ),
                                       )
                                       .toList();
                                   var t = <int>[];
-                                  v.forEach((element) {
+                                  for (var element in v) {
                                     t.add(
                                       items.indexOf(
                                         element,
                                       ),
                                     );
-                                  });
+                                  }
                                   return t;
                                 },
                                 items: allItems
@@ -329,7 +328,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                                           ),
                                           title: Text(
                                             '${category.secondaryName} #${e.id}',
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               fontSize: 16,
                                             ),
                                           ),
@@ -348,7 +347,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                     );
                   },
                 )
-              : SizedBox()
+              : const SizedBox()
           : ListTile(
               leading: Icon(
                 category.mainIcon,
@@ -357,7 +356,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                 '${category.secondaryName} #${items[index]}',
               ),
               trailing: IconButton(
-                icon: Icon(
+                icon: const Icon(
                   Icons.delete_outline,
                 ),
                 onPressed: () => setState(
@@ -434,7 +433,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
           ),
         );
       default:
-        return SizedBox();
+        return const SizedBox();
     }
   }
 
@@ -450,7 +449,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
         ).animate(animation),
         child: SlideTransition(
           position: Tween<Offset>(
-            begin: Offset(0, -0.1),
+            begin: const Offset(0, -0.1),
             end: Offset.zero,
           ).animate(animation),
           child: GestureDetector(
@@ -486,12 +485,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                         _operations[index].type.toLowerCase().contains(
                               _searchTextController.text.toLowerCase(),
                             ) ||
-                        _operations[index]
-                            .status
-                            .last
-                            .name
-                            .toLowerCase()
-                            .contains(
+                        _operations[index].status.last.name.toLowerCase().contains(
                               _searchTextController.text.toLowerCase(),
                             ) ||
                         _operations[index].trip.toString().contains(
@@ -511,7 +505,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                         children: [
                           Text(
                             'Movimentazione #${_operations[index].id}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Color(0xff262539),
                               fontSize: 16,
@@ -522,7 +516,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.more_horiz,
                               color: Color(0xff262539),
                             ),
@@ -535,14 +529,13 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                                       actionsPadding: const EdgeInsets.only(
                                         right: 16,
                                       ),
-                                      title: Text(
+                                      title: const Text(
                                         'Elimina movimentazione',
                                       ),
                                       actions: [
                                         TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                          child: Text(
+                                          onPressed: () => Navigator.pop(context),
+                                          child: const Text(
                                             'Annulla',
                                           ),
                                         ),
@@ -551,7 +544,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                                             context,
                                             true,
                                           ),
-                                          child: Text(
+                                          child: const Text(
                                             'ELIMINA',
                                             style: TextStyle(
                                               color: Colors.red,
@@ -560,12 +553,10 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                                         ),
                                       ],
                                       content: SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.20,
+                                        width: MediaQuery.of(context).size.width * 0.20,
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
-                                          children: [
+                                          children: const [
                                             Text(
                                               'Eliminando la movimentazione non sarà più visibile in questa sezione e tutti gli stati associati saranno rimossi dal sistema.',
                                             ),
@@ -585,7 +576,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                               }
                             },
                             itemBuilder: (context) => [
-                              PopupMenuItem<int>(
+                              const PopupMenuItem<int>(
                                 value: 0,
                                 enabled: true,
                                 height: 40,
@@ -600,14 +591,14 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                       GridView.builder(
                         shrinkWrap: true,
                         itemCount: 8,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                           childAspectRatio: 8,
                           mainAxisSpacing: 0,
                           crossAxisSpacing: 0,
                         ),
-                        itemBuilder: (context, grid_index) => _getInfoWidgets(
-                          grid_index,
+                        itemBuilder: (context, gridIndex) => _getInfoWidgets(
+                          gridIndex,
                           _operations[index],
                         ),
                       ),
@@ -621,7 +612,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
       );
 
   Widget _buildAllOperationsWidget() => Column(
-        key: ValueKey('Column 1'),
+        key: const ValueKey('Column 1'),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
@@ -681,16 +672,16 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                   Countup(
                     begin: 0,
                     end: _operations.length.toDouble(),
-                    duration: Duration(
+                    duration: const Duration(
                       seconds: 1,
                     ),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w700,
                       color: Color(0xff262539),
                       fontSize: 40,
                     ),
                   ),
-                  Text(
+                  const Text(
                     ' Movimentazioni',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
@@ -711,9 +702,9 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                     padding: const EdgeInsets.all(16),
                     hoverElevation: 0,
                     highlightElevation: 0,
-                    shape: CircleBorder(),
-                    color: Color(0xffF9F9F9),
-                    child: Icon(
+                    shape: const CircleBorder(),
+                    color: const Color(0xffF9F9F9),
+                    child: const Icon(
                       Icons.refresh,
                       color: Color(0xff333333),
                       size: 26,
@@ -721,7 +712,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                   ),
                   IconButton(
                     onPressed: () {},
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_back_ios,
                       size: 20,
                       color: Color(0xff333333),
@@ -730,7 +721,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                   IconButton(
                     onPressed: () {},
                     padding: EdgeInsets.zero,
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_forward_ios,
                       size: 20,
                       color: Color(0xff333333),
@@ -746,15 +737,15 @@ class _OperationsWidgetState extends State<OperationsWidget> {
             ),
             child: LiveGrid(
               shrinkWrap: true,
-              showItemDuration: Duration(
+              showItemDuration: const Duration(
                 milliseconds: 300,
               ),
-              showItemInterval: Duration(
+              showItemInterval: const Duration(
                 microseconds: 200,
               ),
               itemCount: _operations.length,
               itemBuilder: _operationsBuilder,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4,
                 childAspectRatio: 2,
               ),
@@ -764,7 +755,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
       );
 
   Widget _buildOperationToEditWidget() => Column(
-        key: ValueKey('Column 2'),
+        key: const ValueKey('Column 2'),
         children: [
           Row(
             children: [
@@ -776,20 +767,20 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                 padding: const EdgeInsets.all(16),
                 hoverElevation: 0,
                 highlightElevation: 0,
-                shape: CircleBorder(),
-                color: Color(0xffF9F9F9),
-                child: Icon(
+                shape: const CircleBorder(),
+                color: const Color(0xffF9F9F9),
+                child: const Icon(
                   Icons.arrow_back_ios_new,
                   color: Color(0xff333333),
                   size: 24,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 16,
               ),
               Text(
                 'Movimentazione #${_operationToEdit!.id}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   color: Color(0xff262539),
                   fontSize: 40,
@@ -819,7 +810,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                 ),
                 Text(
                   _operationToEdit!.id.toString(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 18,
                   ),
                 ),
@@ -849,7 +840,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                               value: e,
                               child: Text(
                                 e,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 18,
                                 ),
                               ),
@@ -886,7 +877,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                               value: e.id,
                               child: Text(
                                 e.id.toString(),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 18,
                                 ),
                               ),
@@ -948,23 +939,22 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
-                              child: Text(
+                              child: const Text(
                                 'Chiudi',
                               ),
                             ),
                           ],
-                          title: Text(
+                          title: const Text(
                             'Navi',
                           ),
-                          content: Container(
+                          content: SizedBox(
                             height: 500,
                             width: 500,
                             child: StatefulBuilder(
                               builder: (context, setState) => ListView.builder(
                                 shrinkWrap: true,
                                 itemCount: _operationToEdit!.ships.length + 1,
-                                itemBuilder: (ctx, index) =>
-                                    _operationItemsBuilder(
+                                itemBuilder: (ctx, index) => _operationItemsBuilder(
                                   index,
                                   setState,
                                   _operationToEdit!.ships,
@@ -976,7 +966,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                           ),
                         ),
                       ),
-                      child: Text(
+                      child: const Text(
                         'VISUALIZZA',
                         style: TextStyle(
                           fontSize: 16,
@@ -1010,23 +1000,22 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
-                              child: Text(
+                              child: const Text(
                                 'Chiudi',
                               ),
                             ),
                           ],
-                          title: Text(
+                          title: const Text(
                             'Merci',
                           ),
-                          content: Container(
+                          content: SizedBox(
                             height: 500,
                             width: 500,
                             child: StatefulBuilder(
                               builder: (context, setState) => ListView.builder(
                                 shrinkWrap: true,
                                 itemCount: _operationToEdit!.goods.length + 1,
-                                itemBuilder: (ctx, index) =>
-                                    _operationItemsBuilder(
+                                itemBuilder: (ctx, index) => _operationItemsBuilder(
                                   index,
                                   setState,
                                   _operationToEdit!.goods,
@@ -1038,7 +1027,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                           ),
                         ),
                       ),
-                      child: Text(
+                      child: const Text(
                         'VISUALIZZA',
                         style: TextStyle(
                           fontSize: 16,
@@ -1072,23 +1061,22 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
-                              child: Text(
+                              child: const Text(
                                 'Chiudi',
                               ),
                             ),
                           ],
-                          title: Text(
+                          title: const Text(
                             'Persone',
                           ),
-                          content: Container(
+                          content: SizedBox(
                             height: 500,
                             width: 500,
                             child: StatefulBuilder(
                               builder: (context, setState) => ListView.builder(
                                 shrinkWrap: true,
                                 itemCount: _operationToEdit!.people.length + 1,
-                                itemBuilder: (ctx, index) =>
-                                    _operationItemsBuilder(
+                                itemBuilder: (ctx, index) => _operationItemsBuilder(
                                   index,
                                   setState,
                                   _operationToEdit!.people,
@@ -1100,7 +1088,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                           ),
                         ),
                       ),
-                      child: Text(
+                      child: const Text(
                         'VISUALIZZA',
                         style: TextStyle(
                           fontSize: 16,
@@ -1134,24 +1122,22 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
-                              child: Text(
+                              child: const Text(
                                 'Chiudi',
                               ),
                             ),
                           ],
-                          title: Text(
+                          title: const Text(
                             'Veicoli',
                           ),
-                          content: Container(
+                          content: SizedBox(
                             height: 500,
                             width: 500,
                             child: StatefulBuilder(
                               builder: (context, setState) => ListView.builder(
                                 shrinkWrap: true,
-                                itemCount:
-                                    _operationToEdit!.vehicles.length + 1,
-                                itemBuilder: (ctx, index) =>
-                                    _operationItemsBuilder(
+                                itemCount: _operationToEdit!.vehicles.length + 1,
+                                itemBuilder: (ctx, index) => _operationItemsBuilder(
                                   index,
                                   setState,
                                   _operationToEdit!.vehicles,
@@ -1163,7 +1149,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                           ),
                         ),
                       ),
-                      child: Text(
+                      child: const Text(
                         'VISUALIZZA',
                         style: TextStyle(
                           fontSize: 16,
@@ -1197,23 +1183,22 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
-                              child: Text(
+                              child: const Text(
                                 'Chiudi',
                               ),
                             ),
                           ],
-                          title: Text(
+                          title: const Text(
                             'Stati',
                           ),
-                          content: Container(
+                          content: SizedBox(
                             height: 500,
                             width: 500,
                             child: StatefulBuilder(
                               builder: (context, setState) => ListView.builder(
                                 shrinkWrap: true,
                                 itemCount: _operationToEdit!.status.length + 1,
-                                itemBuilder: (ctx, index) =>
-                                    _operationStatusBuilder(
+                                itemBuilder: (ctx, index) => _operationStatusBuilder(
                                   index,
                                   setState,
                                 ),
@@ -1222,7 +1207,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                           ),
                         ),
                       ),
-                      child: Text(
+                      child: const Text(
                         'VISUALIZZA',
                         style: TextStyle(
                           fontSize: 16,
@@ -1231,7 +1216,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                     ),
                   ],
                 ),
-                SizedBox(),
+                const SizedBox(),
                 Row(
                   children: [
                     Padding(
@@ -1249,10 +1234,10 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                           horizontal: 40,
                           vertical: 24,
                         ),
-                        color: Theme.of(context).accentColor.withOpacity(0.8),
+                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.8),
                         onPressed: () => _editOperation(),
                         child: Row(
-                          children: [
+                          children: const [
                             Icon(
                               Ionicons.save_outline,
                               color: Colors.white,
@@ -1285,7 +1270,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
         _operationToEdit!.status.where((element) => element.isDeleted).length ==
             _operationToEdit!.status.length) {
       await context.showErrorBar(
-        content: Text(
+        content: const Text(
           'Inserire almeno uno stato',
         ),
       );
@@ -1302,7 +1287,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
               ? await _fetch().then(
                   (value) {
                     context.showInfoBar(
-                      content: Text(
+                      content: const Text(
                         'Movimentazione aggiornata con successo',
                       ),
                     );
@@ -1312,7 +1297,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                   },
                 )
               : context.showErrorBar(
-                  content: Text(
+                  content: const Text(
                     'Si è verificato un errore',
                   ),
                 );
@@ -1334,21 +1319,20 @@ class _OperationsWidgetState extends State<OperationsWidget> {
             (value) async => value.statusCode == HttpStatus.ok
                 ? await _fetch().then(
                     (value) => context.showInfoBar(
-                      content: Text(
+                      content: const Text(
                         'Movimentazione eliminata con successo',
                       ),
                     ),
                   )
                 : context.showErrorBar(
-                    content: Text(
+                    content: const Text(
                       'Si è verificato un errore',
                     ),
                   ),
           );
 
   @override
-  Widget build(BuildContext context) =>
-      BlocBuilder<OperationsCubit, OperationsState>(
+  Widget build(BuildContext context) => BlocBuilder<OperationsCubit, OperationsState>(
         builder: (context, operationState) {
           if (operationState is OperationsLoaded) {
             _operations = operationState.operations;
@@ -1361,7 +1345,7 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                   32,
                 ),
                 child: AnimatedSwitcher(
-                  duration: Duration(
+                  duration: const Duration(
                     milliseconds: 500,
                   ),
                   child: _operationToEdit == null
@@ -1370,9 +1354,8 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                 ),
               ),
             );
-          } else if (operationState is OperationsLoading ||
-              operationState is OperationsInitial) {
-            return LoadingIndicator();
+          } else if (operationState is OperationsLoading || operationState is OperationsInitial) {
+            return const LoadingIndicator();
           } else {
             return Center(
               child: Row(
@@ -1389,14 +1372,13 @@ class _OperationsWidgetState extends State<OperationsWidget> {
                     child: RichText(
                       text: TextSpan(
                         children: [
-                          TextSpan(
+                          const TextSpan(
                             text: 'Si è verificato un errore. ',
                           ),
                           TextSpan(
                             text: 'Riprova',
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () => _fetch(),
-                            style: TextStyle(
+                            recognizer: TapGestureRecognizer()..onTap = () => _fetch(),
+                            style: const TextStyle(
                               color: Colors.blue,
                             ),
                           ),

@@ -1,8 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:date_time_picker/date_time_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ionicons/ionicons.dart';
@@ -15,15 +16,17 @@ import 'package:paperopoli_terminal/presentation/widgets/loading_indicator.dart'
 import 'package:flash/flash.dart';
 
 class CreatePersonWidget extends StatefulWidget {
+  const CreatePersonWidget({Key? key}) : super(key: key);
+
   @override
-  _CreatePersonWidgetState createState() => _CreatePersonWidgetState();
+  CreatePersonWidgetState createState() => CreatePersonWidgetState();
 }
 
-class _CreatePersonWidgetState extends State<CreatePersonWidget> {
+class CreatePersonWidgetState extends State<CreatePersonWidget> {
   late final PersonModel _personToCreate;
   List<String> _types = [];
   List _statusNames = [];
-  var _currentStatusName;
+  dynamic _currentStatusName;
   final TextEditingController _idTextController = TextEditingController();
   final TextEditingController _fullnameTextController = TextEditingController();
   final TextEditingController _cfTextController = TextEditingController();
@@ -68,7 +71,7 @@ class _CreatePersonWidgetState extends State<CreatePersonWidget> {
       } catch (e) {
         HomeScreen.of(context)!.setCreatingMode(1);
         await context.showErrorBar(
-          content: Text(
+          content: const Text(
             'Si è verificato un errore',
           ),
         );
@@ -79,22 +82,22 @@ class _CreatePersonWidgetState extends State<CreatePersonWidget> {
   Widget _personStatusBuilder(int index, setState) =>
       index == _personToCreate.status.length
           ? ListTile(
-              title: Text(
+              title: const Text(
                 'Nuovo stato',
               ),
-              leading: Icon(
+              leading: const Icon(
                 Icons.add,
               ),
               onTap: () => showDialog(
                 context: context,
                 builder: (ctx) => AlertDialog(
-                  title: Text(
+                  title: const Text(
                     'Nuovo stato',
                   ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text(
+                      child: const Text(
                         'Annulla',
                       ),
                     ),
@@ -108,14 +111,14 @@ class _CreatePersonWidgetState extends State<CreatePersonWidget> {
                                 _newStateDateTimeController.text,
                               ),
                               name: _currentStatusName['nome'],
-                              name_id: _currentStatusName['ID'],
+                              nameId: _currentStatusName['ID'],
                               isNew: true,
                               isDeleted: false,
                             ),
                           ),
                         );
                       },
-                      child: Text(
+                      child: const Text(
                         'Salva',
                       ),
                     ),
@@ -125,8 +128,8 @@ class _CreatePersonWidgetState extends State<CreatePersonWidget> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         DateTimePicker(
-                          icon: Padding(
-                            padding: const EdgeInsets.only(
+                          icon: const Padding(
+                            padding: EdgeInsets.only(
                               top: 8,
                             ),
                             child: Icon(
@@ -139,7 +142,7 @@ class _CreatePersonWidgetState extends State<CreatePersonWidget> {
                           type: DateTimePickerType.dateTime,
                           controller: _newStateDateTimeController,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 16,
                         ),
                         DropdownButton<Map<String, dynamic>>(
@@ -166,13 +169,13 @@ class _CreatePersonWidgetState extends State<CreatePersonWidget> {
             )
           : ListTile(
               leading: Text(
-                '${_personToCreate.status[index].timestamp.toIso8601String().substring(0, 19).replaceAll("T", " ")}',
+                _personToCreate.status[index].timestamp.toIso8601String().substring(0, 19).replaceAll("T", " "),
               ),
               title: Text(
                 _personToCreate.status[index].name,
               ),
               trailing: IconButton(
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.delete_outline,
                   ),
                   onPressed: () => setState(
@@ -183,7 +186,7 @@ class _CreatePersonWidgetState extends State<CreatePersonWidget> {
   Future _createPerson() async {
     if (_personToCreate.status.isEmpty) {
       await context.showErrorBar(
-        content: Text(
+        content: const Text(
           'Inserire almeno uno stato',
         ),
       );
@@ -205,14 +208,14 @@ class _CreatePersonWidgetState extends State<CreatePersonWidget> {
         (value) {
           if (value.statusCode == HttpStatus.ok) {
             context.showSuccessBar(
-              content: Text(
+              content: const Text(
                 'Persona creata con successo',
               ),
             );
             HomeScreen.of(context)!.setCreatingMode(0);
           } else {
             context.showErrorBar(
-              content: Text(
+              content: const Text(
                 'Si è verificato un errore',
               ),
             );
@@ -245,18 +248,18 @@ class _CreatePersonWidgetState extends State<CreatePersonWidget> {
                           padding: const EdgeInsets.all(16),
                           hoverElevation: 0,
                           highlightElevation: 0,
-                          shape: CircleBorder(),
-                          color: Color(0xffF9F9F9),
-                          child: Icon(
+                          shape: const CircleBorder(),
+                          color: const Color(0xffF9F9F9),
+                          child: const Icon(
                             Icons.arrow_back_ios_new,
                             color: Color(0xff333333),
                             size: 24,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 16,
                         ),
-                        Text(
+                        const Text(
                           'Nuova persona',
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
@@ -336,7 +339,7 @@ class _CreatePersonWidgetState extends State<CreatePersonWidget> {
                                         value: e,
                                         child: Text(
                                           e,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 18,
                                           ),
                                         ),
@@ -426,15 +429,15 @@ class _CreatePersonWidgetState extends State<CreatePersonWidget> {
                                     actions: [
                                       TextButton(
                                         onPressed: () => Navigator.pop(context),
-                                        child: Text(
+                                        child: const Text(
                                           'Chiudi',
                                         ),
                                       ),
                                     ],
-                                    title: Text(
+                                    title: const Text(
                                       'Stati',
                                     ),
-                                    content: Container(
+                                    content: SizedBox(
                                       height: 500,
                                       width: 500,
                                       child: StatefulBuilder(
@@ -453,7 +456,7 @@ class _CreatePersonWidgetState extends State<CreatePersonWidget> {
                                     ),
                                   ),
                                 ),
-                                child: Text(
+                                child: const Text(
                                   'VISUALIZZA',
                                   style: TextStyle(
                                     fontSize: 16,
@@ -462,7 +465,7 @@ class _CreatePersonWidgetState extends State<CreatePersonWidget> {
                               ),
                             ],
                           ),
-                          SizedBox(),
+                          const SizedBox(),
                           Row(
                             children: [
                               Padding(
@@ -481,11 +484,11 @@ class _CreatePersonWidgetState extends State<CreatePersonWidget> {
                                     vertical: 24,
                                   ),
                                   color: Theme.of(context)
-                                      .accentColor
+                                      .colorScheme.secondary
                                       .withOpacity(0.8),
                                   onPressed: () => _createPerson(),
                                   child: Row(
-                                    children: [
+                                    children: const [
                                       Icon(
                                         Ionicons.save_outline,
                                         color: Colors.white,
@@ -512,7 +515,7 @@ class _CreatePersonWidgetState extends State<CreatePersonWidget> {
                     ),
                   ],
                 )
-              : LoadingIndicator(),
+              : const LoadingIndicator(),
         ),
       );
 }

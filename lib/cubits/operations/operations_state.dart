@@ -27,9 +27,9 @@ class OperationsLoaded extends OperationsState {
   });
 
   @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
-    return o is OperationsLoaded && o.operations == operations;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is OperationsLoaded && other.operations == operations;
   }
 
   @override

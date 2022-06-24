@@ -1,4 +1,6 @@
-import 'package:paperopoli_terminal/core/models/main_model_abstract.dart';
+// ignore_for_file: overridden_fields
+
+import 'package:paperopoli_terminal/core/models/main_model.dart';
 
 import 'good_status.dart';
 
@@ -20,7 +22,7 @@ class GoodModel extends MainModel {
 
   factory GoodModel.fromJson(List json) {
     var v = <GoodStatus>[];
-    json.forEach((element) {
+    for (var element in json) {
       v.addAll({
         GoodStatus(
           id: element['merce_stato_id'],
@@ -32,7 +34,7 @@ class GoodModel extends MainModel {
           isDeleted: false,
         ),
       });
-    });
+    }
     return GoodModel(
       id: json.first['ID'],
       status: v,

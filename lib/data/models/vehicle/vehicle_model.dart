@@ -1,4 +1,6 @@
-import 'package:paperopoli_terminal/core/models/main_model_abstract.dart';
+// ignore_for_file: overridden_fields
+
+import 'package:paperopoli_terminal/core/models/main_model.dart';
 import 'package:paperopoli_terminal/data/models/vehicle/vehicle_status.dart';
 
 import 'vehicle_status.dart';
@@ -22,7 +24,7 @@ class VehicleModel extends MainModel {
 
   factory VehicleModel.fromJson(List json) {
     var v = <VehicleStatus>[];
-    json.forEach((element) {
+    for (var element in json) {
       v.addAll({
         VehicleStatus(
           id: element['veicolo_stato_id'],
@@ -34,7 +36,7 @@ class VehicleModel extends MainModel {
           isDeleted: false,
         ),
       });
-    });
+    }
     return VehicleModel(
       id: json.first['ID'],
       status: v,

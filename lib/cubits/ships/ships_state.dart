@@ -27,9 +27,9 @@ class ShipsLoaded extends ShipsState {
   });
 
   @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
-    return o is ShipsLoaded && o.ships == ships;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is ShipsLoaded && other.ships == ships;
   }
 
   @override

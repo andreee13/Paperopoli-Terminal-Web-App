@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
 import 'package:paperopoli_terminal/data/models/trip/trip_model.dart';
 import 'package:paperopoli_terminal/data/repositories/trips_repository.dart';
 
@@ -12,7 +12,7 @@ class TripsCubit extends Cubit<TripsState> {
   TripsCubit({
     required this.repository,
   }) : super(
-          TripsInitial(),
+          const TripsInitial(),
         );
 
   Future<void> fetch({
@@ -20,7 +20,7 @@ class TripsCubit extends Cubit<TripsState> {
   }) async {
     try {
       emit(
-        TripsLoading(),
+        const TripsLoading(),
       );
       emit(
         TripsLoaded(
@@ -29,7 +29,7 @@ class TripsCubit extends Cubit<TripsState> {
           ),
         ),
       );
-    } on Exception catch (e, _) {
+    } on Exception catch (e) {
       emit(
         TripsError(e),
       );

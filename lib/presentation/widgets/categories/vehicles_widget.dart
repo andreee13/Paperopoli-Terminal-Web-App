@@ -1,16 +1,17 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flash/flash.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:auto_animated/auto_animated.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:paperopoli_terminal/core/services/server_service.dart';
-import 'package:paperopoli_terminal/core/constants/constants.dart';
+import 'package:paperopoli_terminal/core/constants/ui.dart';
 import 'package:paperopoli_terminal/core/utils/packages/flutter-countup/lib/countup.dart';
 import 'package:paperopoli_terminal/core/utils/utils.dart';
 import 'package:paperopoli_terminal/cubits/vehicles/vehicles_cubit.dart';
@@ -21,11 +22,13 @@ import 'package:paperopoli_terminal/presentation/screens/home_screen.dart';
 import '../loading_indicator.dart';
 
 class VehiclesWidget extends StatefulWidget {
+  const VehiclesWidget({Key? key}) : super(key: key);
+
   @override
-  _VehiclesWidgetState createState() => _VehiclesWidgetState();
+  VehiclesWidgetState createState() => VehiclesWidgetState();
 }
 
-class _VehiclesWidgetState extends State<VehiclesWidget> {
+class VehiclesWidgetState extends State<VehiclesWidget> {
   late List<VehicleModel> _vehicles;
   final TextEditingController _plateTextController = TextEditingController();
   final TextEditingController _newStateDateTimeController =
@@ -35,7 +38,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
   VehicleModel? _vehicleToEdit;
   List<String> _types = [];
   List _statusNames = [];
-  var _currentStatusName;
+  dynamic _currentStatusName;
 
   @override
   void initState() {
@@ -78,22 +81,22 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
   Widget _vehicleStatusBuilder(int index, setState) =>
       index == _vehicleToEdit!.status.length
           ? ListTile(
-              title: Text(
+              title: const Text(
                 'Nuovo stato',
               ),
-              leading: Icon(
+              leading: const Icon(
                 Icons.add,
               ),
               onTap: () => showDialog(
                 context: context,
                 builder: (ctx) => AlertDialog(
-                  title: Text(
+                  title: const Text(
                     'Nuovo stato',
                   ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text(
+                      child: const Text(
                         'Annulla',
                       ),
                     ),
@@ -107,14 +110,14 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                                 _newStateDateTimeController.text,
                               ),
                               name: _currentStatusName['nome'],
-                              name_id: _currentStatusName['ID'],
+                              nameId: _currentStatusName['ID'],
                               isNew: true,
                               isDeleted: false,
                             ),
                           ),
                         );
                       },
-                      child: Text(
+                      child: const Text(
                         'Salva',
                       ),
                     ),
@@ -124,8 +127,8 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         DateTimePicker(
-                          icon: Padding(
-                            padding: const EdgeInsets.only(
+                          icon: const Padding(
+                            padding: EdgeInsets.only(
                               top: 8,
                             ),
                             child: Icon(
@@ -138,7 +141,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                           type: DateTimePickerType.dateTime,
                           controller: _newStateDateTimeController,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 16,
                         ),
                         DropdownButton<Map<String, dynamic>>(
@@ -166,13 +169,13 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
           : _vehicleToEdit!.status[index].isDeleted == false
               ? ListTile(
                   leading: Text(
-                    '${_vehicleToEdit!.status[index].timestamp.toIso8601String().substring(0, 19).replaceAll("T", " ")}',
+                    _vehicleToEdit!.status[index].timestamp.toIso8601String().substring(0, 19).replaceAll("T", " "),
                   ),
                   title: Text(
                     _vehicleToEdit!.status[index].name,
                   ),
                   trailing: IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.delete_outline,
                     ),
                     onPressed: () => setState(
@@ -180,7 +183,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                     ),
                   ),
                 )
-              : SizedBox();
+              : const SizedBox();
 
   Widget _getInfoWidgets(int index, VehicleModel vehicle) {
     switch (index) {
@@ -231,7 +234,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
           ),
         );
       default:
-        return SizedBox();
+        return const SizedBox();
     }
   }
 
@@ -247,7 +250,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
         ).animate(animation),
         child: SlideTransition(
           position: Tween<Offset>(
-            begin: Offset(0, -0.1),
+            begin: const Offset(0, -0.1),
             end: Offset.zero,
           ).animate(animation),
           child: GestureDetector(
@@ -305,7 +308,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                         children: [
                           Text(
                             'Veicolo #${_vehicles[index].id}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Color(0xff262539),
                               fontSize: 16,
@@ -316,7 +319,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.more_horiz,
                               color: Color(0xff262539),
                             ),
@@ -329,14 +332,14 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                                       actionsPadding: const EdgeInsets.only(
                                         right: 16,
                                       ),
-                                      title: Text(
+                                      title: const Text(
                                         'Elimina veicolo',
                                       ),
                                       actions: [
                                         TextButton(
                                           onPressed: () =>
                                               Navigator.pop(context),
-                                          child: Text(
+                                          child: const Text(
                                             'Annulla',
                                           ),
                                         ),
@@ -345,7 +348,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                                             context,
                                             true,
                                           ),
-                                          child: Text(
+                                          child: const Text(
                                             'ELIMINA',
                                             style: TextStyle(
                                               color: Colors.red,
@@ -359,7 +362,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                                                 0.20,
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
-                                          children: [
+                                          children: const [
                                             Text(
                                               'Eliminando il veicolo non sarà più visibile in questa sezione e tutti gli stati associati saranno rimossi dal sistema.',
                                             ),
@@ -379,7 +382,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                               }
                             },
                             itemBuilder: (context) => [
-                              PopupMenuItem<int>(
+                              const PopupMenuItem<int>(
                                 value: 0,
                                 enabled: true,
                                 height: 40,
@@ -394,14 +397,14 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                       GridView.builder(
                         shrinkWrap: true,
                         itemCount: 8,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                           childAspectRatio: 8,
                           mainAxisSpacing: 0,
                           crossAxisSpacing: 0,
                         ),
-                        itemBuilder: (context, grid_index) => _getInfoWidgets(
-                          grid_index,
+                        itemBuilder: (context, gridIndex) => _getInfoWidgets(
+                          gridIndex,
                           _vehicles[index],
                         ),
                       ),
@@ -415,7 +418,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
       );
 
   Widget _buildAllVehiclesWidget() => Column(
-        key: ValueKey('Column 1'),
+        key: const ValueKey('Column 1'),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
@@ -475,16 +478,16 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                   Countup(
                     begin: 0,
                     end: _vehicles.length.toDouble(),
-                    duration: Duration(
+                    duration: const Duration(
                       seconds: 1,
                     ),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w700,
                       color: Color(0xff262539),
                       fontSize: 40,
                     ),
                   ),
-                  Text(
+                  const Text(
                     ' Veicoli',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
@@ -505,9 +508,9 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                     padding: const EdgeInsets.all(16),
                     hoverElevation: 0,
                     highlightElevation: 0,
-                    shape: CircleBorder(),
-                    color: Color(0xffF9F9F9),
-                    child: Icon(
+                    shape: const CircleBorder(),
+                    color: const Color(0xffF9F9F9),
+                    child: const Icon(
                       Icons.refresh,
                       color: Color(0xff333333),
                       size: 26,
@@ -515,7 +518,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                   ),
                   IconButton(
                     onPressed: () {},
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_back_ios,
                       size: 20,
                       color: Color(0xff333333),
@@ -524,7 +527,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                   IconButton(
                     onPressed: () {},
                     padding: EdgeInsets.zero,
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_forward_ios,
                       size: 20,
                       color: Color(0xff333333),
@@ -540,15 +543,15 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
             ),
             child: LiveGrid(
               shrinkWrap: true,
-              showItemDuration: Duration(
+              showItemDuration: const Duration(
                 milliseconds: 300,
               ),
-              showItemInterval: Duration(
+              showItemInterval: const Duration(
                 microseconds: 200,
               ),
               itemCount: _vehicles.length,
               itemBuilder: _vehiclesBuilder,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4,
                 childAspectRatio: 2,
               ),
@@ -558,7 +561,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
       );
 
   Widget _buildVehicleToEditWidget() => Column(
-        key: ValueKey('Column 2'),
+        key: const ValueKey('Column 2'),
         children: [
           Row(
             children: [
@@ -570,20 +573,20 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                 padding: const EdgeInsets.all(16),
                 hoverElevation: 0,
                 highlightElevation: 0,
-                shape: CircleBorder(),
-                color: Color(0xffF9F9F9),
-                child: Icon(
+                shape: const CircleBorder(),
+                color: const Color(0xffF9F9F9),
+                child: const Icon(
                   Icons.arrow_back_ios_new,
                   color: Color(0xff333333),
                   size: 24,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 16,
               ),
               Text(
                 'Veicolo #${_vehicleToEdit!.id}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   color: Color(0xff262539),
                   fontSize: 40,
@@ -613,7 +616,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                 ),
                 Text(
                   _vehicleToEdit!.id.toString(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 18,
                   ),
                 ),
@@ -643,7 +646,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                               value: e,
                               child: Text(
                                 e,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 18,
                                 ),
                               ),
@@ -705,15 +708,15 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
-                              child: Text(
+                              child: const Text(
                                 'Chiudi',
                               ),
                             ),
                           ],
-                          title: Text(
+                          title: const Text(
                             'Stati',
                           ),
-                          content: Container(
+                          content: SizedBox(
                             height: 500,
                             width: 500,
                             child: StatefulBuilder(
@@ -730,7 +733,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                           ),
                         ),
                       ),
-                      child: Text(
+                      child: const Text(
                         'VISUALIZZA',
                         style: TextStyle(
                           fontSize: 16,
@@ -739,7 +742,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                     ),
                   ],
                 ),
-                SizedBox(),
+                const SizedBox(),
                 Row(
                   children: [
                     Padding(
@@ -757,10 +760,10 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                           horizontal: 40,
                           vertical: 24,
                         ),
-                        color: Theme.of(context).accentColor.withOpacity(0.8),
+                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.8),
                         onPressed: () => _editVehicle(),
                         child: Row(
-                          children: [
+                          children: const [
                             Icon(
                               Ionicons.save_outline,
                               color: Colors.white,
@@ -793,7 +796,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
         _vehicleToEdit!.status.where((element) => element.isDeleted).length ==
             _vehicleToEdit!.status.length) {
       await context.showErrorBar(
-        content: Text(
+        content: const Text(
           'Inserire almeno uno stato',
         ),
       );
@@ -809,7 +812,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                 ? await _fetch().then(
                     (value) {
                       context.showInfoBar(
-                        content: Text(
+                        content: const Text(
                           'Veicolo aggiornato con successo',
                         ),
                       );
@@ -819,7 +822,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                     },
                   )
                 : context.showErrorBar(
-                    content: Text(
+                    content: const Text(
                       'Si è verificato un errore',
                     ),
                   ),
@@ -840,13 +843,13 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
             (value) async => value.statusCode == HttpStatus.ok
                 ? await _fetch().then(
                     (value) => context.showInfoBar(
-                      content: Text(
+                      content: const Text(
                         'Veicolo eliminato con successo',
                       ),
                     ),
                   )
                 : context.showErrorBar(
-                    content: Text(
+                    content: const Text(
                       'Si è verificato un errore',
                     ),
                   ),
@@ -867,7 +870,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                   32,
                 ),
                 child: AnimatedSwitcher(
-                  duration: Duration(
+                  duration: const Duration(
                     milliseconds: 500,
                   ),
                   child: _vehicleToEdit == null
@@ -878,7 +881,7 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
             );
           } else if (vehicleState is VehiclesLoading ||
               vehicleState is VehiclesInitial) {
-            return LoadingIndicator();
+            return const LoadingIndicator();
           } else {
             return Center(
               child: Row(
@@ -895,14 +898,14 @@ class _VehiclesWidgetState extends State<VehiclesWidget> {
                     child: RichText(
                       text: TextSpan(
                         children: [
-                          TextSpan(
+                          const TextSpan(
                             text: 'Si è verificato un errore. ',
                           ),
                           TextSpan(
                             text: 'Riprova',
                             recognizer: TapGestureRecognizer()
                               ..onTap = () => _fetch(),
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.blue,
                             ),
                           ),

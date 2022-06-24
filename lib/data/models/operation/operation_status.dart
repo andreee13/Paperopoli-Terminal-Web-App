@@ -2,7 +2,7 @@ class OperationStatus {
   int? id;
   final DateTime timestamp;
   final String name;
-  int? name_id;
+  int? nameId;
   final bool isNew;
   bool isDeleted;
 
@@ -10,7 +10,7 @@ class OperationStatus {
     this.id,
     required this.timestamp,
     required this.name,
-    this.name_id,
+    this.nameId,
     required this.isNew,
     required this.isDeleted,
   });
@@ -19,8 +19,8 @@ class OperationStatus {
         'id': id,
         'status_id': this.id,
         'timestamp': timestamp.toIso8601String(),
-        'stato': name_id,
-        'name_id': name_id,
+        'stato': nameId,
+        'name_id': nameId,
         'is_new': isNew,
         'is_deleted': isDeleted,
       };

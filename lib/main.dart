@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/gestures.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,7 +29,7 @@ import 'presentation/widgets/loading_indicator.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await _initializeDeviceProperties();
+  _initializeDeviceProperties();
   runZonedGuarded(
     () {
       runApp(
@@ -40,7 +40,7 @@ void main() async {
                 repository: UserRepository(
                   firebaseAuth: FirebaseAuth.instance,
                 ),
-              ),
+              )..login(),
             ),
             BlocProvider(
               create: (context) => ShipsCubit(
@@ -73,44 +73,36 @@ void main() async {
               ),
             ),
           ],
-          child: AppBootstrapper(),
+          child: const AppBootstrapper(),
         ),
       );
     },
     (obj, stk) {
-      //print(obj);
-      //print(stk);
+      if (kDebugMode) {
+        print(obj);
+        print(stk);
+      }
     },
   );
 }
 
-Future<void> _initializeDeviceProperties() async {
-  GestureBinding.instance!.resamplingEnabled = true;
+void _initializeDeviceProperties() async {
   SystemChrome.setSystemUIOverlayStyle(
-    SystemUiOverlayStyle(
+    const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light,
     ),
   );
 }
 
-class AppBootstrapper extends StatefulWidget {
-  @override
-  _AppBootstrapperState createState() => _AppBootstrapperState();
-}
-
-class _AppBootstrapperState extends State<AppBootstrapper> {
-  @override
-  void initState() {
-    context.read<AuthenticationCubit>().login();
-    super.initState();
-  }
+class AppBootstrapper extends StatelessWidget {
+  const AppBootstrapper({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => MaterialApp(
         theme: DEFAULT_THEME,
         debugShowCheckedModeBanner: false,
-        locale: Locale(
+        locale: const Locale(
           'it',
           'IT',
         ),
@@ -119,11 +111,11 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
             if (state is AuthenticationError ||
                 state is AuthenticationNotLogged ||
                 state is AuthenticationLoading) {
-              return AuthenticatonScreen();
+              return const AuthenticatonScreen();
             } else if (state is AuthenticationLogged) {
-              return HomeScreen();
+              return const HomeScreen();
             } else {
-              return LoadingIndicator();
+              return const LoadingIndicator();
             }
           },
         ),

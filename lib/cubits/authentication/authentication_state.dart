@@ -34,9 +34,9 @@ class AuthenticationLogged extends AuthenticationState {
   );
 
   @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
-    return o is AuthenticationLogged && o.user == user;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is AuthenticationLogged && other.user == user;
   }
 
   @override

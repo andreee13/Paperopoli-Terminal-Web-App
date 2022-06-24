@@ -1,4 +1,6 @@
-import 'package:paperopoli_terminal/core/models/main_model_abstract.dart';
+// ignore_for_file: overridden_fields
+
+import 'package:paperopoli_terminal/core/models/main_model.dart';
 import 'package:paperopoli_terminal/data/models/ship/ship_status.dart';
 
 class ShipModel extends MainModel {
@@ -19,7 +21,7 @@ class ShipModel extends MainModel {
 
   factory ShipModel.fromJson(List json) {
     var v = <ShipStatus>[];
-    json.forEach((element) {
+    for (var element in json) {
       v.addAll({
         ShipStatus(
           id: element['nave_stato_id'],
@@ -31,7 +33,7 @@ class ShipModel extends MainModel {
           isDeleted: false,
         ),
       });
-    });
+    }
     return ShipModel(
       id: json.first['ID'],
       status: v,

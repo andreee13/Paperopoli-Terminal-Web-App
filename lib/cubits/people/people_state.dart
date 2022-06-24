@@ -27,9 +27,9 @@ class PeopleLoaded extends PeopleState {
   });
 
   @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
-    return o is PeopleLoaded && o.people == people;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is PeopleLoaded && other.people == people;
   }
 
   @override

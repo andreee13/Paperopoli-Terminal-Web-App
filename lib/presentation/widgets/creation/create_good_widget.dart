@@ -1,8 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:date_time_picker/date_time_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ionicons/ionicons.dart';
@@ -15,20 +16,20 @@ import 'package:paperopoli_terminal/presentation/widgets/loading_indicator.dart'
 import 'package:flash/flash.dart';
 
 class CreateGoodWidget extends StatefulWidget {
+  const CreateGoodWidget({Key? key}) : super(key: key);
+
   @override
-  _CreateGoodWidgetState createState() => _CreateGoodWidgetState();
+  CreateGoodWidgetState createState() => CreateGoodWidgetState();
 }
 
-class _CreateGoodWidgetState extends State<CreateGoodWidget> {
+class CreateGoodWidgetState extends State<CreateGoodWidget> {
   late final GoodModel _goodToCreate;
   List<String> _types = [];
   List _statusNames = [];
-  var _currentStatusName;
+  dynamic _currentStatusName;
   final TextEditingController _idTextController = TextEditingController();
-  final TextEditingController _descriptionTextController =
-      TextEditingController();
-  final TextEditingController _newStateDateTimeController =
-      TextEditingController();
+  final TextEditingController _descriptionTextController = TextEditingController();
+  final TextEditingController _newStateDateTimeController = TextEditingController();
 
   @override
   void dispose() {
@@ -66,7 +67,7 @@ class _CreateGoodWidgetState extends State<CreateGoodWidget> {
       } catch (e) {
         HomeScreen.of(context)!.setCreatingMode(1);
         await context.showErrorBar(
-          content: Text(
+          content: const Text(
             'Si è verificato un errore',
           ),
         );
@@ -74,114 +75,113 @@ class _CreateGoodWidgetState extends State<CreateGoodWidget> {
     }
   }
 
-  Widget _goodStatusBuilder(int index, setState) =>
-      index == _goodToCreate.status.length
-          ? ListTile(
-              title: Text(
+  Widget _goodStatusBuilder(int index, setState) => index == _goodToCreate.status.length
+      ? ListTile(
+          title: const Text(
+            'Nuovo stato',
+          ),
+          leading: const Icon(
+            Icons.add,
+          ),
+          onTap: () => showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: const Text(
                 'Nuovo stato',
               ),
-              leading: Icon(
-                Icons.add,
-              ),
-              onTap: () => showDialog(
-                context: context,
-                builder: (ctx) => AlertDialog(
-                  title: Text(
-                    'Nuovo stato',
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(
-                        'Annulla',
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        setState(
-                          () => _goodToCreate.status.add(
-                            GoodStatus(
-                              timestamp: DateTime.parse(
-                                _newStateDateTimeController.text,
-                              ),
-                              name: _currentStatusName['nome'],
-                              name_id: _currentStatusName['ID'],
-                              isNew: true,
-                              isDeleted: false,
-                            ),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        'Salva',
-                      ),
-                    ),
-                  ],
-                  content: StatefulBuilder(
-                    builder: (ctx, setState1) => Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        DateTimePicker(
-                          icon: Padding(
-                            padding: const EdgeInsets.only(
-                              top: 8,
-                            ),
-                            child: Icon(
-                              Icons.calendar_today,
-                            ),
-                          ),
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(2021),
-                          lastDate: DateTime(2050),
-                          type: DateTimePickerType.dateTime,
-                          controller: _newStateDateTimeController,
-                        ),
-                        SizedBox(
-                          height: 16,
-                        ),
-                        DropdownButton<Map<String, dynamic>>(
-                          value: _currentStatusName,
-                          onChanged: (value) => setState1(
-                            () => _currentStatusName = value,
-                          ),
-                          items: _statusNames
-                              .map(
-                                (e) => DropdownMenuItem<Map<String, dynamic>>(
-                                  value: e,
-                                  child: Text(
-                                    e['nome'],
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ],
-                    ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text(
+                    'Annulla',
                   ),
                 ),
-              ),
-            )
-          : ListTile(
-              leading: Text(
-                '${_goodToCreate.status[index].timestamp.toIso8601String().substring(0, 19).replaceAll("T", " ")}',
-              ),
-              title: Text(
-                _goodToCreate.status[index].name,
-              ),
-              trailing: IconButton(
-                  icon: Icon(
-                    Icons.delete_outline,
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    setState(
+                      () => _goodToCreate.status.add(
+                        GoodStatus(
+                          timestamp: DateTime.parse(
+                            _newStateDateTimeController.text,
+                          ),
+                          name: _currentStatusName['nome'],
+                          nameId: _currentStatusName['ID'],
+                          isNew: true,
+                          isDeleted: false,
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Salva',
                   ),
-                  onPressed: () => setState(
-                        () => _goodToCreate.status.removeAt(index),
-                      )),
-            );
+                ),
+              ],
+              content: StatefulBuilder(
+                builder: (ctx, setState1) => Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    DateTimePicker(
+                      icon: const Padding(
+                        padding: EdgeInsets.only(
+                          top: 8,
+                        ),
+                        child: Icon(
+                          Icons.calendar_today,
+                        ),
+                      ),
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2021),
+                      lastDate: DateTime(2050),
+                      type: DateTimePickerType.dateTime,
+                      controller: _newStateDateTimeController,
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    DropdownButton<Map<String, dynamic>>(
+                      value: _currentStatusName,
+                      onChanged: (value) => setState1(
+                        () => _currentStatusName = value,
+                      ),
+                      items: _statusNames
+                          .map(
+                            (e) => DropdownMenuItem<Map<String, dynamic>>(
+                              value: e,
+                              child: Text(
+                                e['nome'],
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        )
+      : ListTile(
+          leading: Text(
+            _goodToCreate.status[index].timestamp.toIso8601String().substring(0, 19).replaceAll("T", " "),
+          ),
+          title: Text(
+            _goodToCreate.status[index].name,
+          ),
+          trailing: IconButton(
+              icon: const Icon(
+                Icons.delete_outline,
+              ),
+              onPressed: () => setState(
+                    () => _goodToCreate.status.removeAt(index),
+                  )),
+        );
 
   Future _createGood() async {
     if (_goodToCreate.status.isEmpty) {
       await context.showErrorBar(
-        content: Text(
+        content: const Text(
           'Inserire almeno uno stato',
         ),
       );
@@ -202,14 +202,14 @@ class _CreateGoodWidgetState extends State<CreateGoodWidget> {
         (value) {
           if (value.statusCode == HttpStatus.ok) {
             context.showSuccessBar(
-              content: Text(
+              content: const Text(
                 'Merce creata con successo',
               ),
             );
             HomeScreen.of(context)!.setCreatingMode(0);
           } else {
             context.showErrorBar(
-              content: Text(
+              content: const Text(
                 'Si è verificato un errore',
               ),
             );
@@ -229,31 +229,29 @@ class _CreateGoodWidgetState extends State<CreateGoodWidget> {
         ),
         child: FutureBuilder(
           future: _fetch(),
-          builder: (context, snapshot) => snapshot.connectionState ==
-                  ConnectionState.done
+          builder: (context, snapshot) => snapshot.connectionState == ConnectionState.done
               ? Column(
                   children: [
                     Row(
                       children: [
                         MaterialButton(
-                          onPressed: () =>
-                              HomeScreen.of(context)!.setCreatingMode(0),
+                          onPressed: () => HomeScreen.of(context)!.setCreatingMode(0),
                           elevation: 0,
                           padding: const EdgeInsets.all(16),
                           hoverElevation: 0,
                           highlightElevation: 0,
-                          shape: CircleBorder(),
-                          color: Color(0xffF9F9F9),
-                          child: Icon(
+                          shape: const CircleBorder(),
+                          color: const Color(0xffF9F9F9),
+                          child: const Icon(
                             Icons.arrow_back_ios_new,
                             color: Color(0xff333333),
                             size: 24,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 16,
                         ),
-                        Text(
+                        const Text(
                           'Nuova merce',
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
@@ -333,7 +331,7 @@ class _CreateGoodWidgetState extends State<CreateGoodWidget> {
                                         value: e,
                                         child: Text(
                                           e,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 18,
                                           ),
                                         ),
@@ -395,25 +393,22 @@ class _CreateGoodWidgetState extends State<CreateGoodWidget> {
                                     actions: [
                                       TextButton(
                                         onPressed: () => Navigator.pop(context),
-                                        child: Text(
+                                        child: const Text(
                                           'Chiudi',
                                         ),
                                       ),
                                     ],
-                                    title: Text(
+                                    title: const Text(
                                       'Stati',
                                     ),
-                                    content: Container(
+                                    content: SizedBox(
                                       height: 500,
                                       width: 500,
                                       child: StatefulBuilder(
-                                        builder: (context, setState) =>
-                                            ListView.builder(
+                                        builder: (context, setState) => ListView.builder(
                                           shrinkWrap: true,
-                                          itemCount:
-                                              _goodToCreate.status.length + 1,
-                                          itemBuilder: (ctx, index) =>
-                                              _goodStatusBuilder(
+                                          itemCount: _goodToCreate.status.length + 1,
+                                          itemBuilder: (ctx, index) => _goodStatusBuilder(
                                             index,
                                             setState,
                                           ),
@@ -422,7 +417,7 @@ class _CreateGoodWidgetState extends State<CreateGoodWidget> {
                                     ),
                                   ),
                                 ),
-                                child: Text(
+                                child: const Text(
                                   'VISUALIZZA',
                                   style: TextStyle(
                                     fontSize: 16,
@@ -431,7 +426,7 @@ class _CreateGoodWidgetState extends State<CreateGoodWidget> {
                               ),
                             ],
                           ),
-                          SizedBox(),
+                          const SizedBox(),
                           Row(
                             children: [
                               Padding(
@@ -449,12 +444,10 @@ class _CreateGoodWidgetState extends State<CreateGoodWidget> {
                                     horizontal: 40,
                                     vertical: 24,
                                   ),
-                                  color: Theme.of(context)
-                                      .accentColor
-                                      .withOpacity(0.8),
+                                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.8),
                                   onPressed: () => _createGood(),
                                   child: Row(
-                                    children: [
+                                    children: const [
                                       Icon(
                                         Ionicons.save_outline,
                                         color: Colors.white,
@@ -481,7 +474,7 @@ class _CreateGoodWidgetState extends State<CreateGoodWidget> {
                     ),
                   ],
                 )
-              : LoadingIndicator(),
+              : const LoadingIndicator(),
         ),
       );
 }

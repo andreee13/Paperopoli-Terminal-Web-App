@@ -27,9 +27,9 @@ class GoodsLoaded extends GoodsState {
   });
 
   @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
-    return o is GoodsLoaded && o.goods == goods;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is GoodsLoaded && other.goods == goods;
   }
 
   @override

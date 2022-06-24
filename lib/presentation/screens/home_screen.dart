@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:paperopoli_terminal/core/constants/constants.dart';
+import 'package:paperopoli_terminal/core/constants/ui.dart';
 import 'package:paperopoli_terminal/cubits/authentication/authentication_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperopoli_terminal/data/models/category_model.dart';
@@ -18,20 +17,22 @@ import 'package:paperopoli_terminal/presentation/widgets/creation/create_ship_wi
 import 'package:paperopoli_terminal/presentation/widgets/creation/create_trip_widget.dart';
 import 'package:paperopoli_terminal/presentation/widgets/creation/create_vehicle_widget.dart';
 import 'package:paperopoli_terminal/presentation/widgets/views/operations_widget.dart';
+import 'package:paperopoli_terminal/presentation/widgets/views/dashboard_widget.dart';
 import 'package:paperopoli_terminal/presentation/widgets/views/trips_widget.dart';
 
 class HomeScreen extends StatefulWidget {
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
+  const HomeScreen({Key? key}) : super(key: key);
 
-  static _HomeScreenState? of(
+  @override
+  HomeScreenState createState() => HomeScreenState();
+
+  static HomeScreenState? of(
     BuildContext context,
   ) =>
-      context.findAncestorStateOfType<_HomeScreenState>();
+      context.findAncestorStateOfType<HomeScreenState>();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
- 
+class HomeScreenState extends State<HomeScreen> {
   CategoryModel _selectedCategory = CATEGORIES[0];
   int _inCreatingMode = 0;
   Widget? _createWidget;
@@ -40,8 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
         () => _inCreatingMode = i,
       );
 
-  User getUser() =>
-      (context.read<AuthenticationCubit>().state as AuthenticationLogged).user!;
+  User getUser() => (context.read<AuthenticationCubit>().state as AuthenticationLogged).user!;
 
   Widget _buildCategories(
     BuildContext _,
@@ -65,14 +65,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: TextStyle(
                         color: _selectedCategory == CATEGORIES[index]
                             ? Colors.white
-                            : Color(0xff909399),
+                            : const Color(0xff909399),
                       ),
                     ),
                     leading: Icon(
                       CATEGORIES[index].mainIcon,
                       color: _selectedCategory == CATEGORIES[index]
                           ? Colors.white
-                          : Color(0xff909399),
+                          : const Color(0xff909399),
                     ),
                     selected: _selectedCategory == CATEGORIES[index],
                     hoverColor: Colors.white10,
@@ -100,14 +100,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(
                     color: _selectedCategory == CATEGORIES[index]
                         ? Colors.white
-                        : Color(0xff909399),
+                        : const Color(0xff909399),
                   ),
                 ),
                 leading: Icon(
                   CATEGORIES[index].mainIcon,
                   color: _selectedCategory == CATEGORIES[index]
                       ? Colors.white
-                      : Color(0xff909399),
+                      : const Color(0xff909399),
                 ),
                 selected: _selectedCategory == CATEGORIES[index],
                 hoverColor: Colors.white10,
@@ -143,50 +143,50 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             )
-          : SizedBox();
+          : const SizedBox();
 
   Widget _getCreateWidgetWidget(String s) {
     switch (s) {
       case 'Viaggio':
-        return CreateTripWidget();
+        return const CreateTripWidget();
       case 'Movimentazione':
-        return CreateOperationWidget();
+        return const CreateOperationWidget();
       case 'Nave':
-        return CreateShipWidget();
+        return const CreateShipWidget();
       case 'Merce':
-        return CreateGoodWidget();
+        return const CreateGoodWidget();
       case 'Persona':
-        return CreatePersonWidget();
+        return const CreatePersonWidget();
       case 'Veicolo':
-        return CreateVehicleWidget();
+        return const CreateVehicleWidget();
       default:
-        return SizedBox();
+        return const SizedBox();
     }
   }
 
   Widget _buildMainWidget() {
     switch (_selectedCategory.primaryName) {
       case 'Dashboard':
-        return DASHBOARDWIDGET;
+        return const DashboardWidget();
       case 'Viaggi':
-        return TripsWidget();
+        return const TripsWidget();
       case 'Movimentazioni':
-        return OperationsWidget();
+        return const OperationsWidget();
       case 'Navi':
-        return ShipsWidget();
+        return const ShipsWidget();
       case 'Merci':
-        return GoodsWidget();
+        return const GoodsWidget();
       case 'Persone':
-        return PeopleWidget();
+        return const PeopleWidget();
       case 'Veicoli':
-        return VehiclesWidget();
+        return const VehiclesWidget();
       default:
-        return SizedBox();
+        return const SizedBox();
     }
   }
 
   Widget _buildCreateWidget() => AnimatedSwitcher(
-        duration: Duration(
+        duration: const Duration(
           milliseconds: 500,
         ),
         child: _inCreatingMode == 1
@@ -248,7 +248,7 @@ class _HomeScreenState extends State<HomeScreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),
-          color: Color(0xffF9F9F9),
+          color: const Color(0xffF9F9F9),
           onPressed: () => setState(
             () {
               _inCreatingMode = 2;
@@ -262,12 +262,12 @@ class _HomeScreenState extends State<HomeScreen> {
               Icon(
                 icon,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 24,
               ),
               Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -288,11 +288,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           backgroundColor: _inCreatingMode == 1 || _inCreatingMode == 2
               ? Colors.red.withOpacity(0.9)
-              : Color(0xff5564E8),
+              : const Color(0xff5564E8),
           child: Icon(
-            _inCreatingMode == 1 || _inCreatingMode == 2
-                ? Icons.close
-                : Icons.add,
+            _inCreatingMode == 1 || _inCreatingMode == 2 ? Icons.close : Icons.add,
             color: Colors.white,
           ),
         ),
@@ -304,14 +302,14 @@ class _HomeScreenState extends State<HomeScreen> {
               elevation: 0,
               child: Stack(
                 children: [
-                  SizedBox.expand(
+                  const SizedBox.expand(
                     child: Material(
                       color: Colors.white,
                     ),
                   ),
-                  SizedBox.expand(
+                  const SizedBox.expand(
                     child: Padding(
-                      padding: const EdgeInsets.only(
+                      padding: EdgeInsets.only(
                         right: 32,
                       ),
                       child: Material(
@@ -342,7 +340,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       child: ListView.separated(
                         shrinkWrap: true,
-                        physics: BouncingScrollPhysics(),
+                        physics: const BouncingScrollPhysics(),
                         separatorBuilder: _buildSeparator,
                         itemBuilder: _buildCategories,
                         itemCount: CATEGORIES.length,
@@ -361,8 +359,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           GestureDetector(
                             onTap: () async {
-                              var _currentUser =
-                                  FirebaseAuth.instance.currentUser!;
+                              var currentUser = FirebaseAuth.instance.currentUser!;
                               await showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
@@ -372,25 +369,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                         context,
                                         true,
                                       ),
-                                      child: Text(
+                                      child: const Text(
                                         'Logout',
                                       ),
                                     ),
                                   ],
                                   content: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       CircleAvatar(
                                         minRadius: 30,
-                                        backgroundColor: Color(0xff3A3955),
+                                        backgroundColor: const Color(0xff3A3955),
                                         foregroundColor: Colors.white,
                                         child: Text(
-                                          _currentUser.displayName!
-                                              .substring(0, 1)
-                                              .toUpperCase(),
-                                          style: TextStyle(
+                                          currentUser.displayName!.substring(0, 1).toUpperCase(),
+                                          style: const TextStyle(
                                             fontSize: 24,
                                           ),
                                         ),
@@ -401,34 +395,32 @@ class _HomeScreenState extends State<HomeScreen> {
                                           bottom: 8,
                                         ),
                                         child: Text(
-                                          _currentUser.displayName!,
-                                          style: TextStyle(
+                                          currentUser.displayName!,
+                                          style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                       ),
                                       Text(
-                                        _currentUser.email!,
-                                        style: TextStyle(
+                                        currentUser.email!,
+                                        style: const TextStyle(
                                           color: Colors.black54,
                                           fontSize: 14,
                                         ),
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(
                                           vertical: 8,
                                         ),
                                         child: Divider(),
                                       ),
                                       Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                         children: [
                                           Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: const [
                                               Text(
                                                 'Registrazione:',
                                                 style: TextStyle(
@@ -448,31 +440,28 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ],
                                           ),
                                           Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                _currentUser
-                                                    .metadata.creationTime!
+                                                currentUser.metadata.creationTime!
                                                     .toIso8601String()
                                                     .substring(
                                                       0,
                                                       10,
                                                     ),
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                   fontSize: 12,
                                                   color: Colors.black54,
                                                 ),
                                               ),
                                               Text(
-                                                _currentUser
-                                                    .metadata.lastSignInTime!
+                                                currentUser.metadata.lastSignInTime!
                                                     .toIso8601String()
                                                     .substring(
                                                       0,
                                                       10,
                                                     ),
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                   fontSize: 12,
                                                   color: Colors.black54,
                                                 ),
@@ -486,39 +475,32 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ).then(
                                 (value) async => value != null
-                                    ? await context
-                                        .read<AuthenticationCubit>()
-                                        .logOut()
+                                    ? await context.read<AuthenticationCubit>().logOut()
                                     : {},
                               );
                             },
-                            child: Container(
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  CircleAvatar(
-                                    backgroundColor: Colors.white10,
-                                    foregroundColor: Colors.white,
-                                    child: Text(
-                                      getUser()
-                                          .displayName!
-                                          .substring(0, 1)
-                                          .toUpperCase(),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: Colors.white10,
+                                  foregroundColor: Colors.white,
+                                  child: Text(
+                                    getUser().displayName!.substring(0, 1).toUpperCase(),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 8,
+                                  ),
+                                  child: Text(
+                                    getUser().displayName!,
+                                    style: const TextStyle(
+                                      color: Colors.white70,
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                      left: 8,
-                                    ),
-                                    child: Text(
-                                      getUser().displayName!,
-                                      style: TextStyle(
-                                        color: Colors.white70,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -530,7 +512,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Expanded(
               child: AnimatedSwitcher(
-                duration: Duration(
+                duration: const Duration(
                   milliseconds: 500,
                 ),
                 child: _inCreatingMode == 1 || _inCreatingMode == 2

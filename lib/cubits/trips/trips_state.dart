@@ -27,9 +27,9 @@ class TripsLoaded extends TripsState {
   });
 
   @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
-    return o is TripsLoaded && o.trips == trips;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is TripsLoaded && other.trips == trips;
   }
 
   @override

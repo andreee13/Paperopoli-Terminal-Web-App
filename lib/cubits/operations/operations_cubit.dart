@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
 import 'package:paperopoli_terminal/core/errors/exceptions.dart';
 import 'package:paperopoli_terminal/data/models/operation/operation_model.dart';
 import 'package:paperopoli_terminal/data/repositories/operations_repository.dart';
@@ -13,7 +13,7 @@ class OperationsCubit extends Cubit<OperationsState> {
   OperationsCubit({
     required this.repository,
   }) : super(
-          OperationsInitial(),
+          const OperationsInitial(),
         );
 
   Future<void> fetch({
@@ -21,7 +21,7 @@ class OperationsCubit extends Cubit<OperationsState> {
   }) async {
     try {
       emit(
-        OperationsLoading(),
+        const OperationsLoading(),
       );
       emit(
         OperationsLoaded(
@@ -30,7 +30,7 @@ class OperationsCubit extends Cubit<OperationsState> {
           ),
         ),
       );
-    } on ServerException catch (e, _) {
+    } on ServerException catch (e) {
       emit(
         OperationsError(e),
       );

@@ -1,16 +1,17 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flash/flash.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:auto_animated/auto_animated.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:paperopoli_terminal/core/services/server_service.dart';
-import 'package:paperopoli_terminal/core/constants/constants.dart';
+import 'package:paperopoli_terminal/core/constants/ui.dart';
 import 'package:paperopoli_terminal/core/utils/packages/flutter-countup/lib/countup.dart';
 import 'package:paperopoli_terminal/cubits/trips/trips_cubit.dart';
 import 'package:paperopoli_terminal/data/models/quay/quay_model.dart';
@@ -20,26 +21,24 @@ import 'package:paperopoli_terminal/presentation/screens/home_screen.dart';
 import '../loading_indicator.dart';
 
 class TripsWidget extends StatefulWidget {
+  const TripsWidget({Key? key}) : super(key: key);
+
   @override
-  _TripsWidgetState createState() => _TripsWidgetState();
+  TripsWidgetState createState() => TripsWidgetState();
 }
 
-class _TripsWidgetState extends State<TripsWidget> {
+class TripsWidgetState extends State<TripsWidget> {
   late List<TripModel> _trips;
-  late final TextEditingController _searchTextController =
-      TextEditingController()..addListener(() => setState(() {}));
+  late final TextEditingController _searchTextController = TextEditingController()
+    ..addListener(() => setState(() {}));
   final TextEditingController _deleteTextController = TextEditingController();
   TripModel? _tripToEdit;
   List<QuayModel> _quays = [];
-  final TextEditingController _expectedArrivalDateController =
-      TextEditingController();
-  final TextEditingController _actualArrivalDateController =
-      TextEditingController();
-  final TextEditingController _expectedDeparturedDateController =
-      TextEditingController();
-  final TextEditingController _actualDepartureDateController =
-      TextEditingController();
-      
+  final TextEditingController _expectedArrivalDateController = TextEditingController();
+  final TextEditingController _actualArrivalDateController = TextEditingController();
+  final TextEditingController _expectedDeparturedDateController = TextEditingController();
+  final TextEditingController _actualDepartureDateController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -142,7 +141,7 @@ class _TripsWidgetState extends State<TripsWidget> {
           ),
         );
       default:
-        return SizedBox();
+        return const SizedBox();
     }
   }
 
@@ -158,7 +157,7 @@ class _TripsWidgetState extends State<TripsWidget> {
         ).animate(animation),
         child: SlideTransition(
           position: Tween<Offset>(
-            begin: Offset(0, -0.1),
+            begin: const Offset(0, -0.1),
             end: Offset.zero,
           ).animate(animation),
           child: GestureDetector(
@@ -211,7 +210,7 @@ class _TripsWidgetState extends State<TripsWidget> {
                         children: [
                           Text(
                             'Viaggio #${_trips[index].id}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Color(0xff262539),
                               fontSize: 16,
@@ -222,7 +221,7 @@ class _TripsWidgetState extends State<TripsWidget> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.more_horiz,
                               color: Color(0xff262539),
                             ),
@@ -236,14 +235,13 @@ class _TripsWidgetState extends State<TripsWidget> {
                                       actionsPadding: const EdgeInsets.only(
                                         right: 16,
                                       ),
-                                      title: Text(
+                                      title: const Text(
                                         'Elimina viaggio',
                                       ),
                                       actions: [
                                         TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                          child: Text(
+                                          onPressed: () => Navigator.pop(context),
+                                          child: const Text(
                                             'Annulla',
                                           ),
                                         ),
@@ -252,7 +250,7 @@ class _TripsWidgetState extends State<TripsWidget> {
                                             context,
                                             _deleteTextController.text,
                                           ),
-                                          child: Text(
+                                          child: const Text(
                                             'ELIMINA',
                                             style: TextStyle(
                                               color: Colors.red,
@@ -261,12 +259,10 @@ class _TripsWidgetState extends State<TripsWidget> {
                                         ),
                                       ],
                                       content: SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.20,
+                                        width: MediaQuery.of(context).size.width * 0.20,
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
-                                          children: [
+                                          children: const [
                                             Text(
                                               'Eliminando il viaggio non sarà più visibile in questa sezione e tutte le movimentazioni associate saranno rimosse dal sistema.',
                                             ),
@@ -286,7 +282,7 @@ class _TripsWidgetState extends State<TripsWidget> {
                               }
                             },
                             itemBuilder: (context) => [
-                              PopupMenuItem<int>(
+                              const PopupMenuItem<int>(
                                 value: 0,
                                 enabled: true,
                                 height: 40,
@@ -301,14 +297,14 @@ class _TripsWidgetState extends State<TripsWidget> {
                       GridView.builder(
                         shrinkWrap: true,
                         itemCount: 8,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                           childAspectRatio: 8,
                           mainAxisSpacing: 0,
                           crossAxisSpacing: 0,
                         ),
-                        itemBuilder: (context, grid_index) => _getInfoWidgets(
-                          grid_index,
+                        itemBuilder: (context, gridIndex) => _getInfoWidgets(
+                          gridIndex,
                           _trips[index],
                         ),
                       ),
@@ -322,7 +318,7 @@ class _TripsWidgetState extends State<TripsWidget> {
       );
 
   Widget _buildAllTripsWidget() => Column(
-        key: ValueKey('Column 1'),
+        key: const ValueKey('Column 1'),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
@@ -382,16 +378,16 @@ class _TripsWidgetState extends State<TripsWidget> {
                   Countup(
                     begin: 0,
                     end: _trips.length.toDouble(),
-                    duration: Duration(
+                    duration: const Duration(
                       seconds: 1,
                     ),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w700,
                       color: Color(0xff262539),
                       fontSize: 40,
                     ),
                   ),
-                  Text(
+                  const Text(
                     ' Viaggi',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
@@ -412,9 +408,9 @@ class _TripsWidgetState extends State<TripsWidget> {
                     padding: const EdgeInsets.all(16),
                     hoverElevation: 0,
                     highlightElevation: 0,
-                    shape: CircleBorder(),
-                    color: Color(0xffF9F9F9),
-                    child: Icon(
+                    shape: const CircleBorder(),
+                    color: const Color(0xffF9F9F9),
+                    child: const Icon(
                       Icons.refresh,
                       color: Color(0xff333333),
                       size: 26,
@@ -422,7 +418,7 @@ class _TripsWidgetState extends State<TripsWidget> {
                   ),
                   IconButton(
                     onPressed: () {},
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_back_ios,
                       size: 20,
                       color: Color(0xff333333),
@@ -431,7 +427,7 @@ class _TripsWidgetState extends State<TripsWidget> {
                   IconButton(
                     onPressed: () {},
                     padding: EdgeInsets.zero,
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_forward_ios,
                       size: 20,
                       color: Color(0xff333333),
@@ -447,15 +443,15 @@ class _TripsWidgetState extends State<TripsWidget> {
             ),
             child: LiveGrid(
               shrinkWrap: true,
-              showItemDuration: Duration(
+              showItemDuration: const Duration(
                 milliseconds: 300,
               ),
-              showItemInterval: Duration(
+              showItemInterval: const Duration(
                 microseconds: 200,
               ),
               itemCount: _trips.length,
               itemBuilder: _tripsBuilder,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4,
                 childAspectRatio: 2,
               ),
@@ -465,7 +461,7 @@ class _TripsWidgetState extends State<TripsWidget> {
       );
 
   Widget _buildTripToEditWidget() => Column(
-        key: ValueKey('Column 2'),
+        key: const ValueKey('Column 2'),
         children: [
           Row(
             children: [
@@ -477,20 +473,20 @@ class _TripsWidgetState extends State<TripsWidget> {
                 padding: const EdgeInsets.all(16),
                 hoverElevation: 0,
                 highlightElevation: 0,
-                shape: CircleBorder(),
-                color: Color(0xffF9F9F9),
-                child: Icon(
+                shape: const CircleBorder(),
+                color: const Color(0xffF9F9F9),
+                child: const Icon(
                   Icons.arrow_back_ios_new,
                   color: Color(0xff333333),
                   size: 24,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 16,
               ),
               Text(
                 'Viaggio #${_tripToEdit!.id}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   color: Color(0xff262539),
                   fontSize: 40,
@@ -520,7 +516,7 @@ class _TripsWidgetState extends State<TripsWidget> {
                 ),
                 Text(
                   _tripToEdit!.id.toString(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 18,
                   ),
                 ),
@@ -550,7 +546,7 @@ class _TripsWidgetState extends State<TripsWidget> {
                               value: e.id,
                               child: Text(
                                 e.description,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 18,
                                 ),
                               ),
@@ -579,8 +575,8 @@ class _TripsWidgetState extends State<TripsWidget> {
                         top: 8,
                       ),
                       child: DateTimePicker(
-                        icon: Padding(
-                          padding: const EdgeInsets.only(
+                        icon: const Padding(
+                          padding: EdgeInsets.only(
                             top: 8,
                           ),
                           child: Icon(
@@ -590,11 +586,10 @@ class _TripsWidgetState extends State<TripsWidget> {
                         initialDate: _tripToEdit!.time.expectedArrivalTime,
                         firstDate: DateTime(2021),
                         lastDate: DateTime(2050),
-                        onSaved: (s) =>
-                            _expectedArrivalDateController.text = s!,
+                        onSaved: (s) => _expectedArrivalDateController.text = s!,
                         type: DateTimePickerType.dateTime,
                         controller: _expectedArrivalDateController,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                         ),
                       ),
@@ -620,8 +615,8 @@ class _TripsWidgetState extends State<TripsWidget> {
                         top: 8,
                       ),
                       child: DateTimePicker(
-                        icon: Padding(
-                          padding: const EdgeInsets.only(
+                        icon: const Padding(
+                          padding: EdgeInsets.only(
                             top: 8,
                           ),
                           child: Icon(
@@ -634,7 +629,7 @@ class _TripsWidgetState extends State<TripsWidget> {
                         type: DateTimePickerType.dateTime,
                         onSaved: (s) => _actualArrivalDateController.text = s!,
                         controller: _actualArrivalDateController,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                         ),
                       ),
@@ -660,8 +655,8 @@ class _TripsWidgetState extends State<TripsWidget> {
                         top: 8,
                       ),
                       child: DateTimePicker(
-                        icon: Padding(
-                          padding: const EdgeInsets.only(
+                        icon: const Padding(
+                          padding: EdgeInsets.only(
                             top: 8,
                           ),
                           child: Icon(
@@ -672,10 +667,9 @@ class _TripsWidgetState extends State<TripsWidget> {
                         firstDate: DateTime(2021),
                         lastDate: DateTime(2050),
                         type: DateTimePickerType.dateTime,
-                        onSaved: (s) =>
-                            _expectedDeparturedDateController.text = s!,
+                        onSaved: (s) => _expectedDeparturedDateController.text = s!,
                         controller: _expectedDeparturedDateController,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                         ),
                       ),
@@ -701,8 +695,8 @@ class _TripsWidgetState extends State<TripsWidget> {
                         top: 8,
                       ),
                       child: DateTimePicker(
-                        icon: Padding(
-                          padding: const EdgeInsets.only(
+                        icon: const Padding(
+                          padding: EdgeInsets.only(
                             top: 8,
                           ),
                           child: Icon(
@@ -714,16 +708,15 @@ class _TripsWidgetState extends State<TripsWidget> {
                         lastDate: DateTime(2050),
                         type: DateTimePickerType.dateTime,
                         controller: _actualDepartureDateController,
-                        onSaved: (s) =>
-                            _actualDepartureDateController.text = s!,
-                        style: TextStyle(
+                        onSaved: (s) => _actualDepartureDateController.text = s!,
+                        style: const TextStyle(
                           fontSize: 18,
                         ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(),
+                const SizedBox(),
                 Row(
                   children: [
                     Padding(
@@ -741,10 +734,10 @@ class _TripsWidgetState extends State<TripsWidget> {
                           horizontal: 40,
                           vertical: 24,
                         ),
-                        color: Theme.of(context).accentColor.withOpacity(0.8),
+                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.8),
                         onPressed: () => _editTrip(),
                         child: Row(
-                          children: [
+                          children: const [
                             Icon(
                               Ionicons.save_outline,
                               color: Colors.white,
@@ -796,7 +789,7 @@ class _TripsWidgetState extends State<TripsWidget> {
               ? await _fetch().then(
                   (value) {
                     context.showInfoBar(
-                      content: Text(
+                      content: const Text(
                         'Viaggio aggiornato con successo',
                       ),
                     );
@@ -806,7 +799,7 @@ class _TripsWidgetState extends State<TripsWidget> {
                   },
                 )
               : context.showErrorBar(
-                  content: Text(
+                  content: const Text(
                     'Si è verificato un errore',
                   ),
                 ),
@@ -826,13 +819,13 @@ class _TripsWidgetState extends State<TripsWidget> {
             (value) async => value.statusCode == HttpStatus.ok
                 ? await _fetch().then(
                     (value) => context.showInfoBar(
-                      content: Text(
+                      content: const Text(
                         'Viaggio eliminato con successo',
                       ),
                     ),
                   )
                 : context.showErrorBar(
-                    content: Text(
+                    content: const Text(
                       'Si è verificato un errore',
                     ),
                   ),
@@ -852,17 +845,15 @@ class _TripsWidgetState extends State<TripsWidget> {
                   32,
                 ),
                 child: AnimatedSwitcher(
-                  duration: Duration(
+                  duration: const Duration(
                     milliseconds: 500,
                   ),
-                  child: _tripToEdit == null
-                      ? _buildAllTripsWidget()
-                      : _buildTripToEditWidget(),
+                  child: _tripToEdit == null ? _buildAllTripsWidget() : _buildTripToEditWidget(),
                 ),
               ),
             );
           } else if (tripState is TripsLoading || tripState is TripsInitial) {
-            return LoadingIndicator();
+            return const LoadingIndicator();
           } else {
             return Center(
               child: Row(
@@ -879,14 +870,13 @@ class _TripsWidgetState extends State<TripsWidget> {
                     child: RichText(
                       text: TextSpan(
                         children: [
-                          TextSpan(
+                          const TextSpan(
                             text: 'Si è verificato un errore. ',
                           ),
                           TextSpan(
                             text: 'Riprova',
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () => _fetch(),
-                            style: TextStyle(
+                            recognizer: TapGestureRecognizer()..onTap = () => _fetch(),
+                            style: const TextStyle(
                               color: Colors.blue,
                             ),
                           ),

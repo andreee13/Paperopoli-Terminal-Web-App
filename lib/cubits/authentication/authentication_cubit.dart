@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
 import 'package:paperopoli_terminal/core/errors/exceptions.dart';
 import 'package:paperopoli_terminal/data/repositories/user_repository.dart';
 
@@ -12,13 +12,13 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   AuthenticationCubit({
     required this.repository,
   }) : super(
-          AuthenticationInitial(),
+          const AuthenticationInitial(),
         );
 
   Future<void> login() async {
     try {
       emit(
-        AuthenticationLoading(),
+        const AuthenticationLoading(),
       );
       if (await repository.isSignedIn()) {
         emit(
@@ -28,10 +28,10 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         );
       } else {
         emit(
-          AuthenticationNotLogged(),
+          const AuthenticationNotLogged(),
         );
       }
-    } on AuthenticationException catch (e, _) {
+    } on AuthenticationException catch (e) {
       emit(
         AuthenticationError(e),
       );
@@ -41,7 +41,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   Future<void> logOut() async {
     try {
       emit(
-        AuthenticationLoading(),
+        const AuthenticationLoading(),
       );
       if (await repository.logOut() != null) {
         emit(
@@ -51,10 +51,10 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         );
       } else {
         emit(
-          AuthenticationNotLogged(),
+          const AuthenticationNotLogged(),
         );
       }
-    } on AuthenticationException catch (e, _) {
+    } on AuthenticationException catch (e) {
       emit(
         AuthenticationError(e),
       );
@@ -68,7 +68,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   }) async {
     try {
       emit(
-        AuthenticationLoading(),
+        const AuthenticationLoading(),
       );
       if (await repository.signUpWithEmailPassword(
             email: email,
@@ -83,7 +83,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         );
       } else {
         emit(
-          AuthenticationNotLogged(),
+          const AuthenticationNotLogged(),
         );
       }
     } on Exception catch (e) {
@@ -101,7 +101,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   }) async {
     try {
       emit(
-        AuthenticationLoading(),
+        const AuthenticationLoading(),
       );
       if (await repository.signInWithEmailPassword(
             email: email,
@@ -115,10 +115,10 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         );
       } else {
         emit(
-          AuthenticationNotLogged(),
+          const AuthenticationNotLogged(),
         );
       }
-    } on AuthenticationException catch (e, _) {
+    } on AuthenticationException catch (e) {
       emit(
         AuthenticationError(
           e,

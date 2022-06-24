@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:paperopoli_terminal/core/constants/constants.dart';
+import 'package:http/http.dart' as http;
+import 'package:paperopoli_terminal/core/constants/urls.dart';
 import 'package:paperopoli_terminal/core/utils/utils.dart';
 import 'package:paperopoli_terminal/data/models/good/good_model.dart';
 import 'package:paperopoli_terminal/data/models/operation/operation_model.dart';
@@ -183,7 +183,7 @@ class ServerService {
         },
       );
 
-  /* PEOPLE */ 
+  /* PEOPLE */
 
   Future<http.Response> fetchPeople() async => await http.get(
         Uri.parse(
@@ -262,7 +262,7 @@ class ServerService {
           HttpHeaders.contentTypeHeader: ContentType.json.value,
           HttpHeaders.authorizationHeader: await _user.getIdToken(),
         },
-      );   
+      );
 
   /* GOODS */
 
