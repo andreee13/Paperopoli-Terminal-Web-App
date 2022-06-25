@@ -1,4 +1,6 @@
-// ignore_for_file: constant_identifier_names
+// ignore_for_file: avoid_web_libraries_in_flutter
+// ignore_for_file: constant_identifier_names, non_constant_identifier_names
+import 'dart:html' as html;
 
-const String TERMINAL_WS_URL = 'wss://paperopoliterminal.ddns.net/ws/';
-const String TERMINAL_API_URL = 'https://paperopoliterminal.ddns.net/data';
+final String TERMINAL_WS_URL = 'wss://${html.window.location.host}/api/v1/websocket';
+final String TERMINAL_API_URL = 'https://${html.window.location.host}/api/v1';

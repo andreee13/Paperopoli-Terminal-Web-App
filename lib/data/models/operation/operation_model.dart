@@ -63,7 +63,7 @@ class OperationModel extends MainModel {
       trip: json.first['viaggio'],
       type: json.first['nome_tipo'],
       description: json.first['descrizione'],
-      goods: json.first['merci'] != ''
+      goods: json.first['merci'] != null && json.first['merci'] != ''
           ? (json.first['merci'] as String)
               .split(',')
               .map(
@@ -71,7 +71,7 @@ class OperationModel extends MainModel {
               )
               .toList()
           : [],
-      people: json.first['persone'] != ''
+      people: json.first['persone'] != null && json.first['persone'] != ''
           ? (json.first['persone'] as String)
               .split(',')
               .map(
@@ -79,7 +79,7 @@ class OperationModel extends MainModel {
               )
               .toList()
           : [],
-      ships: json.first['navi'] != ''
+      ships: json.first['navi'] != null && json.first['navi'] != ''
           ? (json.first['navi'] as String)
               .split(',')
               .map(
@@ -87,7 +87,7 @@ class OperationModel extends MainModel {
               )
               .toList()
           : [],
-      vehicles: json.first['veicoli'] != ''
+      vehicles: json.first['veicoli'] != null && json.first['veicoli'] != ''
           ? (json.first['veicoli'] as String)
               .split(',')
               .map(

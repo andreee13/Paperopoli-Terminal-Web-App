@@ -2,6 +2,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:paperopoli_terminal/core/constants/keys.dart';
 import 'package:paperopoli_terminal/cubits/authentication/authentication_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flash/flash.dart';
@@ -22,8 +23,12 @@ class LoginFormWidgetState extends State<LoginFormWidget> {
 
   @override
   void initState() {
-    _emailController = TextEditingController();
-    _passwordController = TextEditingController();
+    _emailController = TextEditingController(
+      text: TEST_EMAIL,
+    );
+    _passwordController = TextEditingController(
+      text: TEST_PASSWORD,
+    );
     _passwordResetController = TextEditingController();
     super.initState();
   }

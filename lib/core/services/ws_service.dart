@@ -1,17 +1,17 @@
+// ignore_for_file: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
+
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:paperopoli_terminal/core/constants/urls.dart';
 import 'package:paperopoli_terminal/data/models/chat/message_model.dart';
-import 'package:paperopoli_terminal/presentation/screens/home_screen.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class WsService {
   static WebSocketChannel? _channel;
-  static final List<MessageModel> _messages = [];
+  static final ValueNotifier<List<MessageModel>> _messages = ValueNotifier([]);
 
-  static List<MessageModel> get messages => _messages;
+  static ValueNotifier<List<MessageModel>> get messages => _messages;
 
   static Future<void> connect(
     BuildContext context,
@@ -30,25 +30,19 @@ class WsService {
           ),
         ).listen((event) {
           try {
-            _channel!.sink.add(
-              jsonEncode(
-                {
-                  'alive': true,
-                },
-              ),
-            );
+            _channel!.sink.add('ping');
           } catch (_) {}
         });
         _channel!.stream.listen((event) {
           try {
-            _messages.add(
+            if (event == 'pong') return;
+            _messages.value.add(
               MessageModel.fromJson(
                 jsonDecode(event),
               ),
             );
-            // ignore: invalid_use_of_protected_member
-            HomeScreen.of(context)!.setState(() {});
-            SchedulerBinding.instance.addPostFrameCallback((timeStamp) async {
+            _messages.notifyListeners();
+            WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
               await scrollController.animateTo(
                 scrollController.position.maxScrollExtent,
                 duration: const Duration(
@@ -71,7 +65,8 @@ class WsService {
       _channel!.sink.add(
         messageModel.toJson(),
       );
-      _messages.add(messageModel);
+      _messages.value.add(messageModel);
+      _messages.notifyListeners();
       await scrollController.animateTo(
         scrollController.position.maxScrollExtent,
         duration: const Duration(

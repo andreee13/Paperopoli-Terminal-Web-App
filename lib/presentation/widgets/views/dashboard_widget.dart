@@ -300,6 +300,7 @@ class DashboardWidgetState extends State<DashboardWidget> {
   Widget _chatBuilder(
     BuildContext context,
     int index,
+    List<MessageModel> messages,
   ) =>
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -308,10 +309,10 @@ class DashboardWidgetState extends State<DashboardWidget> {
           Row(
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.end,
-            children: WsService.messages[index].sender.uid != HomeScreen.of(context)!.getUser().uid
+            children: messages[index].sender.uid != HomeScreen.of(context)!.getUser().uid
                 ? [
                     Tooltip(
-                      message: WsService.messages[index].sender.displayName,
+                      message: messages[index].sender.displayName,
                       child: GestureDetector(
                         onTap: () => showDialog(
                           context: context,
@@ -326,7 +327,9 @@ class DashboardWidgetState extends State<DashboardWidget> {
                                       ACCENT_COLORS[index.remainder(ACCENT_COLORS.length)],
                                   foregroundColor: Colors.black,
                                   child: Text(
-                                    WsService.messages[index].sender.displayName
+                                    messages[index]
+                                        .sender
+                                        .displayName
                                         .substring(0, 1)
                                         .toUpperCase(),
                                     style: const TextStyle(
@@ -340,7 +343,7 @@ class DashboardWidgetState extends State<DashboardWidget> {
                                     bottom: 8,
                                   ),
                                   child: Text(
-                                    WsService.messages[index].sender.displayName,
+                                    messages[index].sender.displayName,
                                     style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -348,7 +351,7 @@ class DashboardWidgetState extends State<DashboardWidget> {
                                   ),
                                 ),
                                 Text(
-                                  WsService.messages[index].sender.email,
+                                  messages[index].sender.email,
                                   style: const TextStyle(
                                     color: Colors.black54,
                                     fontSize: 14,
@@ -388,7 +391,9 @@ class DashboardWidgetState extends State<DashboardWidget> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          WsService.messages[index].sender.creationTime
+                                          messages[index]
+                                              .sender
+                                              .creationTime
                                               .toIso8601String()
                                               .substring(
                                                 0,
@@ -400,7 +405,9 @@ class DashboardWidgetState extends State<DashboardWidget> {
                                           ),
                                         ),
                                         Text(
-                                          WsService.messages[index].sender.lastSignInTime
+                                          messages[index]
+                                              .sender
+                                              .lastSignInTime
                                               .toIso8601String()
                                               .substring(
                                                 0,
@@ -423,9 +430,7 @@ class DashboardWidgetState extends State<DashboardWidget> {
                           backgroundColor: ACCENT_COLORS[index.remainder(ACCENT_COLORS.length)],
                           foregroundColor: Colors.black,
                           child: Text(
-                            WsService.messages[index].sender.displayName
-                                .substring(0, 1)
-                                .toUpperCase(),
+                            messages[index].sender.displayName.substring(0, 1).toUpperCase(),
                           ),
                         ),
                       ),
@@ -444,7 +449,7 @@ class DashboardWidgetState extends State<DashboardWidget> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
-                          WsService.messages[index].body,
+                          messages[index].body,
                         ),
                       ),
                     ),
@@ -464,12 +469,12 @@ class DashboardWidgetState extends State<DashboardWidget> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
-                          WsService.messages[index].body,
+                          messages[index].body,
                         ),
                       ),
                     ),
                     Tooltip(
-                      message: WsService.messages[index].sender.displayName,
+                      message: messages[index].sender.displayName,
                       child: GestureDetector(
                         onTap: () => showDialog(
                           context: context,
@@ -484,7 +489,9 @@ class DashboardWidgetState extends State<DashboardWidget> {
                                       ACCENT_COLORS[index.remainder(ACCENT_COLORS.length)],
                                   foregroundColor: Colors.black,
                                   child: Text(
-                                    WsService.messages[index].sender.displayName
+                                    messages[index]
+                                        .sender
+                                        .displayName
                                         .substring(0, 1)
                                         .toUpperCase(),
                                     style: const TextStyle(
@@ -498,8 +505,8 @@ class DashboardWidgetState extends State<DashboardWidget> {
                                     bottom: 8,
                                   ),
                                   child: Text(
-                                    WsService.messages[index].sender.displayName +
-                                        (WsService.messages[index].sender.uid ==
+                                    messages[index].sender.displayName +
+                                        (messages[index].sender.uid ==
                                                 FirebaseAuth.instance.currentUser!.uid
                                             ? ' (Tu)'
                                             : ''),
@@ -510,7 +517,7 @@ class DashboardWidgetState extends State<DashboardWidget> {
                                   ),
                                 ),
                                 Text(
-                                  WsService.messages[index].sender.email,
+                                  messages[index].sender.email,
                                   style: const TextStyle(
                                     color: Colors.black54,
                                     fontSize: 14,
@@ -550,7 +557,9 @@ class DashboardWidgetState extends State<DashboardWidget> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          WsService.messages[index].sender.creationTime
+                                          messages[index]
+                                              .sender
+                                              .creationTime
                                               .toIso8601String()
                                               .substring(
                                                 0,
@@ -562,7 +571,9 @@ class DashboardWidgetState extends State<DashboardWidget> {
                                           ),
                                         ),
                                         Text(
-                                          WsService.messages[index].sender.lastSignInTime
+                                          messages[index]
+                                              .sender
+                                              .lastSignInTime
                                               .toIso8601String()
                                               .substring(
                                                 0,
@@ -585,9 +596,7 @@ class DashboardWidgetState extends State<DashboardWidget> {
                           backgroundColor: ACCENT_COLORS[index.remainder(ACCENT_COLORS.length)],
                           foregroundColor: Colors.black,
                           child: Text(
-                            WsService.messages[index].sender.displayName
-                                .substring(0, 1)
-                                .toUpperCase(),
+                            messages[index].sender.displayName.substring(0, 1).toUpperCase(),
                           ),
                         ),
                       ),
@@ -601,12 +610,11 @@ class DashboardWidgetState extends State<DashboardWidget> {
               bottom: 16,
             ),
             child: Align(
-              alignment:
-                  WsService.messages[index].sender.uid != HomeScreen.of(context)!.getUser().uid
-                      ? Alignment.topRight
-                      : Alignment.topLeft,
+              alignment: messages[index].sender.uid != HomeScreen.of(context)!.getUser().uid
+                  ? Alignment.topRight
+                  : Alignment.topLeft,
               child: Text(
-                WsService.messages[index].date.toIso8601String().substring(
+                messages[index].date.toIso8601String().substring(
                       11,
                       16,
                     ),
@@ -1304,22 +1312,26 @@ class DashboardWidgetState extends State<DashboardWidget> {
                                   top: 24,
                                   bottom: 16,
                                 ),
-                                child: Stack(
-                                  children: [
-                                    ListView.builder(
-                                      shrinkWrap: true,
-                                      controller: _scrollController,
-                                      itemCount: WsService.messages.length,
-                                      physics: const BouncingScrollPhysics(
-                                        parent: AlwaysScrollableScrollPhysics(),
+                                child: ValueListenableBuilder<List<MessageModel>>(
+                                  valueListenable: WsService.messages,
+                                  builder: (context, messages, _) => Stack(
+                                    children: [
+                                      ListView.builder(
+                                        shrinkWrap: true,
+                                        controller: _scrollController,
+                                        itemCount: messages.length,
+                                        physics: const BouncingScrollPhysics(
+                                          parent: AlwaysScrollableScrollPhysics(),
+                                        ),
+                                        itemBuilder: (context, index) =>
+                                            _chatBuilder(context, index, messages),
                                       ),
-                                      itemBuilder: _chatBuilder,
-                                    ),
-                                    Visibility(
-                                      visible: WsService.messages.isEmpty,
-                                      child: const LoadingIndicator(),
-                                    ),
-                                  ],
+                                      Visibility(
+                                        visible: messages.isEmpty,
+                                        child: const LoadingIndicator(),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                               SizedBox(
